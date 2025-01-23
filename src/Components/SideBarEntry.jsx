@@ -16,7 +16,7 @@ export default function SideBarEntry({ entry, onClose }) {
   };
   return (
     <>
-      <div className="bg-slate-200 shadow-xl absolute top-5 right-5 w-1/4 p-4  h-[90vh] rounded-lg overflow-auto">
+      <div className="bg-slate-200 shadow-xl absolute top-5 right-5 sm:w-48  md:w-1/4 p-4  h-[90vh] rounded-lg overflow-auto">
         <div className="relative " onClick={() => handleOnClose()}>
           <IoIosCloseCircle size={24} />
         </div>
