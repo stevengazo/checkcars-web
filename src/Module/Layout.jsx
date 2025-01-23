@@ -1,22 +1,20 @@
 import React from "react";
-import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
+import Navbar from "../Components/NavBar";
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Main Content */}
-      <main className="flex-grow container mx-auto px-4 py-6">{children}</main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-4">
-        <div className="container mx-auto text-center">
-          <p>&copy; 2025 MyApp. All rights reserved.</p>
+    <>
+      <div className="flex flex-row gap-2 h-screen">
+        <Navbar />
+        {/* Main content */}
+        <div className="flex-1 p-6 m-3 border border-red-500 overflow-y-auto overflow-y-scroll">
+          <h1 className="text-3xl font-bold  ">CheckCars</h1>
+          {/* Aquí iría el contenido principal de tu página */}
+          <Outlet />
         </div>
-      </footer>
-    </div>
+      </div>
+    </>
   );
 };
 
