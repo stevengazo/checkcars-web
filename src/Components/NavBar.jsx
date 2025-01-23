@@ -15,7 +15,7 @@ const Navbar = () => {
       {/* Sidebar */}
       <div
         className={`${
-          isOpen ? " w-48" : "w-16"
+          isOpen ? "w-48" : "w-16"
         } bg-blue-600 text-white h-screen transition-all duration-300 ease-in-out`}
       >
         <div className="flex justify-between items-center p-4">
@@ -40,58 +40,49 @@ const Navbar = () => {
           </button>
         </div>
         <ul className="space-y-4">
-          <li
-            className={`${
-              isOpen ? "block" : "hidden"
-            } hover:bg-blue-800 transition duration-500  `}
-          >
+          <li className="hover:bg-blue-800 transition duration-500">
             <Link
-              to={"home"}
-              className="hover:text-blue-300 flex flex-row w-full p-3 justify-around items-center"
+              to="home"
+              className="flex items-center w-full p-3 hover:text-blue-300"
             >
               <FaHome size={24} />
-
-              <label>Salidas</label>
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Salidas</span>
             </Link>
           </li>
-          <li
-            className={`${
-              isOpen ? "block" : "hidden"
-            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
-          >
-            <CiWarning size={24} />
-            <Link to={"issue"} className="hover:text-blue-300">
-              Problemas
+          <li className="hover:bg-blue-800 transition duration-500">
+            <Link
+              to="issue"
+              className="flex items-center w-full p-3 hover:text-blue-300"
+            >
+              <CiWarning size={24} />
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Problemas</span>
             </Link>
           </li>
-          <li
-            className={`${
-              isOpen ? "block" : "hidden"
-            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
-          >
-            <FaCarCrash size={24} />
-            <Link to={"crash"} className="hover:text-blue-300">
-              Accidentes
+          <li className="hover:bg-blue-800 transition duration-500">
+            <Link
+              to="crash"
+              className="flex items-center w-full p-3 hover:text-blue-300"
+            >
+              <FaCarCrash size={24} />
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Accidentes</span>
             </Link>
           </li>
-          <li
-            className={`${
-              isOpen ? "block" : "hidden"
-            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
-          >
-            <FaCar size={24} />
-            <Link to={"CarList"} className="hover:text-blue-300">
-              Vehículos
+          <li className="hover:bg-blue-800 transition duration-500">
+            <Link
+              to="CarList"
+              className="flex items-center w-full p-3 hover:text-blue-300"
+            >
+              <FaCar size={24} />
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Vehículos</span>
             </Link>
           </li>
-          <li
-            className={`${
-              isOpen ? "block" : "hidden"
-            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
-          >
-            <FaUsers size={24} />
-            <Link href="#" className="hover:text-blue-300">
-              Usuarios
+          <li className="hover:bg-blue-800 transition duration-500">
+            <Link
+              to="#"
+              className="flex items-center w-full p-3 hover:text-blue-300"
+            >
+              <FaUsers size={24} />
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Usuarios</span>
             </Link>
           </li>
         </ul>

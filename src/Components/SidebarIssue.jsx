@@ -1,6 +1,7 @@
 import { IoIosCloseCircle } from "react-icons/io";
 import useFetch from "../Hook/useFetch";
 import { BeatLoader } from "react-spinners";
+import Map from "../Components/MapLocation";
 
 export default function SideBarIssue({ issue, onClose }) {
   const { data, loading, error, refetch } = useFetch(
@@ -50,6 +51,7 @@ export default function SideBarIssue({ issue, onClose }) {
               <label>{issue.longitude}</label>
             </div>
           </div>
+          <Map longitude={issue.longitude} latitude={issue.latitude} />
           {/* Car Plate */}
           <div className="flex flex-row justify-between my-2">
             <label className=" font-medium">Tipo</label>
