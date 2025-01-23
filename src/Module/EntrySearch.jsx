@@ -54,7 +54,7 @@ export default function EntrySearch() {
         <div className="flex flex-col md:flex-row gap-4">
           {!useDate && (
             <label
-              className="bg-green-700 text-white justify-center text-center p-2"
+              className="bg-green-700 text-white rounded  justify-center text-center p-2"
               onClick={() => setUseDate(true)}
             >
               Fecha

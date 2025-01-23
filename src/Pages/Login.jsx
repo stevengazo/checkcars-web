@@ -31,7 +31,7 @@ const Login = () => {
   // Si hay un token exitoso, guardarlo en localStorage
   if (data && data.token) {
     localStorage.setItem('token', data.token);
-    nav('/CarList');
+    nav('/Home');
     //alert('Inicio de sesión exitoso');
    
   }
