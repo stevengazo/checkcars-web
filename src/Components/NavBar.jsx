@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FaHome, FaCar, FaUsers } from "react-icons/fa";
+import { FaHome, FaCar, FaUsers, FaCarCrash } from "react-icons/fa";
+import { CiWarning } from "react-icons/ci";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -19,7 +20,7 @@ const Navbar = () => {
       >
         <div className="flex justify-between items-center p-4">
           <h1 className={`${isOpen ? "block" : "hidden"} text-lg font-bold`}>
-            MyApp
+            Check Cars
           </h1>
           <button onClick={toggleSidebar} className="text-white">
             <svg
@@ -39,19 +40,51 @@ const Navbar = () => {
           </button>
         </div>
         <ul className="space-y-4">
-          <li className={`${isOpen ? "block" : "hidden"} hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}>
+          <li
+            className={`${
+              isOpen ? "block" : "hidden"
+            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
+          >
             <FaHome size={24} />
             <Link to={"home"} className="hover:text-blue-300">
-              Reportes
+              Salidas
             </Link>
           </li>
-          <li className={`${isOpen ? "block" : "hidden"} hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}>
-           <FaCar size={24} />
+          <li
+            className={`${
+              isOpen ? "block" : "hidden"
+            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
+          >
+            <CiWarning size={24} />
+            <Link to={"issue"} className="hover:text-blue-300">
+              Problemas
+            </Link>
+          </li>
+          <li
+            className={`${
+              isOpen ? "block" : "hidden"
+            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
+          >
+            <FaCarCrash size={24} />
+            <Link to={"crash"} className="hover:text-blue-300">
+              Accidentes
+            </Link>
+          </li>
+          <li
+            className={`${
+              isOpen ? "block" : "hidden"
+            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
+          >
+            <FaCar size={24} />
             <Link to={"CarList"} className="hover:text-blue-300">
               Vehículos
             </Link>
           </li>
-          <li className={`${isOpen ? "block" : "hidden"} hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}>
+          <li
+            className={`${
+              isOpen ? "block" : "hidden"
+            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
+          >
             <FaUsers size={24} />
             <Link href="#" className="hover:text-blue-300">
               Usuarios
@@ -59,8 +92,6 @@ const Navbar = () => {
           </li>
         </ul>
       </div>
-
-  
     </div>
   );
 };

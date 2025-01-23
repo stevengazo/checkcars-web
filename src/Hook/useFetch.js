@@ -49,7 +49,7 @@ const useFetch = (url, options = {}) => {
     if (options.autoFetch !== false) {
       fetchData();
     }
-  }, [fetchData]);
+  }, []);
 
   return { data, loading, error, refetch: fetchData };
 };

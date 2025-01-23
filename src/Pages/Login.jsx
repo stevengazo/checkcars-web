@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import useFetch from '../Hook/useFetch'; // Importa el hook personalizado
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const nav  = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -29,7 +31,9 @@ const Login = () => {
   // Si hay un token exitoso, guardarlo en localStorage
   if (data && data.token) {
     localStorage.setItem('token', data.token);
-    alert('Inicio de sesión exitoso');
+    nav('/CarList');
+    //alert('Inicio de sesión exitoso');
+   
   }
 
   return (
