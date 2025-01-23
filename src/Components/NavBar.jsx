@@ -43,11 +43,15 @@ const Navbar = () => {
           <li
             className={`${
               isOpen ? "block" : "hidden"
-            } hover:bg-blue-800 transition duration-500 flex flex-row w-full p-3 justify-around items-center `}
+            } hover:bg-blue-800 transition duration-500  `}
           >
-            <FaHome size={24} />
-            <Link to={"home"} className="hover:text-blue-300">
-              Salidas
+            <Link
+              to={"home"}
+              className="hover:text-blue-300 flex flex-row w-full p-3 justify-around items-center"
+            >
+              <FaHome size={24} />
+
+              <label>Salidas</label>
             </Link>
           </li>
           <li

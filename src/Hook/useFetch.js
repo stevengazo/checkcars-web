@@ -9,11 +9,6 @@ const useFetch = (url, options = {}) => {
 
   const fetchData = useCallback(
     async (customOptions = {}) => {
-      console.group();
-      console.log('useFetch');
-      console.log('url:', url);
-      console.log('options:', { ...options, ...customOptions });
-      console.groupEnd();
       setLoading(true);
       setError(null);
 
@@ -34,7 +29,6 @@ const useFetch = (url, options = {}) => {
         }
 
         const result = await response.json();
-        console.log('result:', result); 
         setData(result);
       } catch (err) {
         setError(err.message);
