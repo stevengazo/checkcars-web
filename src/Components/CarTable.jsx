@@ -1,9 +1,10 @@
 import { useEffect } from "react";
+import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import { useNavigate } from "react-router-dom";
 
 const CarTable = () => {
-const Nav = useNavigate();
+  const Nav = useNavigate();
 
   const URL = "https://mecsacars.stevengazo.co.cr/api/Cars";
   // Hacemos la petición usando la URL construida
@@ -11,11 +12,9 @@ const Nav = useNavigate();
     autoFetch: true,
   });
 
-  const GoTo = (id)=>{
+  const GoTo = (id) => {
     Nav(`/car/${id}`);
-  }
-
-
+  };
 
   return (
     <>
@@ -32,17 +31,34 @@ const Nav = useNavigate();
           <tbody>
             {data &&
               data.map((car) => {
-               return <tr key={car.carId} className=" hover:cursor-pointer "  onClick={()=> GoTo(car.carId)}>
-                  <td className="px-4 py-2 border-b border-gray-300">{car.brand}</td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {car.model}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">{car.plate}</td>
-                  <td className="px-4 py-2 border-b border-gray-300">{car.type}</td>
-                </tr>;
+                return (
+                  <tr
+                    key={car.carId}
+                    className=" hover:cursor-pointer "
+                    onClick={() => GoTo(car.carId)}
+                  >
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {car.brand}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {car.model}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {car.plate}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {car.type}
+                    </td>
+                  </tr>
+                );
               })}
           </tbody>
         </table>
+        {loading && (
+          <div className="flex my-2 justify-center items-center w-full mx-auto">
+            <DotLoader color="#2563EB" />
+          </div>
+        )}
       </div>
     </>
   );

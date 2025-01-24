@@ -49,7 +49,7 @@ const Navbar = () => {
             </svg>
           </button>
         </div>
-        <ul className="space-y-4">
+        <ul className={`${isOpen ? "block" : "hidden"} text-lg font-bold space-y-4`}>
           <li className="hover:bg-blue-800 transition duration-500">
             <Link
               to="home"

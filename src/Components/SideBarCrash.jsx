@@ -89,7 +89,7 @@ export default function SideBarCrash({ crash, onClose }) {
           <h3 className="text-3xl">Fotos</h3>
         </div>
         {data != null && (
-          <div className="flex flex-row justify-center align-middle my-2 border rounded-2xl p-2">
+          <div className="flex flex-col gap-3 justify-center align-middle my-2 border rounded-2xl p-2">
             {loading && <BeatLoader size={24} />}
             {data !== null &&
               data.map((photo) => (
