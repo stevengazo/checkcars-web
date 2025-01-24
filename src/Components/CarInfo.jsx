@@ -1,6 +1,8 @@
 
 
 const CarInfo = ({car})=>{
+
+  console.warn(car)
     return (<>
     <table className="table-auto w-full border-collapse border border-gray-300">
             <thead>

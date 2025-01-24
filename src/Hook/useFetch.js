@@ -4,6 +4,7 @@ const useFetch = (url, options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [status, setStatus] = useState(0);
 
   const token = localStorage.getItem('token'); // Obtén el token almacenado
 
@@ -23,12 +24,13 @@ const useFetch = (url, options = {}) => {
             ...(customOptions.headers || {}), // Headers personalizados
           },
         });
-
+        console.warn(response)
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
 
         const result = await response.json();
+        setStatus(response.status)
         setData(result);
       } catch (err) {
         setError(err.message);
@@ -45,7 +47,7 @@ const useFetch = (url, options = {}) => {
     }
   }, []);
 
-  return { data, loading, error, refetch: fetchData };
+  return { data, loading, error, refetch: fetchData , status };
 };
 
 export default useFetch;

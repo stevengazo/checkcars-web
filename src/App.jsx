@@ -8,6 +8,7 @@ import CarView from "./Pages/CarView";
 import Crashes from "./Pages/crashes";
 import Issues from "./Pages/issues";
 import ErrorPage from "./Pages/Error";
+import ForgotPassword from "./Pages/ForgotPassword";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -16,7 +17,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+  
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot" element={<ForgotPassword />} />
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/crash" element={<Crashes />} />
