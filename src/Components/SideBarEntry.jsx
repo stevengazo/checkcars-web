@@ -80,7 +80,7 @@ export default function SideBarEntry({ entry, onClose }) {
           {/* Fuel Level */}
           <div className="flex flex-row justify-between my-2">
             <label className="font-medium">Nivel de combustible</label>
-            <label>{entry.fuelLevel === 0 ? "Vacío" : entry.fuelLevel}</label>
+            <progress value={entry.fuelLevel} max={100} />
           </div>
 
           {/* Tires State */}
