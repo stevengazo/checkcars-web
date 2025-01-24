@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import { FaHome, FaCar, FaUsers, FaCarCrash } from "react-icons/fa";
 import { CiWarning } from "react-icons/ci";
 import { Link } from "react-router-dom";
+import { IoIosExit } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const nav = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  const DeleteToken = () => {
+    localStorage.clear();
+    nav("/");
+  };
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -64,7 +72,9 @@ const Navbar = () => {
               className="flex items-center w-full p-3 hover:text-blue-300"
             >
               <FaCarCrash size={24} />
-              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Accidentes</span>
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>
+                Accidentes
+              </span>
             </Link>
           </li>
           <li className="hover:bg-blue-800 transition duration-500">
@@ -86,6 +96,22 @@ const Navbar = () => {
             </Link>
           </li>
         </ul>
+
+        <div
+          className={`${
+            isOpen ? "w-48" : "w-16"
+          } absolute bottom-2 text-white transition-all duration-300 ease-in-out px-4 justify-center`}
+        >
+          <div className="flex flex-row b p-2 hover:to-blue-900 transition duration-500">
+            <IoIosExit size={36} />
+            <label
+              className={`${isOpen ? "ml-2" : "hidden"}`}
+              onClick={() => DeleteToken()}
+            >
+              Cerrar Sesión
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import CarList from "./Pages/CarList";
 import CarView from "./Pages/CarView";
 import Crashes from "./Pages/crashes";
 import Issues from "./Pages/issues";
+import ErrorPage from "./Pages/Error";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -24,6 +25,7 @@ function App() {
           <Route path="/CarList" element={<CarList />} />
           <Route path="/carview" element={<CarView />} />
         </Route>
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </Router>
   );
