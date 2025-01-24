@@ -23,8 +23,8 @@ const Navbar = () => {
       {/* Sidebar */}
       <div
         className={`${
-          isOpen ? "w-48" : "w-16"
-        } bg-blue-600 text-white h-screen transition-all duration-300 ease-in-out`}
+          isOpen ? "w-screen md:w-48  h-screen  " : " h-12 md:h-screen w-screen  md:w-16"
+        } bg-blue-600 text-white  transition-all duration-300 ease-in-out`}
       >
         <div className="flex justify-between items-center p-4">
           <h1 className={`${isOpen ? "block" : "hidden"} text-lg font-bold`}>
