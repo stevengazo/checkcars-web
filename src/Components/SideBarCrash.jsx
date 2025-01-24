@@ -35,28 +35,28 @@ export default function SideBarCrash({ crash, onClose }) {
           onClick={() => handleOnClose()}
         />
 
-        <h2 className="text-3xl">Registro de Avería</h2>
+        <h2 className="text-3xl">Registro de Accidente</h2>
         <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
           {/* Created */}
-          <div className="flex flex-row justify-between my-2">
+          <div className="flex flex-row justify-between my-2 gap-1">
             <label className=" font-medium">Creación</label>
             <label className=" font-light">{crash.created}</label>
           </div>
 
           {/* Author */}
-          <div className="flex flex-row justify-between my-2">
+          <div className="flex flex-row justify-between my-2 gap-1">
             <label className=" font-medium">Autor</label>
             <label>{crash.author}</label>
           </div>
 
           {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
+          <div className="flex flex-row justify-between my-2 gap-1">
             <label className=" font-medium">Placa</label>
             <label>{crash.carPlate}</label>
           </div>
 
           {/* Location */}
-          <div className="flex flex-row justify-between my-2">
+          <div className="flex flex-row justify-between my-2 gap-1">
             <label className=" font-medium">Ubicación</label>
             <div className="flex flex-col">
               <label className=" font-medium">Latitud</label>
@@ -68,6 +68,22 @@ export default function SideBarCrash({ crash, onClose }) {
             </div>
           </div>
           <Map longitude={crash.longitude} latitude={crash.latitude} />
+
+          {/* Car Plate */}
+          <div className="flex flex-row justify-between my-2 gap-1">
+            <label className=" font-medium">Daños</label>
+            <label>{crash.crashedParts}</label>
+          </div>
+          {/* Car Plate */}
+          <div className="flex flex-row justify-between my-2 gap-1">
+            <label className=" font-medium">Detalles</label>
+            <label>{crash.crashDetails}</label>
+          </div>
+          {/*  location */}
+          <div className="flex flex-row justify-between my-2 gap-1">
+            <label className=" font-medium">Localización</label>
+            <label>{crash.location}</label>
+          </div>
 
           {/*Images */}
           <h3 className="text-3xl">Fotos</h3>

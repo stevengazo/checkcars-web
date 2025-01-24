@@ -35,54 +35,54 @@ export default function SideBarIssue({ issue, onClose }) {
           onClick={() => handleOnClose()}
         />
 
-        <h2 className="text-3xl">Registro de Avería</h2>
+        <h2 className="text-3xl font-semibold">Registro de Avería</h2>
         <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
           {/* Created */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Creación</label>
+            <label className=" font-medium mr-3">Creación</label>
             <label className=" font-light">{issue.created}</label>
           </div>
 
           {/* Author */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Autor</label>
+            <label className=" font-medium mr-3">Autor</label>
             <label>{issue.author}</label>
           </div>
 
           {/* Car Plate */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Placa</label>
+            <label className=" font-medium mr-3">Placa</label>
             <label>{issue.carPlate}</label>
           </div>
 
           {/* Location */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Ubicación</label>
+            <label className=" font-medium mr-3">Ubicación</label>
             <div className="flex flex-col">
-              <label className=" font-medium">Latitud</label>
+              <label className=" font-medium mr-3">Latitud</label>
               <label>{issue.latitude}</label>
             </div>
             <div className="flex flex-col">
-              <label className=" font-medium">Longitud</label>
+              <label className=" font-medium mr-3">Longitud</label>
               <label>{issue.longitude}</label>
             </div>
           </div>
           <Map longitude={issue.longitude} latitude={issue.latitude} />
           {/* Car Plate */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Tipo</label>
+            <label className=" font-medium mr-3">Tipo</label>
             <label>{issue.type}</label>
           </div>
 
           {/* Car Plate */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Detalles</label>
+            <label className=" font-medium mr-3">Detalles</label>
             <label>{issue.details}</label>
           </div>
 
           {/* Car Plate */}
           <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Prioridad</label>
+            <label className=" font-medium mr-3">Prioridad</label>
             <label>{issue.priority}</label>
           </div>
 
