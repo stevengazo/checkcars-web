@@ -3,13 +3,13 @@ import useFetch from "../Hook/useFetch";
 import { BeatLoader } from "react-spinners";
 import Map from "../Components/MapLocation";
 
-export default function SideBarIssue({ issue, onClose }) {
+export default function SideBarCrash({ crash, onClose }) {
   const { data, loading, error, refetch } = useFetch(
-    `https://mecsacars.stevengazo.co.cr/api/Photos/report/${issue.reportId}`,
+    `https://mecsacars.stevengazo.co.cr/api/Photos/report/${crash.reportId}`,
     { autoFetch: true }
   );
 
-  console.log(issue);
+  console.log(crash);
   const handleOnClose = () => {
     onClose(null);
   };
@@ -40,19 +40,19 @@ export default function SideBarIssue({ issue, onClose }) {
           {/* Created */}
           <div className="flex flex-row justify-between my-2">
             <label className=" font-medium">Creación</label>
-            <label className=" font-light">{issue.created}</label>
+            <label className=" font-light">{crash.created}</label>
           </div>
 
           {/* Author */}
           <div className="flex flex-row justify-between my-2">
             <label className=" font-medium">Autor</label>
-            <label>{issue.author}</label>
+            <label>{crash.author}</label>
           </div>
 
           {/* Car Plate */}
           <div className="flex flex-row justify-between my-2">
             <label className=" font-medium">Placa</label>
-            <label>{issue.carPlate}</label>
+            <label>{crash.carPlate}</label>
           </div>
 
           {/* Location */}
@@ -60,31 +60,14 @@ export default function SideBarIssue({ issue, onClose }) {
             <label className=" font-medium">Ubicación</label>
             <div className="flex flex-col">
               <label className=" font-medium">Latitud</label>
-              <label>{issue.latitude}</label>
+              <label>{crash.latitude}</label>
             </div>
             <div className="flex flex-col">
               <label className=" font-medium">Longitud</label>
-              <label>{issue.longitude}</label>
+              <label>{crash.longitude}</label>
             </div>
           </div>
-          <Map longitude={issue.longitude} latitude={issue.latitude} />
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Tipo</label>
-            <label>{issue.type}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Detalles</label>
-            <label>{issue.details}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium">Prioridad</label>
-            <label>{issue.priority}</label>
-          </div>
+          <Map longitude={crash.longitude} latitude={crash.latitude} />
 
           {/*Images */}
           <h3 className="text-3xl">Fotos</h3>

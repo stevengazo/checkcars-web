@@ -1,4 +1,4 @@
-
+import CrashSearch from '../Module/CrashSearch'
 const Crashes = () => {
 
   return (
@@ -6,6 +6,7 @@ const Crashes = () => {
       <h1 className="text-3xl font-medium">
         Reporte de Choques
       </h1>
+      <CrashSearch />
     </div>
   );
 };

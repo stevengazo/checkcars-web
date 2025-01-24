@@ -20,8 +20,8 @@ const EntryTable = ({ entries, onSelected }) => {
           <th className="px-4 text-sm py-2 ">Fecha</th>
           <th className="px-4 text-sm py-2 ">Autor</th>
           <th className="px-4 text-sm py-2 ">Placa</th>
-          <th className="px-4 text-sm py-2 ">Motivo</th>
-          <th className="px-4 text-sm py-2 ">Odometro</th>
+          <th className="px-4 text-sm py-2  ">Motivo</th>
+          <th className="px-4 text-sm py-2 hidden md:block ">Odometro</th>
         </tr>
       </thead>
       <tbody>
@@ -35,8 +35,8 @@ const EntryTable = ({ entries, onSelected }) => {
               <td className="px-4 py-2">{formatDate(entry.created)}</td>
               <td className="px-4 py-2">{entry.author}</td>
               <td className="px-4 py-2">{entry.carPlate}</td>
-              <td className="px-4 py-2">{entry.notes}</td>
-              <td className="px-4 py-2">{entry.mileage} KM</td>
+              <td className="px-4 py-2 ">{entry.notes}</td>
+              <td className="px-4 py-2 hidden md:block">{entry.mileage} KM</td>
             </tr>
           ))}
       </tbody>
