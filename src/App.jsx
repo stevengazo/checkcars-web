@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Pages/Login";
 import Home from "./Pages/Home";
 import Layout from "./Module/Layout";
-import Navbar from "./Components/NavBar";
 import CarList from "./Pages/CarList";
 import CarView from "./Pages/CarView";
 import Crashes from "./Pages/crashes";
@@ -23,7 +22,7 @@ function App() {
           <Route path="/crash" element={<Crashes />} />
           <Route path="/issue" element={<Issues />} />
           <Route path="/CarList" element={<CarList />} />
-          <Route path="/carview" element={<CarView />} />
+          <Route path="/car/:id" element={<CarView />} />
         </Route>
         <Route path="*" element={<ErrorPage />} />
       </Routes>

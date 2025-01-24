@@ -1,16 +1,21 @@
 import { useEffect } from "react";
 import useFetch from "../Hook/useFetch";
+import { useNavigate } from "react-router-dom";
 
 const CarTable = () => {
+const Nav = useNavigate();
+
   const URL = "https://mecsacars.stevengazo.co.cr/api/Cars";
   // Hacemos la petición usando la URL construida
   const { data, loading, error, refetch } = useFetch(URL, {
     autoFetch: true,
   });
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+  const GoTo = (id)=>{
+    Nav(`/car/${id}`);
+  }
+
+
 
   return (
     <>
@@ -27,7 +32,7 @@ const CarTable = () => {
           <tbody>
             {data &&
               data.map((car) => {
-               return <tr key={car.carId} className=" hover:cursor-pointer ">
+               return <tr key={car.carId} className=" hover:cursor-pointer "  onClick={()=> GoTo(car.carId)}>
                   <td className="px-4 py-2 border-b border-gray-300">{car.brand}</td>
                   <td className="px-4 py-2 border-b border-gray-300">
                     {car.model}
