@@ -18,8 +18,16 @@ export default function SideBarEntry({ entry, onClose }) {
   return (
     <>
       <div
-        className="bg-slate-200 shadow-xl hover:shadow-2xl border border-gray-100 hover:border-gray-400  duration-1000 absolute top-5 right-5 sm:w-screen sm:h-screen sm:top-0 sm:right-0 md:w-3/4  lg:w-1/4 p-4  h-[90vh] rounded-lg overflow-auto 
-      transition-all ease-in-out translate-y-0 
+        className="
+        bg-slate-200 
+        shadow-xl hover:shadow-2xl 
+        border border-gray-100 hover:border-gray-400  
+        duration-1000 
+        p-1
+        absolute md:top-5 md:right-5 top-0 right-0
+        w-screen md:w-2/4 lg:w-1/4
+        md:h-[90vh] md:rounded-2xl overflow-auto 
+        transition-all ease-in-out translate-y-0 
       "
       >
         <IoIosCloseCircle

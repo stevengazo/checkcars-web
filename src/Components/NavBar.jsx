@@ -23,7 +23,9 @@ const Navbar = () => {
       {/* Sidebar */}
       <div
         className={`${
-          isOpen ? "w-screen md:w-48  h-screen  " : " h-12 md:h-screen w-screen  md:w-16"
+          isOpen
+            ? "w-screen md:w-48  h-screen  "
+            : " h-12 md:h-screen w-screen  md:w-16"
         } bg-blue-600 text-white  transition-all duration-300 ease-in-out`}
       >
         <div className="flex justify-between items-center p-4">
@@ -52,6 +54,7 @@ const Navbar = () => {
             <Link
               to="home"
               className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
             >
               <FaHome size={24} />
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Salidas</span>
@@ -61,6 +64,7 @@ const Navbar = () => {
             <Link
               to="issue"
               className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
             >
               <CiWarning size={24} />
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Problemas</span>
@@ -70,6 +74,7 @@ const Navbar = () => {
             <Link
               to="crash"
               className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
             >
               <FaCarCrash size={24} />
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>
@@ -81,6 +86,7 @@ const Navbar = () => {
             <Link
               to="CarList"
               className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
             >
               <FaCar size={24} />
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Vehículos</span>
@@ -90,6 +96,7 @@ const Navbar = () => {
             <Link
               to="#"
               className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
             >
               <FaUsers size={24} />
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Usuarios</span>
