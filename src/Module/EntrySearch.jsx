@@ -94,7 +94,7 @@ export default function EntrySearch() {
           />
           <button
             onClick={handleSearch}
-            className="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="bg-indigo-500 ease-in-out duration-200 transition-all text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Search
           </button>
@@ -107,7 +107,7 @@ export default function EntrySearch() {
         )}
 
         {selectedReport && (
-          <SideBarEntry entry={selectedReport} onClose={setSelectedReport} />
+          <SideBarEntry  entry={selectedReport} onClose={setSelectedReport} />
         )}
       </div>
     </>

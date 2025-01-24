@@ -17,10 +17,17 @@ export default function SideBarEntry({ entry, onClose }) {
   };
   return (
     <>
-      <div className="bg-slate-200 shadow-xl absolute top-5 right-5 sm:w-48  md:w-1/4 p-4  h-[90vh] rounded-lg overflow-auto">
-        <div className="relative " onClick={() => handleOnClose()}>
-          <IoIosCloseCircle size={24} />
-        </div>
+      <div
+        className="bg-slate-200 shadow-xl hover:shadow-2xl border border-gray-100 hover:border-gray-400  duration-1000 absolute top-5 right-5 sm:w-screen sm:h-screen sm:top-0 sm:right-0 md:w-3/4  lg:w-1/4 p-4  h-[90vh] rounded-lg overflow-auto 
+      transition-all ease-in-out translate-y-0 
+      "
+      >
+        <IoIosCloseCircle
+          size={40}
+          color="red"
+          className=" absolute top-2 right-2  hover:rotate-180 transition duration-700"
+          onClick={() => handleOnClose()}
+        />
         <h2 className="text-3xl">Registro de Salida</h2>
         <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
           {/* Created */}

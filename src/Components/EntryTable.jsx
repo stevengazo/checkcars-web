@@ -14,7 +14,7 @@ const EntryTable = ({ entries, onSelected }) => {
   
 
   return (
-    <table className="table-auto w-full border-collapse">
+    <table className="table-auto w-full border-collapse   transition-all ease-in-out">
       <thead className="bg-gray-100">
         <tr>
           <th className="px-4 text-sm py-2 ">Fecha</th>
@@ -29,7 +29,7 @@ const EntryTable = ({ entries, onSelected }) => {
           entries.map((entry) => (
             <tr
               key={entry.reportId}
-              className="border-t border-slate-200 hover:bg-slate-200 transition duration-500"
+              className="border-t border-slate-200 hover:bg-slate-200 transition duration-500 cursor-pointer"
               onClick={() => setSelected(entry)}
             >
               <td className="px-4 py-2">{formatDate(entry.created)}</td>

@@ -21,6 +21,8 @@ const IssueTable = ({ issues, onSelected }) => {
             <th className="px-4 text-sm py-2 ">Fecha</th>
             <th className="px-4 text-sm py-2 ">Autor</th>
             <th className="px-4 text-sm py-2 ">Placa</th>
+            <th className="px-4 text-sm py-2 ">Tipo</th>
+            <th className="px-4 text-sm py-2 ">Prioridad</th>
           </tr>
         </thead>
         <tbody>
@@ -28,12 +30,14 @@ const IssueTable = ({ issues, onSelected }) => {
             issues.map((entry) => (
               <tr
                 key={entry.reportId}
-                className="border-t border-slate-200 hover:bg-slate-200 transition duration-500"
+                className="border-t border-slate-200 hover:bg-slate-200 transition duration-500 cursor-pointer"
                 onClick={() => setSelected(entry)}
               >
                 <td className="px-4 py-2">{formatDate(entry.created)}</td>
                 <td className="px-4 py-2">{entry.author}</td>
                 <td className="px-4 py-2">{entry.carPlate}</td>
+                <td className="px-4 py-2">{entry.type}</td>
+                <td className="px-4 py-2">{entry.priority}</td>
               </tr>
             ))}
         </tbody>
