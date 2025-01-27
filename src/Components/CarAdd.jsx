@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useFetch from "../Hook/useFetch";
 
-const CarAdd = ({ OnClose }) => {
+const CarAdd = ({ OnClose, Added }) => {
   const [car, setCar] = useState({
     carId: 0,
     model: "",
@@ -48,12 +48,26 @@ const CarAdd = ({ OnClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (loading) return; // prevent submitting while loading
     refetch();
+
+    if (status === 201) {
+      OnClose(false);
+      Added(true);
+    } else if (error) {
+      // Handle error appropriately (e.g., show error message)
+      console.error("Error:", error);
+    }
   };
 
   return (
-    <div className="max-w-xl relative mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <button onClick={() => HandleClose()} className="bg-red-600 absolute top-1 right-1 text-white p-0.5 hover:rotate-45 w-10 h-10 transition duration-300 hover:shadow rounded-4xl">X</button>
+    <div className="max-w-xl p-2 absolute top-4 right-4 w-screen md:1/4  mx-auto m-3 shadow bg-white rounded-lg shadow-lg">
+      <button
+        onClick={() => HandleClose()}
+        className="bg-red-600 absolute top-1 right-1 text-white p-0.5 hover:rotate-45 w-10 h-10 transition duration-300 hover:shadow rounded-4xl"
+      >
+        X
+      </button>
       <h2 className="text-2xl font-semibold text-gray-700 mb-6">
         Agregar Nuevo Vehículo
       </h2>

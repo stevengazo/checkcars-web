@@ -1,4 +1,16 @@
+
 import { useState, useEffect, useCallback } from 'react';
+/**
+ * Hook personalizado para realizar peticiones HTTP en aplicaciones React.
+ * 
+ * Características principales:
+ * - Maneja estados de carga (`loading`), errores (`error`), y respuesta (`data`).
+ * - Soporta autenticación mediante un token almacenado en `localStorage`.
+ * - Permite la mezcla de opciones iniciales y personalizadas para las solicitudes.
+ * - Incluye una función de reintento (`refetch`) para realizar nuevamente la petición.
+ * - Auto-fetch habilitado por defecto, configurable con la opción `autoFetch`.
+ * - Proporciona el código de estado HTTP (`status`) de la respuesta.
+ */
 
 const useFetch = (url, options = {}) => {
   const [data, setData] = useState(null);
@@ -24,13 +36,12 @@ const useFetch = (url, options = {}) => {
             ...(customOptions.headers || {}), // Headers personalizados
           },
         });
-        console.warn(response)
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
 
         const result = await response.json();
-        setStatus(response.status)
+        setStatus(response.status);
         setData(result);
       } catch (err) {
         setError(err.message);
@@ -47,7 +58,7 @@ const useFetch = (url, options = {}) => {
     }
   }, []);
 
-  return { data, loading, error, refetch: fetchData , status };
+  return { data, loading, error, refetch: fetchData, status };
 };
 
 export default useFetch;
