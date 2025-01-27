@@ -37,6 +37,7 @@ const useFetch = (url, options = {}) => {
           },
         });
         if (!response.ok) {
+          setData(result)
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
 
@@ -44,6 +45,7 @@ const useFetch = (url, options = {}) => {
         setStatus(response.status);
         setData(result);
       } catch (err) {
+        setData(null)
         setError(err.message);
       } finally {
         setLoading(false);
