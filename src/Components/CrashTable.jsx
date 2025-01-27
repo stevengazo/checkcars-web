@@ -1,30 +1,63 @@
+import React, { useState } from 'react';
+
 const CrashTable = ({ crashes, onSelected }) => {
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+
   const setSelected = (e) => {
     console.log(e);
     onSelected(e);
   };
 
-  function formatDate(dateString) {
-    const date = new Date(dateString); // Crea un objeto Date a partir de la cadena
-    const day = String(date.getDate()).padStart(2, "0"); // Agrega ceros al día si es necesario
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses son base 0
-    const year = date.getFullYear(); // Obtén el año
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
-    return `${day}/${month}/${year}`; // Devuelve la fecha en formato DD/MM/YYYY
-  }
+  const sortedCrashes = React.useMemo(() => {
+    let sortableItems = [...crashes];
+    if (sortConfig.key !== null) {
+      sortableItems.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [crashes, sortConfig]);
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
 
   return (
     <table className="table-auto w-full border-collapse">
       <thead className="bg-gray-100">
         <tr>
-          <th className="px-4 text-sm py-2 ">Fecha</th>
-          <th className="px-4 text-sm py-2 ">Autor</th>
-          <th className="px-4 text-sm py-2 ">Placa</th>
+          <th className="px-4 text-sm py-2 cursor-pointer" onClick={() => requestSort('created')}>
+            Fecha {sortConfig.key === 'created' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+          </th>
+          <th className="px-4 text-sm py-2 cursor-pointer" onClick={() => requestSort('author')}>
+            Autor {sortConfig.key === 'author' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+          </th>
+          <th className="px-4 text-sm py-2 cursor-pointer" onClick={() => requestSort('carPlate')}>
+            Placa {sortConfig.key === 'carPlate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+          </th>
         </tr>
       </thead>
       <tbody>
-        {crashes &&
-          crashes.map((report) => (
+        {sortedCrashes &&
+          sortedCrashes.map((report) => (
             <tr
               key={report.reportId}
               className="border-t border-slate-200 hover:bg-slate-200 transition duration-500 cursor-pointer"

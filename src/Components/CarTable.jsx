@@ -1,13 +1,13 @@
-import { useEffect } from "react";
+import React, { useState } from "react";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import { useNavigate } from "react-router-dom";
 
 const CarTable = () => {
   const Nav = useNavigate();
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
   const URL = "https://mecsacars.stevengazo.co.cr/api/Cars";
-  // Hacemos la petición usando la URL construida
   const { data, loading, error, refetch } = useFetch(URL, {
     autoFetch: true,
   });
@@ -16,42 +16,76 @@ const CarTable = () => {
     Nav(`/car/${id}`);
   };
 
+  const sortedCars = React.useMemo(() => {
+    let sortableItems = [...(data || [])];
+    if (sortConfig.key !== null) {
+      sortableItems.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [data, sortConfig]);
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
   return (
     <>
       <div className="border rounded-xl border-gray-300 p-4 bg-gray-50 shadow-md">
         <table className="table-auto w-full text-left border-collapse">
           <thead className="bg-gray-200">
             <tr>
-              <th className="px-4 py-2 border-b border-gray-300">Marca</th>
-              <th className="px-4 py-2 border-b border-gray-300">Modelo</th>
-              <th className="px-4 py-2 border-b border-gray-300">Placa</th>
-              <th className="px-4 py-2 border-b border-gray-300">Tipo</th>
+              <th
+                className="px-4 py-2 border-b border-gray-300 cursor-pointer"
+                onClick={() => requestSort('brand')}
+              >
+                Marca {sortConfig.key === 'brand' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+              </th>
+              <th
+                className="px-4 py-2 border-b border-gray-300 cursor-pointer"
+                onClick={() => requestSort('model')}
+              >
+                Modelo {sortConfig.key === 'model' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+              </th>
+              <th
+                className="px-4 py-2 border-b border-gray-300 cursor-pointer"
+                onClick={() => requestSort('plate')}
+              >
+                Placa {sortConfig.key === 'plate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+              </th>
+              <th
+                className="px-4 py-2 border-b border-gray-300 cursor-pointer"
+                onClick={() => requestSort('type')}
+              >
+                Tipo {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+              </th>
             </tr>
           </thead>
           <tbody>
-            {data &&
-              data.map((car) => {
-                return (
-                  <tr
-                    key={car.carId}
-                    className=" hover:cursor-pointer "
-                    onClick={() => GoTo(car.carId)}
-                  >
-                    <td className="px-4 py-2 border-b border-gray-300">
-                      {car.brand}
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300">
-                      {car.model}
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300">
-                      {car.plate}
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300">
-                      {car.type}
-                    </td>
-                  </tr>
-                );
-              })}
+            {sortedCars &&
+              sortedCars.map((car) => (
+                <tr
+                  key={car.carId}
+                  className="hover:cursor-pointer"
+                  onClick={() => GoTo(car.carId)}
+                >
+                  <td className="px-4 py-2 border-b border-gray-300">{car.brand}</td>
+                  <td className="px-4 py-2 border-b border-gray-300">{car.model}</td>
+                  <td className="px-4 py-2 border-b border-gray-300">{car.plate}</td>
+                  <td className="px-4 py-2 border-b border-gray-300">{car.type}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
         {loading && (
