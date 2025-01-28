@@ -2,14 +2,54 @@ import { IoIosCloseCircle } from "react-icons/io";
 import useFetch from "../Hook/useFetch";
 import { BeatLoader } from "react-spinners";
 import Map from "../Components/MapLocation";
+import useGeneratePDF from "../Hook/useGeneratePdf";
 
 export default function SideBarIssue({ issue, onClose }) {
+  const { generatePDF } = useGeneratePDF();
+
   const { data, loading, error, refetch } = useFetch(
     `https://mecsacars.stevengazo.co.cr/api/Photos/report/${issue.reportId}`,
     { autoFetch: true }
   );
 
-  console.log(issue);
+  const HandleGenerate = () => {
+    generatePDF((doc) => {
+      // Agregar título
+      doc.setFontSize(18);
+      doc.text("Mi Reporte PDF Genérico", 10, 10);
+  
+      // Agregar contenido dinámico del objeto issue
+      doc.setFontSize(12);
+      let yOffset = 20; // Margen inicial
+  
+      Object.entries(issue).forEach(([key, value]) => {
+        if (typeof value === "string" && value.length > 50) {
+          // Dividir texto largo en líneas que se ajusten al ancho del PDF
+          const lines = doc.splitTextToSize(value, 180); // Ajusta el ancho (180 mm para márgenes)
+          lines.forEach((line) => {
+            doc.text(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${line}`, 10, yOffset);
+            yOffset += 10; // Espacio entre líneas
+          });
+        } else {
+          // Manejar campos normales (cadenas cortas o números)
+          doc.text(
+            `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`,
+            10,
+            yOffset
+          );
+          yOffset += 10;
+        }
+  
+        // Mover a una nueva página si el contenido supera el límite
+        if (yOffset > 280) {
+          doc.addPage();
+          yOffset = 10; // Reiniciar margen superior en la nueva página
+        }
+      });
+    }, "reporte-issue.pdf");
+  };
+  
+
   const handleOnClose = () => {
     onClose(null);
   };
@@ -28,6 +68,9 @@ export default function SideBarIssue({ issue, onClose }) {
                 transition-all ease-in-out translate-y-0 
               "
       >
+           <button className="border border-gray-100 bg-white p-5 m-5 rounded " onClick={HandleGenerate}>
+      Generar PDF Básico
+    </button>
         <IoIosCloseCircle
           size={40}
           color="red"
