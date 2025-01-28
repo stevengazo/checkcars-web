@@ -46,8 +46,41 @@ export default function SideBarIssue({ issue, onClose }) {
           yOffset = 10; // Reiniciar margen superior en la nueva página
         }
       });
-    }, "reporte-issue.pdf");
+  
+      // Agregar imágenes del array data
+      if (data && data.length > 0) {
+        console.log(data)
+        data.forEach((photo, index) => {
+          const img = new Image();
+          img.src = photo.filePath; // Asume que `filePath` contiene la URL de la imagen
+  
+          img.onload = () => {
+            const imgWidth = 50; // Ancho de la imagen
+            const imgHeight = (img.height * imgWidth) / img.width; // Mantener proporción
+  
+            // Si el espacio restante no es suficiente, agregar una nueva página
+            if (yOffset + imgHeight > 280) {
+              doc.addPage();
+              yOffset = 10;
+            }
+  
+            // Agregar imagen al PDF
+            doc.addImage(img, "JPEG", 10, yOffset, imgWidth, imgHeight);
+            yOffset += imgHeight + 10; // Ajustar posición para la siguiente imagen
+  
+            // Descargar el PDF cuando sea la última imagen
+            if (index === data.length - 1) {
+              doc.save("reporte-issue.pdf");
+            }
+          };
+        });
+      } else {
+        // Si no hay imágenes, descargar el PDF de inmediato
+        doc.save("reporte-issue.pdf");
+      }
+    });
   };
+  
   
 
   const handleOnClose = () => {
@@ -68,9 +101,7 @@ export default function SideBarIssue({ issue, onClose }) {
                 transition-all ease-in-out translate-y-0 
               "
       >
-           <button className="border border-gray-100 bg-white p-5 m-5 rounded " onClick={HandleGenerate}>
-      Generar PDF Básico
-    </button>
+
         <IoIosCloseCircle
           size={40}
           color="red"
