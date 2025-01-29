@@ -7,6 +7,7 @@ import CarList from "./Pages/CarList";
 import CarView from "./Pages/CarView";
 import Crashes from "./Pages/crashes";
 import Issues from "./Pages/issues";
+import Users from "./Pages/UsersPage"
 import ErrorPage from "./Pages/Error";
 import ForgotPassword from "./Pages/ForgotPassword";
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/crash" element={<Crashes />} />
           <Route path="/issue" element={<Issues />} />
+          <Route path="/users" element={<Users/>} />
           <Route path="/CarList" element={<CarList />} />
           <Route path="/car/:id" element={<CarView />} />
         </Route>

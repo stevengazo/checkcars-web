@@ -94,7 +94,7 @@ const Navbar = () => {
           </li>
           <li className="hover:bg-blue-800 transition duration-500">
             <Link
-              to="#"
+              to="users"
               className="flex items-center w-full p-3 hover:text-blue-300"
               onClick={() => toggleSidebar()}
             >
