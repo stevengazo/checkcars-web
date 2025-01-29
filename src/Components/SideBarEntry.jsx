@@ -111,7 +111,7 @@ export default function SideBarEntry({ entry, onClose }) {
         duration-1000 
         p-3
         absolute md:top-5 md:right-5 top-0 right-0
-        w-screen md:w-2/4 lg:w-2/6
+        w-screen md:w-2/4 lg:w-3/6
         md:h-[90vh] md:rounded-2xl overflow-auto 
         transition-all ease-in-out translate-y-0 
       "
