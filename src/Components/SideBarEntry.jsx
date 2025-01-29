@@ -131,7 +131,7 @@ export default function SideBarEntry({ entry, onClose }) {
           />
         </div>
 
-        <h2 className="text-3xl">Registro de Salida</h2>
+        <h2 className="text-2xl">Registro de Salida</h2>
         <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
           {/* Created */}
           <div className="flex flex-row justify-between my-2">
@@ -263,21 +263,27 @@ export default function SideBarEntry({ entry, onClose }) {
             <label className="font-medium">Motivo</label>
             <label>{entry.notes}</label>
           </div>
-
-          {/*Images */}
-          <h3 className="text-3xl">Fotos</h3>
         </div>
-        <div className="flex flex-col gap-3 justify-center align-middle my-2 border rounded-2xl p-2">
-          {loading && <BeatLoader size={24} />}
-          {data !== null &&
-            data.map((photo) => (
-              <img
-                src={photo.filePath}
-                alt={photo.name}
-                className=" w-full rounded-2xl"
-              />
-            ))}
-        </div>
+        {loading && (
+          <div className="flex flex-row justify-items-center">
+            <BeatLoader size={20} className="mx-auto" />
+          </div>
+        )}
+        {data !== null && (
+          <>
+            <h3 className="text-2xl font-light mx-auto">Fotos</h3>
+            <div className="flex flex-col gap-3 justify-center align-middle my-2 border rounded-2xl p-2">
+              {data !== null &&
+                data.map((photo) => (
+                  <img
+                    src={photo.filePath}
+                    alt={photo.name}
+                    className=" w-full rounded-2xl"
+                  />
+                ))}
+            </div>
+          </>
+        )}
       </div>
     </>
   );

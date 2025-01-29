@@ -24,7 +24,7 @@ const MapLocation = ({ longitude, latitude }) => {
       />
       <Marker position={position}>
         <Popup>
-          <FaMapMarkerAlt /> Aquí está la ubicación
+           Creacion de Reporte
         </Popup>
       </Marker>
     </MapContainer>
