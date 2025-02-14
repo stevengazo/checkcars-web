@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { DotLoader } from "react-spinners";
+import SettingsContext from '../Context/SettingsContext.jsx'
 import useFetch from "../Hook/useFetch";
 import SideBarCrash from "../Components/SideBarCrash";
 import CrashTable from "../Components/CrashTable";
 
 const CrashSearch = () => {
+  const { API_URL } = useContext(SettingsContext);
   const [selectedReport, setSelectedReport] = useState(null);
   const [crashes, setCrashes] = useState([]);
   const [useDate, setUseDate] = useState(false);
@@ -17,10 +19,10 @@ const CrashSearch = () => {
 
   // Construir la URL de búsqueda con los parámetros si están presentes
   const buildSearchUrl = () => {
-    let urlbase = "https://mecsacars.stevengazo.co.cr/api/CrashReports";
+    let urlbase = `${API_URL}/api/CrashReports`;
 
     let urlSearch =
-      "https://mecsacars.stevengazo.co.cr/api/CrashReports/search";
+      `${API_URL}/api/CrashReports/search`;
 
     if (!isFirstExecution) {
       let params = [];

@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import { useNavigate } from "react-router-dom";
+import  SettingsContext from '../Context/SettingsContext.jsx'
+
 
 const CarTable = () => {
+  const { API_URL } = useContext(SettingsContext);
   const Nav = useNavigate();
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
-  const URL = "https://mecsacars.stevengazo.co.cr/api/Cars";
+  const URL = `${API_URL}/api/Cars`;
   const { data, loading, error, refetch } = useFetch(URL, {
     autoFetch: true,
   });

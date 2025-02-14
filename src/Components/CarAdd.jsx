@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useFetch from "../Hook/useFetch";
+import SettingsContext from '../Context/SettingsContext.jsx'
+
 
 const CarAdd = ({ OnClose, Added }) => {
+  const {API_URL} = useContext(SettingsContext);
   const [car, setCar] = useState({
     carId: 0,
     model: "",
@@ -25,7 +28,7 @@ const CarAdd = ({ OnClose, Added }) => {
   });
 
   const { data, loading, error, status, refetch } = useFetch(
-    `https://mecsacars.stevengazo.co.cr/api/Cars`, // Ruta del backend
+    `${API_URL}/api/Cars`, // Ruta del backend
     {
       method: "POST",
       body: JSON.stringify(car),

@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import useFetch from "../Hook/useFetch"; // Importa el hook personalizado
 import { IoIosCar } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
+import SettingsContext from '../Context/SettingsContext.jsx'
+
 
 const Login = () => {
+  const { API_URL } = useContext(SettingsContext);
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // Opciones del hook
   const { data, loading, error, refetch } = useFetch(
-    "https://mecsacars.stevengazo.co.cr/api/account/login",
+    `${API_URL}/api/account/login`,
     {
       method: "POST",
       autoFetch: false, // Evita que la petición se haga automáticamente

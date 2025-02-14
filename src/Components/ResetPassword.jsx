@@ -1,11 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import useFetch from "../Hook/useFetch";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import SettingsContext from '../Context/SettingsContext.jsx'
+
 
 const ResetPassword = ({ email }) => {
+  const { API_URL } = useContext(SettingsContext); 
   const _Nav = useNavigate();
   const { data, loading, error, status, refetch } = useFetch(
-    `https://mecsacars.stevengazo.co.cr/api/Account/Reset`, // Ruta del backend
+    `${API_URL}/api/Account/Reset`, // Ruta del backend
     {
       method: "POST",
       autoFetch: false,

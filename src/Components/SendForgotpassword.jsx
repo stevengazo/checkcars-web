@@ -1,13 +1,13 @@
 import useFetch from "../Hook/useFetch"; // Usa tu hook personalizado
 import { IoIosMail } from "react-icons/io";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import SettingsContext from "../Context/SettingsContext";
 
 const SendForgotPassword = ({ OnSendIt, selectedEmail }) => {
+  const { API_URL } = useContext(SettingsContext);
   const [email, setEmail] = useState("");
   const { data, loading, error, status, refetch } = useFetch(
-    ` https://mecsacars.stevengazo.co.cr/api/account/forgot?email=${encodeURIComponent(
-      email
-    )}`, // Ruta del backend
+    `${API_URL}/api/account/forgot?email=${encodeURIComponent(email)}`, // Ruta del backend
     {
       method: "POST",
       autoFetch: false,

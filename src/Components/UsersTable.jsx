@@ -1,8 +1,11 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import useFetch from "../Hook/useFetch";
+import SettingsContext from '../Context/SettingsContext.jsx'
+
 
 const UsersTable = () => {
-  const URL = "https://mecsacars.stevengazo.co.cr/api/Users";
+  const { API_URL } = useContext(SettingsContext);
+  const URL = `${API_URL}/api/Users`;
   const { data, loading, error, refetch } = useFetch(URL, {
     autoFetch: true,
   });

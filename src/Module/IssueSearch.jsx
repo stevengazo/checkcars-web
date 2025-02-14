@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import IssueTable from "../Components/IssueTable";
 import SideBarIssue from "../Components/SidebarIssue";
+import SettingsContext from '../Context/SettingsContext.jsx'
+
 
 const IssueSearch = ({ setFilter }) => {
+  const { API_URL } = useContext(SettingsContext);
   const [selectedReport, setSelectedReport] = useState(null);
   const [useDate, setUseDate] = useState(false);
   // Estados para almacenar los valores de los campos de búsqueda
@@ -15,9 +18,9 @@ const IssueSearch = ({ setFilter }) => {
 
   // Construir la URL de búsqueda con los parámetros si están presentes
   const buildSearchUrl = () => {
-    let urlbase = "https://mecsacars.stevengazo.co.cr/api/IssueReports";
+    let urlbase = `${API_URL}/api/IssueReports`;
 
-    let urlSearch = "https://mecsacars.stevengazo.co.cr/api/Issue/search";
+    let urlSearch = `${API_URL}/api/Issue/search`;
 
     if (!isFirstExecution) {
       let params = [];

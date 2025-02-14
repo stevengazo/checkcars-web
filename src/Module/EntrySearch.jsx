@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import EntryTable from "../Components/EntryTable.jsx";
 import SideBarEntry from "../Components/SideBarEntry.jsx";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
+import SettingsContext from '../Context/SettingsContext.jsx'
+
 
 export default function EntrySearch() {
+  const { API_URL } = useContext(SettingsContext);
   const [selectedReport, setSelectedReport] = useState(null);
   const [useDate, setUseDate] = useState(false);
   // Estados para almacenar los valores de los campos de búsqueda
@@ -15,9 +18,9 @@ export default function EntrySearch() {
 
   // Construir la URL de búsqueda con los parámetros si están presentes
   const buildSearchUrl = () => {
-    let urlbase = "https://mecsacars.stevengazo.co.cr/api/EntryExitReports";
+    let urlbase = `${API_URL}/api/EntryExitReports`;
   
-    let urlSearch = "https://mecsacars.stevengazo.co.cr/api/EntryExitReports/search";
+    let urlSearch = `${API_URL}/api/EntryExitReports/search`;
   
     if (!isFirstExecution) {
       let params = [];

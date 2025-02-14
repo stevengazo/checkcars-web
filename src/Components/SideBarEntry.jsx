@@ -4,10 +4,14 @@ import useFetch from "../Hook/useFetch";
 import MapLocation from "./MapLocation";
 import { BeatLoader } from "react-spinners";
 import useGeneratePDF from "../Hook/useGeneratePdf";
+import SettingsContext from '../Context/SettingsContext.jsx'
+import { useContext } from "react";
+
 
 export default function SideBarEntry({ entry, onClose }) {
+  const { API_URL } = useContext(SettingsContext);
   const { data, loading, error, refetch } = useFetch(
-    `https://mecsacars.stevengazo.co.cr/api/Photos/report/${entry.reportId}`,
+    `${API_URL}/api/Photos/report/${entry.reportId}`,
     { autoFetch: true }
   );
   const { generatePDF } = useGeneratePDF();

@@ -4,12 +4,14 @@ import { FaRegFilePdf } from "react-icons/fa6";
 import { BeatLoader } from "react-spinners";
 import Map from "../Components/MapLocation";
 import useGeneratePDF from "../Hook/useGeneratePdf";
+import SettingsContext from '../Context/SettingsContext.jsx'
+import { useContext } from "react";
 
 export default function SideBarIssue({ issue, onClose }) {
-  const { generatePDF } = useGeneratePDF();
-
+  const { generatePDF } = useContext(SettingsContext);
+  const { API_URL } = useSettings();
   const { data, loading, error, refetch } = useFetch(
-    `https://mecsacars.stevengazo.co.cr/api/Photos/report/${issue.reportId}`,
+    `${API_URL}/api/Photos/report/${issue.reportId}`,
     { autoFetch: true }
   );
 

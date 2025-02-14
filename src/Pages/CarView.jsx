@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
@@ -9,14 +9,16 @@ import SidebarIssue from "../Components/SidebarIssue.jsx"
 import CarInfo from "../Components/CarInfo";
 import IssueTable from "../Components/IssueTable.jsx";
 import SideBarIssue from "../Components/SidebarIssue.jsx";
+import SettingsContext from '../Context/SettingsContext.jsx'
 
 const CarView = () => {
+  const { API_URL } = useContext(SettingsContext);
   const [selectedEntry, setselectedEntry] = useState(null);
   const [selectedIssue, setselectedIssue] = useState(null);
   const { id } = useParams();
-  const URLInfo = `https://mecsacars.stevengazo.co.cr/api/Cars/${id}`;
-  const URLEntries = ` https://mecsacars.stevengazo.co.cr/api/EntryExitReports/search?carId=${id}`;
-  const URLIssues = ` https://mecsacars.stevengazo.co.cr/api/IssueReports/search?carId=${id}`;
+  const URLInfo = `${API_URL}/api/Cars/${id}`;
+  const URLEntries = ` ${API_URL}/api/EntryExitReports/search?carId=${id}`;
+  const URLIssues = ` ${API_URL}/api/IssueReports/search?carId=${id}`;
 
   // Primera petición para obtener información del vehículo
   const {
