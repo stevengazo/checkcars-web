@@ -11,8 +11,22 @@ import Users from "./Pages/UsersPage"
 import ErrorPage from "./Pages/Error";
 import ForgotPassword from "./Pages/ForgotPassword";
 
+import { useEffect } from "react";
+import { startConnection, onNotificationReceived } from './service/signalRService'
+
+
 function App() {
   const [count, setCount] = useState(0);
+
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    startConnection();
+
+    onNotificationReceived((message) => {
+      setNotifications((prev) => [...prev, message]);
+    });
+  }, []);
 
   return (
     <Router>
