@@ -19,14 +19,14 @@ function App() {
   const [count, setCount] = useState(0);
 
   const [notifications, setNotifications] = useState([]);
-
+/*
   useEffect(() => {
     startConnection();
 
     onNotificationReceived((message) => {
       setNotifications((prev) => [...prev, message]);
     });
-  }, []);
+  }, []);*/
 
   return (
     <Router>

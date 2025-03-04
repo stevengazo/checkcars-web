@@ -5,7 +5,7 @@ const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
   // URL de la API
-  const API_URL = "http://localhost:8080";
+  const API_URL = "https://mecsacars.stevengazo.co.cr";
 
   return (
     <SettingsContext.Provider value={{ API_URL }}>
