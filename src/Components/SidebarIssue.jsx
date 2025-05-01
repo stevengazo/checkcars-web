@@ -1,90 +1,72 @@
 import { IoIosCloseCircle } from "react-icons/io";
-import useFetch from "../Hook/useFetch";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { BeatLoader } from "react-spinners";
-import Map from "../Components/MapLocation";
-import useGeneratePDF from "../Hook/useGeneratePdf";
-import SettingsContext from '../Context/SettingsContext.jsx'
 import { useContext } from "react";
+import useFetch from "../Hook/useFetch";
+import Map from "../Components/MapLocation";
+import SettingsContext from "../Context/SettingsContext.jsx";
 
 export default function SideBarIssue({ issue, onClose }) {
-  const { generatePDF } = useContext(SettingsContext);
-  const { API_URL } = useSettings();
-  const { data, loading, error, refetch } = useFetch(
+  const { API_URL, generatePDF } = useContext(SettingsContext);
+
+  const { data, loading } = useFetch(
     `${API_URL}/api/Photos/report/${issue.reportId}`,
     { autoFetch: true }
   );
 
   const HandleGenerate = () => {
     generatePDF((doc) => {
-      // Establecer fuente para el título
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("Reporte Problema Vehiculo", 10, 10);
+      doc.text("Reporte Problema Vehículo", 10, 10);
 
-      // Establecer fuente para el contenido
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
-      let yOffset = 25; // Margen inicial después del título
+      let yOffset = 25;
 
-      // Recorrer las entradas del objeto 'issue'
       Object.entries(issue).forEach(([key, value]) => {
         const formattedKey = `${key.charAt(0).toUpperCase() + key.slice(1)}:`;
-
         if (typeof value === "string" && value.length > 50) {
-          // Dividir texto largo en líneas que se ajusten al ancho del PDF
-          const lines = doc.splitTextToSize(value, 180); // Ajusta el ancho (180 mm para márgenes)
-
-          // Escribir solo la primera línea y el resto de las líneas debajo
+          const lines = doc.splitTextToSize(value, 180);
           doc.text(formattedKey, 10, yOffset);
-          yOffset += 8; // Espacio entre el título y el contenido
-
+          yOffset += 8;
           lines.forEach((line) => {
             doc.text(line, 10, yOffset);
-            yOffset += 8; // Espacio entre líneas
+            yOffset += 8;
           });
         } else {
-          // Manejar campos normales (cadenas cortas o números)
           doc.text(`${formattedKey} ${value}`, 10, yOffset);
           yOffset += 10;
         }
 
-        // Mover a una nueva página si el contenido supera el límite
         if (yOffset > 260) {
           doc.addPage();
-          yOffset = 10; // Reiniciar margen superior en la nueva página
+          yOffset = 10;
         }
       });
 
-      // Agregar imágenes del array 'data' (si existe)
       if (data && data.length > 0) {
-        console.log(data);
         data.forEach((photo, index) => {
           const img = new Image();
-          img.src = photo.filePath; // Asume que `filePath` contiene la URL de la imagen
-
+          img.src = photo.filePath;
           img.onload = () => {
-            const imgWidth = 50; // Ancho de la imagen
-            const imgHeight = (img.height * imgWidth) / img.width; // Mantener proporción
+            const imgWidth = 50;
+            const imgHeight = (img.height * imgWidth) / img.width;
 
-            // Si el espacio restante no es suficiente, agregar una nueva página
             if (yOffset + imgHeight > 260) {
               doc.addPage();
               yOffset = 10;
             }
 
-            // Agregar imagen al PDF
             doc.addImage(img, "JPEG", 10, yOffset, imgWidth, imgHeight);
-            yOffset += imgHeight + 10; // Ajustar posición para la siguiente imagen
+            yOffset += imgHeight + 10;
 
-            // Descargar el PDF cuando sea la última imagen
             if (index === data.length - 1) {
               doc.save();
             }
           };
         });
       } else {
-        // Si no hay imágenes, descargar el PDF de inmediato
         doc.save();
       }
     }, generateName());
@@ -102,106 +84,77 @@ export default function SideBarIssue({ issue, onClose }) {
     return `Report-Issue-${formattedDate}.pdf`;
   };
 
-  const handleOnClose = () => {
-    onClose(null);
-  };
   return (
-    <>
-      <div
-        className="
-                bg-slate-200 
-                shadow-xl hover:shadow-2xl 
-                border border-gray-100 hover:border-gray-400  
-                duration-1000 
-                p-3
-                absolute md:top-5 md:right-5 top-0 right-0
-                w-screen md:w-2/4 lg:w-3/6
-                md:h-[90vh] md:rounded-2xl overflow-auto 
-                transition-all ease-in-out translate-y-0 
-              "
-      >
-        <div className=" absolute top-2 right-2  flex flex-row justify-end items-center ">
-          <FaRegFilePdf
-            size={28}
-            className="hover:scale-110 hover:bg-gray-200 hover:border-white duration-100 transition border p-1 rounded mx-3"
-            onClick={HandleGenerate}
-          />
-          <IoIosCloseCircle
-            size={40}
-            color="red"
-            className="hover:rotate-180 transition duration-700"
-            onClick={() => handleOnClose()}
-          />
+    <div className="fixed top-0 right-0 w-screen md:w-[50vw] lg:w-[40vw] h-full z-50 bg-white border-l border-gray-300 shadow-2xl rounded-l-2xl overflow-y-auto p-6 transition-transform">
+      {/* Botones flotantes */}
+      <div className="absolute top-4 right-4 flex gap-3 z-50">
+        <FaRegFilePdf
+          size={26}
+          className="text-blue-600 hover:scale-110 cursor-pointer transition"
+          title="Generar PDF"
+          onClick={HandleGenerate}
+        />
+        <IoIosCloseCircle
+          size={36}
+          className="text-red-500 hover:rotate-180 cursor-pointer transition"
+          onClick={() => onClose(null)}
+        />
+      </div>
+
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Reporte de Avería</h2>
+
+      <div className="space-y-2">
+        <InfoRow label="Creación" value={issue.created} />
+        <InfoRow label="Autor" value={issue.author} />
+        <InfoRow label="Placa" value={issue.carPlate} />
+        <InfoRow label="Tipo" value={issue.type} />
+        <InfoRow label="Detalles" value={issue.details} />
+        <InfoRow label="Prioridad" value={issue.priority} />
+      </div>
+
+      {/* Ubicación */}
+      <div className="mt-4 border rounded-xl p-4 bg-gray-50">
+        <h3 className="font-semibold text-gray-700 mb-2">Ubicación</h3>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <InfoRow label="Latitud" value={issue.latitude} />
+          <InfoRow label="Longitud" value={issue.longitude} />
         </div>
-
-        <h2 className="text-3xl font-semibold">Registro de Avería</h2>
-        <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
-          {/* Created */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Creación</label>
-            <label className=" font-light">{issue.created}</label>
-          </div>
-
-          {/* Author */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Autor</label>
-            <label>{issue.author}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Placa</label>
-            <label>{issue.carPlate}</label>
-          </div>
-
-          {/* Location */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Ubicación</label>
-            <div className="flex flex-col">
-              <label className=" font-medium mr-3">Latitud</label>
-              <label>{issue.latitude}</label>
-            </div>
-            <div className="flex flex-col">
-              <label className=" font-medium mr-3">Longitud</label>
-              <label>{issue.longitude}</label>
-            </div>
-          </div>
+        <div className="mt-4">
           <Map longitude={issue.longitude} latitude={issue.latitude} />
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Tipo</label>
-            <label>{issue.type}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Detalles</label>
-            <label>{issue.details}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className=" font-medium mr-3">Prioridad</label>
-            <label>{issue.priority}</label>
-          </div>
-
-          {/*Images */}
-          <h3 className="text-3xl">Fotos</h3>
         </div>
-        {data != null && (
-          <div className="flex flex-col gap-3 justify-center align-middle my-2 border rounded-2xl p-2">
-            {loading && <BeatLoader size={24} />}
-            {data !== null &&
-              data.map((photo) => (
-                <img
-                  src={photo.filePath}
-                  alt={photo.name}
-                  className=" w-full rounded-2xl"
-                />
-              ))}
+      </div>
+
+      {/* Fotos */}
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">Fotos</h3>
+        {loading ? (
+          <div className="flex justify-center py-6">
+            <BeatLoader size={24} />
           </div>
+        ) : data && data.length > 0 ? (
+          <div className="grid gap-3">
+            {data.map((photo) => (
+              <img
+                key={photo.name}
+                src={photo.filePath}
+                alt={photo.name}
+                className="rounded-lg border shadow-sm"
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 italic">No hay fotos disponibles.</p>
         )}
       </div>
-    </>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div className="flex justify-between text-sm text-gray-700">
+      <span className="font-medium">{label}</span>
+      <span className="text-right">{value || "—"}</span>
+    </div>
   );
 }

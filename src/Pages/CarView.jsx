@@ -1,136 +1,169 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
-import EntriesTable from "../Components/EntryTable";
-import IssuesTable from "../Components/IssueTable.jsx"
-import SideBarEntry from "../Components/SideBarEntry.jsx";
-import SidebarIssue from "../Components/SidebarIssue.jsx"
 import CarInfo from "../Components/CarInfo";
-import IssueTable from "../Components/IssueTable.jsx";
-import SideBarIssue from "../Components/SidebarIssue.jsx";
-import SettingsContext from '../Context/SettingsContext.jsx'
+import CarEdit from "../Components/CarEdit";
+import EntriesTable from "../Components/EntryTable";
+import IssueTable from "../Components/IssueTable";
+import SideBarEntry from "../Components/SideBarEntry";
+import SideBarIssue from "../Components/SidebarIssue";
+import SettingsContext from "../Context/SettingsContext";
+
+const LoadingState = ({ message }) => (
+  <div className="flex flex-col items-center justify-center p-6">
+    <label className="mb-2">{message}</label>
+    <DotLoader color="#2563EB" />
+  </div>
+);
+
+const EmptyState = ({ message }) => (
+  <p className="text-center text-gray-500 p-4">{message}</p>
+);
 
 const CarView = () => {
   const { API_URL } = useContext(SettingsContext);
-  const [selectedEntry, setselectedEntry] = useState(null);
-  const [selectedIssue, setselectedIssue] = useState(null);
   const { id } = useParams();
+
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [activeTab, setActiveTab] = useState("entries");
+
   const URLInfo = `${API_URL}/api/Cars/${id}`;
-  const URLEntries = ` ${API_URL}/api/EntryExitReports/search?carId=${id}`;
-  const URLIssues = ` ${API_URL}/api/IssueReports/search?carId=${id}`;
+  const URLEntries = `${API_URL}/api/EntryExitReports/search?carId=${id}`;
+  const URLIssues = `${API_URL}/api/IssueReports/search?carId=${id}`;
+  const URLReminders = `${API_URL}/api/Reminders/search?carId=${id}`;
+  const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
+  const URLFiles = `${API_URL}/api/Files/search?carId=${id}`;
 
-  // Primera petición para obtener información del vehículo
-  const {
-    data: carData,
-    loading: carLoading,
-    error: carError,
-  } = useFetch(URLInfo, {
-    autoFetch: true,
-  });
+  const { data: carData, loading: carLoading, error: carError } = useFetch(URLInfo, { autoFetch: true });
+  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, { autoFetch: true });
+  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, { autoFetch: true });
+  const { data: RemindersData, loading: RemindersLoading } = useFetch(URLReminders, { autoFetch: true });
+  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, { autoFetch: true });
+  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, { autoFetch: true });
 
-  // Segunda petición para obtener historial de mantenimiento
-  const {
-    data: EntriesData,
-    loading: EntriesLoading,
-    error: EntriesError,
-  } = useFetch(URLEntries, {
-    autoFetch: true,
-  });
-
-    // Segunda petición para obtener historial de mantenimiento
-    const {
-      data: IssuesData,
-      loading: IssuesLoading,
-      error: IssuesError,
-    } = useFetch(URLIssues, {
-      autoFetch: true,
-    });
-
-    console.log(IssuesData);
+  const tabs = [
+    { key: "entries", label: "Salidas" },
+    { key: "issues", label: "Problemas" },
+    { key: "reminders", label: "Recordatorios" },
+    { key: "crashes", label: "Accidentes" },
+    { key: "files", label: "Archivos" },
+  ];
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Detalles Vehículo</h1>
-      {carLoading && (
-        <div className="flex justify-center items-center w-full mx-auto">
-          <label> Cargando Detalles...</label>
-          <DotLoader color="#2563EB" />
-        </div>
-      )}
+    <div className="p-6 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Detalles del Vehículo</h1>
+        {carData && (
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            {editMode ? "Cancelar" : "Editar Vehículo"}
+          </button>
+        )}
+      </div>
 
-      {carData ? (
-        <div className="overflow-x-auto mb-6">
-          <CarInfo car={carData}></CarInfo>
+      {/* Vehículo */}
+      {carLoading ? (
+        <LoadingState message="Cargando Detalles..." />
+      ) : carError ? (
+        <EmptyState message="Error al cargar los datos del vehículo." />
+      ) : carData ? (
+        <div className="p-2">
+          {editMode ? <CarEdit CarEdit={carData} /> : <CarInfo car={carData} />}
         </div>
       ) : (
-        <p className="text-center text-gray-500">
-          No data available for this car.
-        </p>
+        <EmptyState message="No hay datos disponibles para este vehículo." />
       )}
 
-      {/* Salidas */}
-      <div className="shadow rounded-2xl">
-        <h2 className="text-2xl font-bold text-center mb-4">
-          Historial de Salidas
-        </h2>
+      {/* Tabs */}
+      <div className="mt-6">
+        <div className="flex gap-4 border-b border-gray-200">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              className={`px-4 py-2 font-medium border-b-2 ${
+                activeTab === tab.key
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-600 hover:text-blue-600"
+              }`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-        {EntriesLoading && (
-          <div className="flex justify-center items-center w-full mx-auto">
-            <label> Cargando Salidas...</label>
-            <DotLoader color="#2563EB" />
-          </div>
-        )}
-
-        {!EntriesLoading && EntriesData && EntriesData.length > 0 ? (
-          <div className="overflow-x-auto">
-            <EntriesTable
-              entries={EntriesData}
-              onSelected={setselectedEntry}
-            />
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">
-            No Entries records available.
-          </p>
-        )}
-
-        {selectedEntry && (
-          <SideBarEntry entry={selectedEntry} onClose={setselectedEntry} />
-        )}
+        {/* Content */}
+        <div className="mt-4">
+          {activeTab === "entries" ? (
+            EntriesLoading ? (
+              <LoadingState message="Cargando Salidas..." />
+            ) : EntriesData?.length ? (
+              <EntriesTable entries={EntriesData} onSelected={setSelectedEntry} />
+            ) : (
+              <EmptyState message="No hay registros de salidas." />
+            )
+          ) : activeTab === "issues" ? (
+            IssuesLoading ? (
+              <LoadingState message="Cargando Problemas..." />
+            ) : IssuesData?.length ? (
+              <IssueTable issues={IssuesData} onSelected={setSelectedIssue} />
+            ) : (
+              <EmptyState message="No hay registros de problemas." />
+            )
+          ) : activeTab === "reminders" ? (
+            RemindersLoading ? (
+              <LoadingState message="Cargando recordatorios..." />
+            ) : RemindersData?.length ? (
+              <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
+                {RemindersData.map((r, i) => (
+                  <li key={i}>{r.title || r.description}</li>
+                ))}
+              </ul>
+            ) : (
+              <EmptyState message="No hay recordatorios activos." />
+            )
+          ) : activeTab === "crashes" ? (
+            CrashesLoading ? (
+              <LoadingState message="Cargando accidentes..." />
+            ) : CrashesData?.length ? (
+              <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
+                {CrashesData.map((c, i) => (
+                  <li key={i}>{c.description || "Accidente registrado"}</li>
+                ))}
+              </ul>
+            ) : (
+              <EmptyState message="No hay reportes de accidentes." />
+            )
+          ) : FilesLoading ? (
+            <LoadingState message="Cargando archivos..." />
+          ) : FilesData?.length ? (
+            <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
+              {FilesData.map((f, i) => (
+                <li key={i}>
+                  <a href={f.url || f.filePath} className="text-blue-600 hover:underline" target="_blank" rel="noreferrer">
+                    {f.name || `Archivo ${i + 1}`}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState message="No hay archivos asociados al vehículo." />
+          )}
+        </div>
       </div>
 
-     {/* Problemas */}
-     <div className="shadow rounded-2xl">
-        <h2 className="text-2xl font-bold text-center mb-4">
-          Historial de Problemas
-        </h2>
-
-        {IssuesLoading && (
-          <div className="flex justify-center items-center w-full mx-auto">
-            <label> Cargando Problemas...</label>
-            <DotLoader color="#2563EB" />
-          </div>
-        )}
-
-        {!IssuesLoading && IssuesData && IssuesData.length > 0 ? (
-          <div className="overflow-x-auto">
-            <IssueTable
-            issues={IssuesData}
-              onSelected={setselectedIssue}
-            />
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">
-            No Issues records available.
-          </p>
-        )}
-
-        {selectedIssue && (
-          <SideBarIssue issue={selectedIssue} onClose={setselectedIssue} />
-        )}
-      </div>
-
+      {/* Sidebars */}
+      {selectedEntry && (
+        <SideBarEntry entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
+      )}
+      {selectedIssue && (
+        <SideBarIssue issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
+      )}
     </div>
   );
 };

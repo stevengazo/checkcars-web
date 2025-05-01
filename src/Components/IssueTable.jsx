@@ -1,99 +1,92 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 const IssueTable = ({ issues, onSelected }) => {
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-
-  const setSelected = (e) => {
-    console.log(e);
-    onSelected(e);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const sortedIssues = React.useMemo(() => {
-    let sortableItems = [...(issues || [])];
-    if (sortConfig.key !== null) {
-      sortableItems.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableItems;
-  }, [issues, sortConfig]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
 
   const requestSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
   };
 
+  const getArrow = (key) =>
+    sortConfig.key === key ? (sortConfig.direction === "ascending" ? " ↑" : " ↓") : "";
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const sortedIssues = useMemo(() => {
+    let sortable = [...(issues || [])];
+    if (sortConfig.key) {
+      sortable.sort((a, b) => {
+        const aVal = a[sortConfig.key];
+        const bVal = b[sortConfig.key];
+        if (aVal < bVal) return sortConfig.direction === "ascending" ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === "ascending" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortable;
+  }, [issues, sortConfig]);
+
   return (
-    <table className="table-auto w-full border-collapse">
-      <thead className="bg-gray-100">
-        <tr>
-          <th
-            className="px-4 text-sm py-2 cursor-pointer"
-            onClick={() => requestSort('created')}
-          >
-            Fecha {sortConfig.key === 'created' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-          </th>
-          <th
-            className="px-4 text-sm py-2 cursor-pointer"
-            onClick={() => requestSort('author')}
-          >
-            Autor {sortConfig.key === 'author' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-          </th>
-          <th
-            className="px-4 text-sm py-2 cursor-pointer"
-            onClick={() => requestSort('carPlate')}
-          >
-            Placa {sortConfig.key === 'carPlate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-          </th>
-          <th
-            className="px-4 text-sm py-2 cursor-pointer"
-            onClick={() => requestSort('type')}
-          >
-            Tipo {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-          </th>
-          <th
-            className="px-4 text-sm py-2 cursor-pointer"
-            onClick={() => requestSort('priority')}
-          >
-            Prioridad {sortConfig.key === 'priority' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {sortedIssues &&
-          sortedIssues.map((entry) => (
-            <tr
-              key={entry.reportId}
-              className="border-t border-slate-200 hover:bg-slate-200 transition duration-500 cursor-pointer"
-              onClick={() => setSelected(entry)}
-            >
-              <td className="px-4 py-2">{formatDate(entry.created)}</td>
-              <td className="px-4 py-2">{entry.author}</td>
-              <td className="px-4 py-2">{entry.carPlate}</td>
-              <td className="px-4 py-2">{entry.type}</td>
-              <td className="px-4 py-2">{entry.priority}</td>
+    <div className="w-full max-w-none overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
+      <table className="w-full table-auto border-collapse text-sm">
+        <thead className="bg-gray-50 text-gray-700 font-medium">
+          <tr>
+            <Th label="Fecha" sortKey="created" requestSort={requestSort} getArrow={getArrow} />
+            <Th label="Autor" sortKey="author" requestSort={requestSort} getArrow={getArrow} />
+            <Th label="Placa" sortKey="carPlate" requestSort={requestSort} getArrow={getArrow} />
+            <Th label="Tipo" sortKey="type" requestSort={requestSort} getArrow={getArrow} />
+            <Th label="Prioridad" sortKey="priority" requestSort={requestSort} getArrow={getArrow} />
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100 text-gray-800">
+          {sortedIssues.length > 0 ? (
+            sortedIssues.map((entry) => (
+              <tr
+                key={entry.reportId}
+                className="hover:bg-blue-50 cursor-pointer transition"
+                onClick={() => onSelected(entry)}
+              >
+                <td className="px-4 py-3">{formatDate(entry.created)}</td>
+                <td className="px-4 py-3">{entry.author}</td>
+                <td className="px-4 py-3">{entry.carPlate}</td>
+                <td className="px-4 py-3">{entry.type}</td>
+                <td className="px-4 py-3">{entry.priority}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={5} className="text-center text-gray-400 py-6">
+                No hay reportes de problemas.
+              </td>
             </tr>
-          ))}
-      </tbody>
-    </table>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
+
+const Th = ({ label, sortKey, requestSort, getArrow }) => (
+  <th
+    className="px-4 py-3 text-left whitespace-nowrap select-none cursor-pointer hover:text-blue-600"
+    onClick={() => requestSort(sortKey)}
+  >
+    {label}
+    <span className="ml-1">{getArrow(sortKey)}</span>
+  </th>
+);
 
 export default IssueTable;

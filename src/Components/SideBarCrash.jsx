@@ -4,204 +4,201 @@ import useFetch from "../Hook/useFetch";
 import { BeatLoader } from "react-spinners";
 import Map from "../Components/MapLocation";
 import useGeneratePDF from "../Hook/useGeneratePdf";
-import SettingsContext from '../Context/SettingsContext.jsx'
+import SettingsContext from "../Context/SettingsContext.jsx";
 import { useContext } from "react";
-
 
 export default function SideBarCrash({ crash, onClose }) {
   const { API_URL } = useContext(SettingsContext);
-  const { data, loading, error, refetch } = useFetch(
+  const { data, loading } = useFetch(
     `${API_URL}/api/Photos/report/${crash.reportId}`,
     { autoFetch: true }
   );
   const { generatePDF } = useGeneratePDF();
+
+  const generateName = () => {
+    const date = new Date();
+    return `Reporte-Accidente-${date.toISOString().split("T")[0]}.pdf`;
+  };
+  const formatDate = (rawDate) => {
+    const date = new Date(rawDate);
+    return date.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
   
   const HandleGenerate = () => {
     generatePDF((doc) => {
-      // Establecer fuente para el título
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("Reporte Accidente Vehiculo", 10, 10);
-
-      // Establecer fuente para el contenido
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      let yOffset = 25; // Margen inicial después del título
-
-      // Recorrer las entradas del objeto 'issue'
-      Object.entries(crash).forEach(([key, value]) => {
-        const formattedKey = `${key.charAt(0).toUpperCase() + key.slice(1)}:`;
-
-        if (typeof value === "string" && value.length > 50) {
-          // Dividir texto largo en líneas que se ajusten al ancho del PDF
-          const lines = doc.splitTextToSize(value, 180); // Ajusta el ancho (180 mm para márgenes)
-
-          // Escribir solo la primera línea y el resto de las líneas debajo
-          doc.text(formattedKey, 10, yOffset);
-          yOffset += 8; // Espacio entre el título y el contenido
-
-          lines.forEach((line) => {
-            doc.text(line, 10, yOffset);
-            yOffset += 8; // Espacio entre líneas
-          });
-        } else {
-          // Manejar campos normales (cadenas cortas o números)
-          doc.text(`${formattedKey} ${value}`, 10, yOffset);
-          yOffset += 10;
-        }
-
-        // Mover a una nueva página si el contenido supera el límite
-        if (yOffset > 260) {
+      const marginX = 15;
+      let y = 20;
+  
+      const line = () => {
+        doc.setDrawColor(200);
+        doc.line(marginX, y, 200, y);
+        y += 6;
+      };
+  
+      const header = () => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("CheckCars", marginX, y);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(`Fecha de generación: ${new Date().toLocaleDateString("es-ES")}`, 150, y);
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Reporte de Accidente de Vehículo", marginX, y);
+        y += 10;
+        line();
+      };
+  
+      const addField = (label, value) => {
+        if (y > 270) {
           doc.addPage();
-          yOffset = 10; // Reiniciar margen superior en la nueva página
+          y = 20;
         }
-      });
-
-      // Agregar imágenes del array 'data' (si existe)
+  
+        doc.setFont("helvetica", "bold");
+        doc.text(`${label}:`, marginX, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(String(value ?? "—"), marginX + 55, y);
+        y += 8;
+      };
+  
+      const addSection = (title) => {
+        if (y > 260) {
+          doc.addPage();
+          y = 20;
+        }
+  
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text(title, marginX, y);
+        y += 8;
+        line();
+      };
+  
+      header();
+  
+      // 📌 Información del reporte
+      addSection("Información general");
+      addField("Fecha", formatDate(crash.created));
+      addField("Autor", crash.author);
+      addField("Placa", crash.carPlate);
+      addField("Daños", crash.crashedParts);
+      addField("Detalles", crash.crashDetails);
+      addField("Ubicación", crash.location);
+  
+      // 📍 Coordenadas GPS
+      addSection("Ubicación GPS");
+      addField("Latitud", crash.latitude);
+      addField("Longitud", crash.longitude);
+      addField("Google Maps", `https://maps.google.com/?q=${crash.latitude},${crash.longitude}`);
+  
+      // 🖼 Imágenes
       if (data && data.length > 0) {
-        console.log(data);
+        addSection("Imágenes");
+        const imgWidth = 60;
+        const spacing = 10;
+  
         data.forEach((photo, index) => {
           const img = new Image();
-          img.src = photo.filePath; // Asume que `filePath` contiene la URL de la imagen
-
+          img.src = photo.filePath;
           img.onload = () => {
-            const imgWidth = 50; // Ancho de la imagen
-            const imgHeight = (img.height * imgWidth) / img.width; // Mantener proporción
-
-            // Si el espacio restante no es suficiente, agregar una nueva página
-            if (yOffset + imgHeight > 260) {
+            const imgHeight = (img.height * imgWidth) / img.width;
+  
+            if (y + imgHeight > 260) {
               doc.addPage();
-              yOffset = 10;
+              y = 20;
             }
-
-            // Agregar imagen al PDF
-            doc.addImage(img, "JPEG", 10, yOffset, imgWidth, imgHeight);
-            yOffset += imgHeight + 10; // Ajustar posición para la siguiente imagen
-            // Descargar el PDF cuando sea la última imagen
-            if (index === data.length - 1) {
-              doc.save();
-            }
+  
+            doc.addImage(img, "JPEG", marginX, y, imgWidth, imgHeight);
+            y += imgHeight + spacing;
+  
+            if (index === data.length - 1) doc.save();
           };
         });
       } else {
-        // Si no hay imágenes, descargar el PDF de inmediato
         doc.save();
       }
     }, generateName());
   };
+  
 
-  const generateName = () => {
-    const date = new Date();
-    const formattedDate = date
-      .toLocaleString("en-GB", {
-        year: "2-digit",
-        month: "short",
-        day: "2-digit",
-      })
-      .replace(/ /g, "-");
-    return `Reporte Accidente-${formattedDate}.pdf`;
-  };
-
-  const handleOnClose = () => {
-    onClose(null);
-  };
 
   return (
-    <>
-      <div
-        className="
-                bg-slate-200 
-                shadow-xl hover:shadow-2xl 
-                border border-gray-100 hover:border-gray-400  
-                duration-1000 
-                p-3
-                absolute md:top-5 md:right-5 top-0 right-0
-                w-screen md:w-2/4 lg:w-3/6
-                md:h-[90vh] md:rounded-2xl overflow-auto 
-                transition-all ease-in-out translate-y-0 
-              "
-      >
-        <div className=" absolute top-2 right-2  flex flex-row justify-end items-center ">
-          <FaRegFilePdf
-            size={28}
-            className="hover:scale-110 hover:bg-gray-200 hover:border-white duration-100 transition border p-1 rounded mx-3"
+    <div className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-lg overflow-y-auto transition-all duration-300 p-6 space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-800">Registro de Accidente</h2>
+        <div className="flex items-center gap-3">
+          <button
             onClick={HandleGenerate}
-          />
-          <IoIosCloseCircle
-            size={40}
-            color="red"
-            className="hover:rotate-180 transition duration-700"
-            onClick={() => handleOnClose()}
-          />
+            className="text-blue-600 hover:text-blue-800 transition"
+            title="Generar PDF"
+          >
+            <FaRegFilePdf size={24} />
+          </button>
+          <button
+            onClick={() => onClose(null)}
+            className="text-red-600 hover:text-red-800 transition"
+            title="Cerrar"
+          >
+            <IoIosCloseCircle size={32} />
+          </button>
         </div>
+      </div>
 
-        <h2 className="text-3xl">Registro de Accidente</h2>
-        <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
-          {/* Created */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Creación</label>
-            <label className=" font-light">{crash.created}</label>
-          </div>
+      {/* Información */}
+      <div className="space-y-3">
+        <InfoRow label="Creación" value={crash.created} />
+        <InfoRow label="Autor" value={crash.author} />
+        <InfoRow label="Placa" value={crash.carPlate} />
+        <InfoRow label="Localización" value={crash.location} />
+        <InfoRow label="Detalles" value={crash.crashDetails} />
+        <InfoRow label="Daños" value={crash.crashedParts} />
+      </div>
 
-          {/* Author */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Autor</label>
-            <label>{crash.author}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Placa</label>
-            <label>{crash.carPlate}</label>
-          </div>
-
-          {/* Location */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Ubicación</label>
-            <div className="flex flex-col">
-              <label className=" font-medium">Latitud</label>
-              <label>{crash.latitude}</label>
-            </div>
-            <div className="flex flex-col">
-              <label className=" font-medium">Longitud</label>
-              <label>{crash.longitude}</label>
-            </div>
-          </div>
-          <Map longitude={crash.longitude} latitude={crash.latitude} />
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Daños</label>
-            <label>{crash.crashedParts}</label>
-          </div>
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Detalles</label>
-            <label>{crash.crashDetails}</label>
-          </div>
-          {/*  location */}
-          <div className="flex flex-row justify-between my-2 gap-1">
-            <label className=" font-medium">Localización</label>
-            <label>{crash.location}</label>
-          </div>
-
-          {/*Images */}
-          <h3 className="text-3xl ">Fotos</h3>
+      {/* Ubicación */}
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">Ubicación GPS</h3>
+        <div className="grid grid-cols-2 gap-4 mb-3">
+          <InfoRow label="Latitud" value={crash.latitude} />
+          <InfoRow label="Longitud" value={crash.longitude} />
         </div>
-        {data != null && (
-          <div className="flex flex-col gap-3 justify-center align-middle my-2 border rounded-2xl p-2">
-            {loading && <BeatLoader size={24} />}
-            {data !== null &&
-              data.map((photo) => (
-                <img
-                  src={photo.filePath}
-                  alt={photo.name}
-                  className=" w-full rounded-2xl"
-                />
-              ))}
+        <Map longitude={crash.longitude} latitude={crash.latitude} />
+      </div>
+
+      {/* Imágenes */}
+      <div>
+        <h3 className="text-lg font-semibold mb-3 text-gray-700">Fotos del Accidente</h3>
+        {loading && <BeatLoader size={12} />}
+        {!loading && data && data.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4">
+            {data.map((photo) => (
+              <img
+                key={photo.name}
+                src={photo.filePath}
+                alt={photo.name}
+                className="w-full rounded-xl border"
+              />
+            ))}
           </div>
+        ) : (
+          !loading && <p className="text-sm text-gray-500 italic">No hay imágenes disponibles.</p>
         )}
       </div>
-    </>
+    </div>
   );
 }
+
+const InfoRow = ({ label, value }) => (
+  <div className="flex flex-col text-sm">
+    <span className="text-gray-500 font-medium">{label}</span>
+    <span className="text-gray-800">{value || "—"}</span>
+  </div>
+);

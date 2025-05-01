@@ -4,291 +4,171 @@ import useFetch from "../Hook/useFetch";
 import MapLocation from "./MapLocation";
 import { BeatLoader } from "react-spinners";
 import useGeneratePDF from "../Hook/useGeneratePdf";
-import SettingsContext from '../Context/SettingsContext.jsx'
+import SettingsContext from "../Context/SettingsContext.jsx";
 import { useContext } from "react";
-
 
 export default function SideBarEntry({ entry, onClose }) {
   const { API_URL } = useContext(SettingsContext);
-  const { data, loading, error, refetch } = useFetch(
+  const { data, loading } = useFetch(
     `${API_URL}/api/Photos/report/${entry.reportId}`,
     { autoFetch: true }
   );
   const { generatePDF } = useGeneratePDF();
 
+  const generateName = () => {
+    const date = new Date();
+    return `Reporte-Salida-${date.toISOString().split("T")[0]}.pdf`;
+  };
+
   const HandleGenerate = () => {
     generatePDF((doc) => {
-      // Establecer fuente para el título
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("Reporte Problema Vehiculo", 10, 10);
-
-      // Establecer fuente para el contenido
+      doc.text("Reporte de Salida", 10, 10);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
-      let yOffset = 25; // Margen inicial después del título
 
-      // Recorrer las entradas del objeto 'issue'
+      let yOffset = 25;
+
       Object.entries(entry).forEach(([key, value]) => {
         const formattedKey = `${key.charAt(0).toUpperCase() + key.slice(1)}:`;
+        const text = typeof value === "string" && value.length > 50
+          ? doc.splitTextToSize(value, 180)
+          : [`${formattedKey} ${value}`];
 
-        if (typeof value === "string" && value.length > 50) {
-          // Dividir texto largo en líneas que se ajusten al ancho del PDF
-          const lines = doc.splitTextToSize(value, 180); // Ajusta el ancho (180 mm para márgenes)
-
-          // Escribir solo la primera línea y el resto de las líneas debajo
-          doc.text(formattedKey, 10, yOffset);
-          yOffset += 8; // Espacio entre el título y el contenido
-
-          lines.forEach((line) => {
-            doc.text(line, 10, yOffset);
-            yOffset += 8; // Espacio entre líneas
-          });
-        } else {
-          // Manejar campos normales (cadenas cortas o números)
-          doc.text(`${formattedKey} ${value}`, 10, yOffset);
+        text.forEach((line) => {
+          doc.text(line, 10, yOffset);
           yOffset += 10;
-        }
-
-        // Mover a una nueva página si el contenido supera el límite
-        if (yOffset > 260) {
-          doc.addPage();
-          yOffset = 10; // Reiniciar margen superior en la nueva página
-        }
+          if (yOffset > 260) {
+            doc.addPage();
+            yOffset = 10;
+          }
+        });
       });
 
-      // Agregar imágenes del array 'data' (si existe)
       if (data && data.length > 0) {
-        console.log(data);
-        data.forEach((photo, index) => {
+        data.forEach((photo, i) => {
           const img = new Image();
-          img.src = photo.filePath; // Asume que `filePath` contiene la URL de la imagen
-
+          img.src = photo.filePath;
           img.onload = () => {
-            const imgWidth = 50; // Ancho de la imagen
-            const imgHeight = (img.height * imgWidth) / img.width; // Mantener proporción
-
-            // Si el espacio restante no es suficiente, agregar una nueva página
+            const imgWidth = 50;
+            const imgHeight = (img.height * imgWidth) / img.width;
             if (yOffset + imgHeight > 260) {
               doc.addPage();
               yOffset = 10;
             }
-
-            // Agregar imagen al PDF
             doc.addImage(img, "JPEG", 10, yOffset, imgWidth, imgHeight);
-            yOffset += imgHeight + 10; // Ajustar posición para la siguiente imagen
-            // Descargar el PDF cuando sea la última imagen
-            if (index === data.length - 1) {
-              doc.save();
-            }
+            yOffset += imgHeight + 10;
+            if (i === data.length - 1) doc.save();
           };
         });
       } else {
-        // Si no hay imágenes, descargar el PDF de inmediato
         doc.save();
       }
     }, generateName());
   };
 
-  const generateName = () => {
-    const date = new Date();
-    const formattedDate = date
-      .toLocaleString("en-GB", {
-        year: "2-digit",
-        month: "short",
-        day: "2-digit",
-      })
-      .replace(/ /g, "-");
-    return `Reporte Salida-${formattedDate}.pdf`;
-  };
+  const InfoItem = ({ label, value, important = false }) => (
+    <div className="flex flex-col text-sm">
+      <span className="text-gray-500 font-medium">{label}</span>
+      <span className={`text-gray-800 ${important ? "font-semibold" : ""}`}>
+        {value || "—"}
+      </span>
+    </div>
+  );
 
-  const handleOnClose = () => {
-    onClose(null);
-  };
+  const YesNo = ({ label, value }) => (
+    <InfoItem
+      label={label}
+      value={value ? "Sí" : "No"}
+      important={!value}
+    />
+  );
+
   return (
-    <>
-      <div
-        className="
-        bg-slate-200 
-        shadow-xl hover:shadow-2xl 
-        border border-gray-100 hover:border-gray-400  
-        duration-1000 
-        p-3
-        absolute md:top-5 md:right-5 top-0 right-0
-        w-screen md:w-2/4 lg:w-3/6
-        md:h-[90vh] md:rounded-2xl overflow-auto 
-        transition-all ease-in-out translate-y-0 
-      "
-      >
-        <div className=" absolute top-2 right-2  flex flex-row justify-end items-center ">
-          <FaRegFilePdf
-            size={28}
-            className="hover:scale-110 hover:bg-gray-200 hover:border-white duration-100 transition border p-1 rounded mx-3"
-            onClick={HandleGenerate}
-          />
-
-          <IoIosCloseCircle
-            size={40}
-            color="red"
-            className="hover:rotate-180 transition duration-700"
-            onClick={() => handleOnClose()}
-          />
+    <div className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-xl overflow-y-auto transition-all duration-300 p-6 space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-800">Registro de Salida</h2>
+        <div className="flex items-center gap-3">
+          <button onClick={HandleGenerate} title="Generar PDF" className="text-blue-600 hover:text-blue-800 transition">
+            <FaRegFilePdf size={24} />
+          </button>
+          <button onClick={() => onClose(null)} title="Cerrar" className="text-red-600 hover:rotate-45 hover:text-red-800 transition">
+            <IoIosCloseCircle size={32} />
+          </button>
         </div>
+      </div>
 
-        <h2 className="text-2xl">Registro de Salida</h2>
-        <div className="border p-2 my-1 border-slate-200 rounded-e-2xl ">
-          {/* Created */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Creación</label>
-            <label className="font-light">{entry.created}</label>
-          </div>
+      {/* Info General */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <InfoItem label="Creación" value={entry.created} />
+        <InfoItem label="Autor" value={entry.author} />
+        <InfoItem label="Placa" value={entry.carPlate} />
+        <InfoItem label="Kilometraje" value={entry.mileage} />
+        <InfoItem label="Estado de pintura" value={entry.paintState} />
+        <InfoItem label="Estado mecánico" value={entry.mecanicState} />
+        <InfoItem label="Nivel de aceite" value={entry.oilLevel} />
+        <InfoItem label="Estado de interiores" value={entry.interiorsState} />
+        <InfoItem label="Motivo" value={entry.notes} />
+      </div>
 
-          {/* Author */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Autor</label>
-            <label>{entry.author}</label>
-          </div>
-
-          {/* Car Plate */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Placa</label>
-            <label>{entry.carPlate}</label>
-          </div>
-
-          {/* Location */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Ubicación</label>
-            <div className="flex flex-col">
-              <label className="font-medium">Latitud</label>
-              <label>{entry.latitude}</label>
-            </div>
-            <div className="flex flex-col">
-              <label className="font-medium">Longitud</label>
-              <label>{entry.longitude}</label>
-            </div>
-          </div>
-
-          <MapLocation longitude={entry.longitude} latitude={entry.latitude} />
-
-          {/* Mileage */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Kilometraje</label>
-            <label>{entry.mileage}</label>
-          </div>
-
-          {/* Fuel Level */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Nivel de combustible</label>
-            <progress value={entry.fuelLevel} max={100} />
-          </div>
-
-          {/* Tires State */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Estado de los neumáticos</label>
-            <label>{entry.tiresState}</label>
-          </div>
-
-          {/* Spare Tire */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Llanta de repuesto</label>
-            <label
-              className={entry.hasSpareTire ? "text-black" : "text-red-500"}
-            >
-              {entry.hasSpareTire ? "Sí" : "No"}
-            </label>
-          </div>
-
-          {/* Charger USB */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Cargador USB</label>
-            <label
-              className={entry.hasChargerUSB ? "text-black" : "text-red-500"}
-            >
-              {entry.hasChargerUSB ? "Sí" : "No"}
-            </label>
-          </div>
-
-          {/* Quick Pass */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Quick Pass</label>
-            <label
-              className={entry.hasQuickPass ? "text-black" : "text-red-500"}
-            >
-              {entry.hasQuickPass ? "Sí" : "No"}
-            </label>
-          </div>
-
-          {/* Phone Support */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Soporte telefónico</label>
-            <label
-              className={entry.hasPhoneSupport ? "text-black" : "text-red-500"}
-            >
-              {entry.hasPhoneSupport ? "Sí" : "No"}
-            </label>
-          </div>
-
-          {/* Emergency Kit */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Kit de emergencia</label>
-            <label
-              className={entry.hasEmergencyKit ? "text-black" : "text-red-500"}
-            >
-              {entry.hasEmergencyKit ? "Sí" : "No"}
-            </label>
-          </div>
-
-          {/* Paint State */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Estado de la pintura</label>
-            <label>{entry.paintState}</label>
-          </div>
-
-          {/* Mechanical State */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Estado mecánico</label>
-            <label>{entry.mecanicState}</label>
-          </div>
-
-          {/* Oil Level */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Nivel de aceite</label>
-            <label>{entry.oilLevel}</label>
-          </div>
-
-          {/* Interiors State */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Estado de los interiores</label>
-            <label>{entry.interiorsState}</label>
-          </div>
-
-          {/* Notes */}
-          <div className="flex flex-row justify-between my-2">
-            <label className="font-medium">Motivo</label>
-            <label>{entry.notes}</label>
-          </div>
+      {/* Ubicación */}
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">Ubicación GPS</h3>
+        <div className="grid grid-cols-2 gap-4 mb-3">
+          <InfoItem label="Latitud" value={entry.latitude} />
+          <InfoItem label="Longitud" value={entry.longitude} />
         </div>
+        <MapLocation longitude={entry.longitude} latitude={entry.latitude} />
+      </div>
+
+      {/* Estado del vehículo */}
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">Condiciones y Accesorios</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InfoItem
+            label="Nivel de combustible"
+            value={
+              <progress
+                value={entry.fuelLevel}
+                max={100}
+                className="w-full h-2"
+              />
+            }
+          />
+          <InfoItem label="Estado neumáticos" value={entry.tiresState} />
+          <YesNo label="Llanta de repuesto" value={entry.hasSpareTire} />
+          <YesNo label="Cargador USB" value={entry.hasChargerUSB} />
+          <YesNo label="Quick Pass" value={entry.hasQuickPass} />
+          <YesNo label="Soporte telefónico" value={entry.hasPhoneSupport} />
+          <YesNo label="Kit de emergencia" value={entry.hasEmergencyKit} />
+        </div>
+      </div>
+
+      {/* Imágenes */}
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">Fotos del Reporte</h3>
         {loading && (
-          <div className="flex flex-row justify-items-center">
-            <BeatLoader size={20} className="mx-auto" />
+          <div className="flex justify-center py-4">
+            <BeatLoader size={14} />
           </div>
         )}
-        {data !== null && (
-          <>
-            <h3 className="text-2xl font-light mx-auto">Fotos</h3>
-            <div className="flex flex-col gap-3 justify-center align-middle my-2 border rounded-2xl p-2">
-              {data !== null &&
-                data.map((photo) => (
-                  <img
-                    src={photo.filePath}
-                    alt={photo.name}
-                    className=" w-full rounded-2xl"
-                  />
-                ))}
-            </div>
-          </>
+        {!loading && data && data.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4">
+            {data.map((photo) => (
+              <img
+                key={photo.name}
+                src={photo.filePath}
+                alt={photo.name}
+                className="w-full rounded-xl border"
+              />
+            ))}
+          </div>
+        ) : (
+          !loading && <p className="text-sm text-gray-500 italic">No hay imágenes disponibles.</p>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -1,73 +1,56 @@
+const CarInfo = ({ car }) => {
+  const formatDate = (rawDate) => {
+    if (!rawDate) return "—";
+    const date = new Date(rawDate);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
+  const safeValue = (val) => {
+    return val && val !== "NULL" && val !== 0 ? val : "—";
+  };
 
-const CarInfo = ({car})=>{
+  const InfoItem = ({ label, value }) => (
+    <div className="bg-gray-50  p-4 shadow-sm">
+      <p className="text-sm text-gray-500 font-medium mb-1">{label}</p>
+      <p className="text-base text-gray-800">{value}</p>
+    </div>
+  );
 
-  console.warn(car)
-    return (<>
-    <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Propiedad
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Valor
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Marca</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.brand}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Modelo</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.model}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Tipo</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.type}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Placa</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.plate}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Color</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.color}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Notas</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.notes}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">VIN</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.vin}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">Combustible</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {car.fueltype}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-    </>)
-}
-;
+  return (
+    <div className="rounded-xl bg-white shadow p-6 space-y-6">
+      {car.imagePath && car.imagePath !== "NULL" && (
+        <div className="flex justify-center">
+          <img
+            src={car.imagePath}
+            alt={`Imagen del vehículo ${car.plate}`}
+            className="w-full max-w-md rounded-lg border"
+          />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <InfoItem label="Marca" value={safeValue(car.brand)} />
+        <InfoItem label="Modelo" value={safeValue(car.model)} />
+        <InfoItem label="Tipo" value={safeValue(car.type)} />
+        <InfoItem label="Placa" value={safeValue(car.plate)} />
+        <InfoItem label="Color" value={safeValue(car.color)} />
+        <InfoItem label="Año" value={safeValue(car.year)} />
+        <InfoItem label="Fecha de Adquisición" value={formatDate(car.adquisitionDate)} />
+        <InfoItem label="VIN" value={safeValue(car.vin)} />
+        <InfoItem label="Combustible" value={safeValue(car.fueltype)} />
+        <InfoItem label="Peso (kg)" value={safeValue(car.weight)} />
+        <InfoItem
+          label="Dimensiones (L x A x H)"
+          value={`${safeValue(car.lenght)} x ${safeValue(car.width)} x ${safeValue(car.height)} cm`}
+        />
+        <InfoItem label="Notas" value={safeValue(car.notes)} />
+      </div>
+    </div>
+  );
+};
 
 export default CarInfo;
