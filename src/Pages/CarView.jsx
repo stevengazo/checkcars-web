@@ -9,6 +9,8 @@ import IssueTable from "../Components/IssueTable";
 import SideBarEntry from "../Components/SideBarEntry";
 import SideBarIssue from "../Components/SidebarIssue";
 import SettingsContext from "../Context/SettingsContext";
+import { AddReminder } from "../Components/AddReminder";
+import { ReminderList } from "../Components/ReminderList";
 
 const LoadingState = ({ message }) => (
   <div className="flex flex-col items-center justify-center p-6">
@@ -37,12 +39,27 @@ const CarView = () => {
   const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
   const URLFiles = `${API_URL}/api/Files/search?carId=${id}`;
 
-  const { data: carData, loading: carLoading, error: carError } = useFetch(URLInfo, { autoFetch: true });
-  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, { autoFetch: true });
-  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, { autoFetch: true });
-  const { data: RemindersData, loading: RemindersLoading } = useFetch(URLReminders, { autoFetch: true });
-  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, { autoFetch: true });
-  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, { autoFetch: true });
+  const {
+    data: carData,
+    loading: carLoading,
+    error: carError,
+  } = useFetch(URLInfo, { autoFetch: true });
+  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, {
+    autoFetch: true,
+  });
+  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, {
+    autoFetch: true,
+  });
+  const { data: RemindersData, loading: RemindersLoading } = useFetch(
+    URLReminders,
+    { autoFetch: true }
+  );
+  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, {
+    autoFetch: true,
+  });
+  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
+    autoFetch: true,
+  });
 
   const tabs = [
     { key: "entries", label: "Salidas" },
@@ -103,7 +120,10 @@ const CarView = () => {
             EntriesLoading ? (
               <LoadingState message="Cargando Salidas..." />
             ) : EntriesData?.length ? (
-              <EntriesTable entries={EntriesData} onSelected={setSelectedEntry} />
+              <EntriesTable
+                entries={EntriesData}
+                onSelected={setSelectedEntry}
+              />
             ) : (
               <EmptyState message="No hay registros de salidas." />
             )
@@ -117,15 +137,17 @@ const CarView = () => {
             )
           ) : activeTab === "reminders" ? (
             RemindersLoading ? (
-              <LoadingState message="Cargando recordatorios..." />
-            ) : RemindersData?.length ? (
-              <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
-                {RemindersData.map((r, i) => (
-                  <li key={i}>{r.title || r.description}</li>
-                ))}
-              </ul>
+              <LoadingState message="Cargando Recordatorios..." />
             ) : (
-              <EmptyState message="No hay recordatorios activos." />
+              <>
+                 <ReminderList/>
+                <AddReminder />
+                {RemindersData?.length ? (
+                  <ReminderList reminders={RemindersData} />
+                ) : (
+                  <EmptyState message="No hay recordatorios para este vehículo." />
+                )}
+              </>
             )
           ) : activeTab === "crashes" ? (
             CrashesLoading ? (
@@ -145,7 +167,12 @@ const CarView = () => {
             <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
               {FilesData.map((f, i) => (
                 <li key={i}>
-                  <a href={f.url || f.filePath} className="text-blue-600 hover:underline" target="_blank" rel="noreferrer">
+                  <a
+                    href={f.url || f.filePath}
+                    className="text-blue-600 hover:underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     {f.name || `Archivo ${i + 1}`}
                   </a>
                 </li>
@@ -159,10 +186,16 @@ const CarView = () => {
 
       {/* Sidebars */}
       {selectedEntry && (
-        <SideBarEntry entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
+        <SideBarEntry
+          entry={selectedEntry}
+          onClose={() => setSelectedEntry(null)}
+        />
       )}
       {selectedIssue && (
-        <SideBarIssue issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
+        <SideBarIssue
+          issue={selectedIssue}
+          onClose={() => setSelectedIssue(null)}
+        />
       )}
     </div>
   );

@@ -15,83 +15,122 @@ export default function SideBarEntry({ entry, onClose }) {
   );
   const { generatePDF } = useGeneratePDF();
 
-  console.log("Datos cargados:", data); // Imprimir datos recibidos
-
   const generateName = () => {
     const date = new Date();
-    return `Reporte-Salida-${date.toISOString().split("T")[0]}.pdf`;
+    return `CheckCars-Resumen-Salida-${date.toISOString().split("T")[0]}.pdf`;
   };
 
   const HandleGenerate = () => {
-    console.log("Generando PDF...");
-
     generatePDF((doc) => {
-      console.log("Inicio de generación de PDF");
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 20;
 
+      // Portada
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("Reporte de Salida", 10, 10);
-      doc.setFont("helvetica", "normal");
+      doc.setFontSize(22);
+      doc.text("CheckCars", pageWidth / 2, y, { align: "center" });
+      y += 10;
+      doc.setFontSize(16);
+      doc.text("Resumen de Salida de Vehículo", pageWidth / 2, y, {
+        align: "center",
+      });
+      y += 10;
       doc.setFontSize(12);
-
-      let yOffset = 25;
-
-      Object.entries(entry).forEach(([key, value]) => {
-        const formattedKey = `${key.charAt(0).toUpperCase() + key.slice(1)}:`;
-        const text =
-          typeof value === "string" && value.length > 50
-            ? doc.splitTextToSize(value, 180)
-            : [`${formattedKey} ${value}`];
-
-        text.forEach((line) => {
-          doc.text(line, 10, yOffset);
-          yOffset += 10;
-          if (yOffset > 260) {
-            doc.addPage();
-            yOffset = 10;
-          }
-        });
+      doc.setFont("helvetica", "normal");
+      doc.text(`Fecha: ${new Date().toLocaleDateString("es-ES")}`, pageWidth / 2, y, {
+        align: "center",
       });
 
+      doc.addPage();
+
+      const drawSectionTitle = (title) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.setTextColor(30, 30, 30);
+        doc.text(title, 10, y);
+        y += 6;
+        doc.setDrawColor(200);
+        doc.line(10, y, pageWidth - 10, y);
+        y += 10;
+      };
+
+      const drawField = (label, value) => {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        const text = `${label}: ${value || "—"}`;
+        const lines = doc.splitTextToSize(text, pageWidth - 20);
+        lines.forEach((line) => {
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, 12, y);
+          y += 6;
+        });
+      };
+
+      // Sección: Información general
+      drawSectionTitle("1. Información del Vehículo");
+      drawField("Autor", entry.author);
+      drawField("Fecha de creación", new Date(entry.created).toLocaleString("es-ES"));
+      drawField("Placa", entry.carPlate);
+      drawField("Kilometraje", entry.mileage);
+      drawField("Estado de pintura", entry.paintState);
+      drawField("Estado mecánico", entry.mecanicState);
+      drawField("Nivel de aceite", entry.oilLevel);
+      drawField("Estado interiores", entry.interiorsState);
+      drawField("Motivo / Observaciones", entry.notes);
+
+      // Sección: Condiciones
+      drawSectionTitle("2. Condiciones y Accesorios");
+      drawField("Estado neumáticos", entry.tiresState);
+      drawField("Nivel de combustible", `${entry.fuelLevel}%`);
+      drawField("Llanta de repuesto", entry.hasSpareTire ? "Sí" : "No");
+      drawField("Cargador USB", entry.hasChargerUSB ? "Sí" : "No");
+      drawField("Quick Pass", entry.hasQuickPass ? "Sí" : "No");
+      drawField("Soporte telefónico", entry.hasPhoneSupport ? "Sí" : "No");
+      drawField("Kit de emergencia", entry.hasEmergencyKit ? "Sí" : "No");
+
+      // Sección: Ubicación GPS
+      drawSectionTitle("3. Ubicación GPS");
+      drawField("Latitud", entry.latitude);
+      drawField("Longitud", entry.longitude);
+
+      // Sección: Imágenes
       if (data && data.length > 0) {
-        // Hacer la carga de imágenes asíncrona y esperar antes de guardar el PDF
+        drawSectionTitle("4. Galería de Fotos");
+
         const imagePromises = data.map((photo) => {
-          return new Promise((resolve, reject) => {
+          return new Promise((resolve) => {
             const img = new Image();
+            img.crossOrigin = "anonymous";
             img.src = photo.filePath;
 
             img.onload = () => {
-              console.log(`Imagen cargada: ${photo.filePath}`); // Imprimir cuando una imagen se haya cargado
-              const imgWidth = 50;
-              const imgHeight = (img.height * imgWidth) / img.width;
-              if (yOffset + imgHeight > 260) {
+              const imgW = 80;
+              const imgH = (img.height * imgW) / img.width;
+
+              if (y + imgH > 270) {
                 doc.addPage();
-                yOffset = 10;
+                y = 20;
               }
-              doc.addImage(img, "JPEG", 10, yOffset, imgWidth, imgHeight);
-              yOffset += imgHeight + 10;
+
+              doc.addImage(img, "JPEG", 10, y, imgW, imgH);
+              y += imgH + 10;
               resolve();
             };
 
             img.onerror = () => {
-              console.error(`Error al cargar la imagen: ${photo.filePath}`); // Imprimir error si la imagen no carga
-              reject(new Error(`Error al cargar la imagen: ${photo.filePath}`));
+              console.warn(`No se pudo cargar la imagen: ${photo.filePath}`);
+              resolve();
             };
           });
         });
 
-        // Esperamos que todas las imágenes se hayan cargado antes de guardar el PDF
-        Promise.all(imagePromises)
-          .then(() => {
-            console.log("Todas las imágenes cargadas. Guardando PDF.");
-            doc.save();
-          })
-          .catch((err) => {
-            console.error("Error generando el PDF:", err);
-            alert("Hubo un error al generar el PDF.");
-          });
+        Promise.all(imagePromises).then(() => {
+          doc.save();
+        });
       } else {
-        console.log("No se encontraron imágenes. Guardando PDF.");
         doc.save();
       }
     }, generateName());
@@ -123,10 +162,8 @@ export default function SideBarEntry({ entry, onClose }) {
 
   return (
     <div className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-xl overflow-y-auto transition-all duration-300 p-6 space-y-6">
-      {/* Header */}
-
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Registro de Salida</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Resumen de Salida</h2>
         <div className="flex items-center gap-3">
           <button
             onClick={HandleGenerate}
@@ -145,20 +182,20 @@ export default function SideBarEntry({ entry, onClose }) {
         </div>
       </div>
 
-      {/* Info General */}
+      {/* Información resumida y presentación */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InfoItem label="Creación" value={formatDate(entry.created)} />
+        <InfoItem label="Fecha" value={formatDate(entry.created)} />
         <InfoItem label="Autor" value={entry.author} />
         <InfoItem label="Placa" value={entry.carPlate} />
         <InfoItem label="Kilometraje" value={entry.mileage} />
-        <InfoItem label="Estado de pintura" value={entry.paintState} />
-        <InfoItem label="Estado mecánico" value={entry.mecanicState} />
-        <InfoItem label="Nivel de aceite" value={entry.oilLevel} />
-        <InfoItem label="Estado de interiores" value={entry.interiorsState} />
+        <InfoItem label="Pintura" value={entry.paintState} />
+        <InfoItem label="Mecánica" value={entry.mecanicState} />
+        <InfoItem label="Aceite" value={entry.oilLevel} />
+        <InfoItem label="Interiores" value={entry.interiorsState} />
         <InfoItem label="Motivo" value={entry.notes} />
       </div>
 
-      {/* Ubicación */}
+      {/* Ubicación GPS */}
       <div>
         <h3 className="text-lg font-semibold mb-2 text-gray-700">Ubicación GPS</h3>
         <div className="grid grid-cols-2 gap-4 mb-3">
@@ -168,48 +205,43 @@ export default function SideBarEntry({ entry, onClose }) {
         <MapLocation longitude={entry.longitude} latitude={entry.latitude} />
       </div>
 
-      {/* Estado del vehículo */}
+      {/* Condiciones y accesorios */}
       <div>
         <h3 className="text-lg font-semibold mb-2 text-gray-700">Condiciones y Accesorios</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <InfoItem
-            label="Nivel de combustible"
+            label="Combustible"
             value={<progress value={entry.fuelLevel} max={100} className="w-full h-2" />}
           />
-          <InfoItem label="Estado neumáticos" value={entry.tiresState} />
+          <InfoItem label="Neumáticos" value={entry.tiresState} />
           <YesNo label="Llanta de repuesto" value={entry.hasSpareTire} />
           <YesNo label="Cargador USB" value={entry.hasChargerUSB} />
           <YesNo label="Quick Pass" value={entry.hasQuickPass} />
-          <YesNo label="Soporte telefónico" value={entry.hasPhoneSupport} />
-          <YesNo label="Kit de emergencia" value={entry.hasEmergencyKit} />
+          <YesNo label="Soporte Teléfono" value={entry.hasPhoneSupport} />
+          <YesNo label="Kit Emergencia" value={entry.hasEmergencyKit} />
         </div>
       </div>
 
-      {/* Imágenes */}
+      {/* Galería de fotos */}
       <div>
         <h3 className="text-lg font-semibold mb-2 text-gray-700">Fotos del Reporte</h3>
-        {loading && (
+        {loading ? (
           <div className="flex justify-center py-4">
             <BeatLoader size={14} />
           </div>
-        )}
-        {!loading && data && data.length > 0 ? (
+        ) : data && data.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
             {data.map((photo, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <img
-                
-                  src={photo.filePath}
-                  alt={photo.name || "Imagen"}
-                  className="w-full rounded-xl border"
-                />
-              </div>
+              <img
+                key={index}
+                src={photo.filePath}
+                alt={photo.name || "Imagen"}
+                className="w-full rounded-xl border"
+              />
             ))}
           </div>
         ) : (
-          !loading && (
-            <p className="text-sm text-gray-500 italic">No hay imágenes disponibles.</p>
-          )
+          <p className="text-sm text-gray-500 italic">No hay imágenes disponibles.</p>
         )}
       </div>
     </div>
