@@ -85,6 +85,18 @@ export default function SideBarEntry({ entry, onClose }) {
     />
   );
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+
   return (
     <div className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-xl overflow-y-auto transition-all duration-300 p-6 space-y-6">
       {/* Header */}
@@ -102,7 +114,7 @@ export default function SideBarEntry({ entry, onClose }) {
 
       {/* Info General */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InfoItem label="Creación" value={entry.created} />
+        <InfoItem label="Creación" value={formatDate(entry.created)} />
         <InfoItem label="Autor" value={entry.author} />
         <InfoItem label="Placa" value={entry.carPlate} />
         <InfoItem label="Kilometraje" value={entry.mileage} />
