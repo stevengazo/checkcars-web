@@ -5,7 +5,7 @@ const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
   // URL de la API
-  const API_URL = "http://192.168.1.209:8080";
+  const API_URL = "http://192.168.0.25:8080";
 
   return (
     <SettingsContext.Provider value={{ API_URL }}>
