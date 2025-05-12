@@ -9,9 +9,9 @@ import EntriesTable from "../Components/EntryTable";
 import IssueTable from "../Components/IssueTable";
 import SideBarEntry from "../Components/SideBarEntry";
 import SideBarIssue from "../Components/SidebarIssue";
+import { ReminderList } from "../Components/ReminderList";
 import SettingsContext from "../Context/SettingsContext";
 import { AddReminder } from "../Components/AddReminder";
-import { ReminderList } from "../Components/ReminderList";
 
 const LoadingState = ({ message }) => (
   <div className="flex flex-col items-center justify-center p-6">
@@ -37,7 +37,7 @@ const CarView = () => {
   const URLInfo = `${API_URL}/api/Cars/${id}`;
   const URLEntries = `${API_URL}/api/EntryExitReports/search?carId=${id}`;
   const URLIssues = `${API_URL}/api/IssueReports/search?carId=${id}`;
-  const URLReminders = `${API_URL}/api/Reminders/search?carId=${id}`;
+  const URLReminders = `${API_URL}/api/Reminder/remindersbycar/${id}`;
   const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
   const URLFiles = `${API_URL}/api/Files/search?carId=${id}`;
 
@@ -162,7 +162,7 @@ const CarView = () => {
               ) : (
                 <>
                   {showAddReminder ? (
-                    <AddReminder onClose={() => setShowAddReminder(false)} />
+                    <AddReminder onClose={() => setShowAddReminder(false)} CarId={id} />
                   ) : (
                     <button
                       onClick={() => setShowAddReminder(true)}
@@ -171,10 +171,9 @@ const CarView = () => {
                       Añadir Recordatorio
                     </button>
                   )}
-                  <ReminderList />
 
                   {RemindersData?.length ? (
-                    <ReminderList reminders={RemindersData} />
+                    <ReminderList items={RemindersData} />
                   ) : (
                     <EmptyState message="No hay recordatorios para este vehículo." />
                   )}

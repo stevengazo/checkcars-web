@@ -3,6 +3,7 @@ import { FaRegFilePdf } from "react-icons/fa6";
 import useFetch from "../Hook/useFetch";
 import { BeatLoader } from "react-spinners";
 import Map from "../Components/MapLocation";
+import { Link } from "react-router-dom";
 import useGeneratePDF from "../Hook/useGeneratePdf";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import { useContext } from "react";
@@ -152,6 +153,13 @@ export default function SideBarCrash({ crash, onClose }) {
               Registro de Accidente
             </h2>
             <div className="flex items-center gap-3">
+            <Link
+                to={`/car/${crash.carId}`}
+                className="flex bg-white border rounded items-center w-full p-1  text-blue-300 hover:text-blue-500"
+              >
+                {" "}
+                Ver Vehiculo
+              </Link>
               <button
                 onClick={HandleGenerate}
                 className="text-blue-600 hover:text-blue-800 transition"

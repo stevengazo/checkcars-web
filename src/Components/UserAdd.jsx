@@ -1,6 +1,7 @@
 import React, { useReducer, useContext } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import SettingsContext from '../Context/SettingsContext.jsx'
+import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Reducer para manejar el estado del formulario de usuario.
@@ -49,6 +50,14 @@ const UserAdd = ({ onClose }) => {
   };
 
   return (
+
+    <AnimatePresence>
+    <motion.div
+      initial={{ x: "100%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: "100%", opacity: 0 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+   >
     <div className="absolute top-2 right-4 border border-gray-300 bg-white w-full max-w-sm p-4 rounded-lg shadow-lg">
       <IoIosCloseCircle
         size={40}
@@ -112,6 +121,9 @@ const UserAdd = ({ onClose }) => {
         </button>
       </form>
     </div>
+      </motion.div>
+      </AnimatePresence>
+   
   );
 };
 
