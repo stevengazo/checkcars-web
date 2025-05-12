@@ -1,44 +1,55 @@
 import { useContext, useEffect } from "react";
 import useFetch from "../Hook/useFetch";
-import SettingsContext from '../Context/SettingsContext.jsx'
-
+import SettingsContext from "../Context/SettingsContext.jsx";
 
 const UsersTable = () => {
   const { API_URL } = useContext(SettingsContext);
   const URL = `${API_URL}/api/Users`;
-  const { data, loading, error, refetch } = useFetch(URL, {
-    autoFetch: true,
-  });
+  const { data, loading, error } = useFetch(URL, { autoFetch: true });
 
   useEffect(() => {
     console.table(data);
   }, [data]);
 
-  if (loading) return <div className="text-center">Cargando...</div>;
-  if (error) return <div className="text-center text-red-500">Error al cargar datos.</div>;
+  if (loading) {
+    return <div className="text-center py-4 text-gray-600">Cargando...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-4 text-red-600">
+        Error al cargar los datos.
+      </div>
+    );
+  }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="px-4 py-2 border-b">Email</th>
-            <th className="px-4 py-2 border-b">Confirmado</th>
+    <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-100 text-gray-700 text-sm uppercase tracking-wider">
+          <tr>
+            <th className="px-6 py-3  text-left">Email</th>
+            <th className="px-6 py-3  text-left">Confirmado</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="">
           {data && data.length > 0 ? (
             data.map((user, index) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border-b">{user.email}</td>
-                <td className="px-4 py-2 border-b">
+                <td className="px-6 py-3 ">{user.email}</td>
+                <td className="px-6 py-3 ">
                   {user.emailConfirmed ? "Sí" : "No"}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="2" className="px-4 py-2 text-center">No hay usuarios disponibles</td>
+              <td
+                colSpan="2"
+                className="px-6 py-4 text-center text-gray-500 italic"
+              >
+                No hay usuarios disponibles.
+              </td>
             </tr>
           )}
         </tbody>

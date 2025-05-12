@@ -15,6 +15,8 @@ import SettingsContext from "../Context/SettingsContext";
 import { AddReminder } from "../Components/AddReminder";
 import FileTable from "../Components/FileTable";
 import FileUpload from "../Components/FileUpload";
+import AddService from "../Components/AddService";
+import ServiceTable from "../Components/ServiceTable";
 
 const LoadingState = ({ message }) => (
   <div className="flex flex-col items-center justify-center p-6">
@@ -72,6 +74,7 @@ const CarView = () => {
     { key: "reminders", label: "Recordatorios" },
     { key: "crashes", label: "Accidentes" },
     { key: "files", label: "Archivos" },
+    { key: "services", label: "Servicios" },
   ];
 
   return (
@@ -218,6 +221,13 @@ const CarView = () => {
               ) : (
                 <EmptyState message="No hay reportes de accidentes." />
               )
+            ) : activeTab === "services" ? (
+              <div>
+                <h3>Servicios</h3>
+                <AddService />
+                <ServiceTable />
+              </div>
+
             ) : FilesLoading ? (
               <LoadingState message="Cargando archivos..." />
             ) : FilesData?.length ? (

@@ -29,8 +29,8 @@ const FileUpload = ({ CarId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-6 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl shadow-sm">
-      <label className="w-full max-w-md text-center py-8 px-4 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition">
+    <div className="flex flex-col items-center justify-center w-full h-full p-2 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl shadow-sm">
+      <label className="w-full max-w-md text-center py-4 px-10 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition">
         <input type="file" onChange={handleFileChange} className="hidden" />
         {file ? (
           <p className="text-gray-700 font-medium">{file.name}</p>
