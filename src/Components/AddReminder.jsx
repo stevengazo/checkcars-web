@@ -1,5 +1,6 @@
 import { IoIosCloseCircle } from "react-icons/io";
 import { useState, useContext } from "react";
+import { motion } from "framer-motion"; // Importamos la librería
 import SettingsContext from "../Context/SettingsContext.jsx";
 
 export const AddReminder = ({ onClose }) => {
@@ -11,7 +12,7 @@ export const AddReminder = ({ onClose }) => {
     dateTime: "",
     author: "",
     carId: "",
-    recipients: [],  // Lista para almacenar destinatarios
+    recipients: [], // Lista para almacenar destinatarios
     isCompleted: false,
     sendIt: false
   });
@@ -29,7 +30,7 @@ export const AddReminder = ({ onClose }) => {
       setReminderData({
         ...reminderData,
         recipients: [...reminderData.recipients, reminderData.email],
-        email: ""  // Limpiar campo después de agregar
+        email: "" // Limpiar campo después de agregar
       });
     }
   };
@@ -48,7 +49,13 @@ export const AddReminder = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-lg overflow-y-auto transition-all duration-300 p-6 space-y-6">
+    <motion.div
+      className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-lg overflow-y-auto transition-all duration-300 p-6 space-y-6"
+      initial={{ opacity: 0, x: "100%" }} // Comienza desde fuera de la pantalla
+      animate={{ opacity: 1, x: 0 }} // Se mueve a la posición normal
+      exit={{ opacity: 0, x: "100%" }} // Se mueve fuera de la pantalla al salir
+      transition={{ type: "spring", stiffness: 300 }} // Configura la animación
+    >
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Nuevo Recordatorio</h2>
@@ -175,6 +182,6 @@ export const AddReminder = ({ onClose }) => {
           Crear
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 };

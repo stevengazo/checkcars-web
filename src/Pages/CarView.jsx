@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DotLoader } from "react-spinners";
+import { motion, AnimatePresence } from "framer-motion";
 import useFetch from "../Hook/useFetch";
 import CarInfo from "../Components/CarInfo";
 import CarEdit from "../Components/CarEdit";
@@ -45,22 +46,11 @@ const CarView = () => {
     loading: carLoading,
     error: carError,
   } = useFetch(URLInfo, { autoFetch: true });
-  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, {
-    autoFetch: true,
-  });
-  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, {
-    autoFetch: true,
-  });
-  const { data: RemindersData, loading: RemindersLoading } = useFetch(
-    URLReminders,
-    { autoFetch: true }
-  );
-  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, {
-    autoFetch: true,
-  });
-  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
-    autoFetch: true,
-  });
+  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, { autoFetch: true });
+  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, { autoFetch: true });
+  const { data: RemindersData, loading: RemindersLoading } = useFetch(URLReminders, { autoFetch: true });
+  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, { autoFetch: true });
+  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, { autoFetch: true });
 
   const tabs = [
     { key: "entries", label: "Salidas" },
@@ -71,35 +61,56 @@ const CarView = () => {
   ];
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="flex items-center justify-between">
+    <motion.div
+      className="p-6 space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Header */}
+      <motion.div
+        className="flex items-center justify-between"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
         <h1 className="text-3xl font-bold">Detalles del Vehículo</h1>
         {carData && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setEditMode(!editMode)}
             className={`px-4 py-2 rounded transition text-white ${
               editMode
-                ? "bg-gray-500 hover:bg-gray-600" // Estilo para "Cancelar"
-                : "bg-red-600 hover:bg-red-700" // Estilo para "Editar Vehículo"
+                ? "bg-gray-500 hover:bg-gray-600"
+                : "bg-red-600 hover:bg-red-700"
             }`}
           >
             {editMode ? "Cancelar" : "Editar Vehículo"}
-          </button>
+          </motion.button>
         )}
-      </div>
+      </motion.div>
 
-      {/* Vehículo */}
-      {carLoading ? (
-        <LoadingState message="Cargando Detalles..." />
-      ) : carError ? (
-        <EmptyState message="Error al cargar los datos del vehículo." />
-      ) : carData ? (
-        <div className="p-2">
-          {editMode ? <CarEdit CarEdit={carData} /> : <CarInfo car={carData} />}
-        </div>
-      ) : (
-        <EmptyState message="No hay datos disponibles para este vehículo." />
-      )}
+      {/* Vehicle Details */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={editMode ? "edit" : "info"}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+        >
+          {carLoading ? (
+            <LoadingState message="Cargando Detalles..." />
+          ) : carError ? (
+            <EmptyState message="Error al cargar los datos del vehículo." />
+          ) : carData ? (
+            editMode ? <CarEdit CarEdit={carData} /> : <CarInfo car={carData} />
+          ) : (
+            <EmptyState message="No hay datos disponibles para este vehículo." />
+          )}
+        </motion.div>
+      </AnimatePresence>
 
       {/* Tabs */}
       <div className="mt-6">
@@ -119,100 +130,100 @@ const CarView = () => {
           ))}
         </div>
 
-        {/* Content */}
-        <div className="mt-4">
-          {activeTab === "entries" ? (
-            EntriesLoading ? (
-              <LoadingState message="Cargando Salidas..." />
-            ) : EntriesData?.length ? (
-              <EntriesTable
-                entries={EntriesData}
-                onSelected={setSelectedEntry}
-              />
-            ) : (
-              <EmptyState message="No hay registros de salidas." />
-            )
-          ) : activeTab === "issues" ? (
-            IssuesLoading ? (
-              <LoadingState message="Cargando Problemas..." />
-            ) : IssuesData?.length ? (
-              <IssueTable issues={IssuesData} onSelected={setSelectedIssue} />
-            ) : (
-              <EmptyState message="No hay registros de problemas." />
-            )
-          ) : activeTab === "reminders" ? (
-            RemindersLoading ? (
-              <LoadingState message="Cargando Recordatorios..." />
-            ) : (
-              <>
-                {showAddReminder ? (
-                  <AddReminder onClose={() => setShowAddReminder(false)} />
-                ) : (
-                  <button
-                    onClick={() => setShowAddReminder(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                  >
-                    Añadir Recordatorio
-                  </button>
-                )}
-                <ReminderList />
+        {/* Tab Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="mt-4"
+          >
+            {activeTab === "entries" ? (
+              EntriesLoading ? (
+                <LoadingState message="Cargando Salidas..." />
+              ) : EntriesData?.length ? (
+                <EntriesTable entries={EntriesData} onSelected={setSelectedEntry} />
+              ) : (
+                <EmptyState message="No hay registros de salidas." />
+              )
+            ) : activeTab === "issues" ? (
+              IssuesLoading ? (
+                <LoadingState message="Cargando Problemas..." />
+              ) : IssuesData?.length ? (
+                <IssueTable issues={IssuesData} onSelected={setSelectedIssue} />
+              ) : (
+                <EmptyState message="No hay registros de problemas." />
+              )
+            ) : activeTab === "reminders" ? (
+              RemindersLoading ? (
+                <LoadingState message="Cargando Recordatorios..." />
+              ) : (
+                <>
+                  {showAddReminder ? (
+                    <AddReminder onClose={() => setShowAddReminder(false)} />
+                  ) : (
+                    <button
+                      onClick={() => setShowAddReminder(true)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    >
+                      Añadir Recordatorio
+                    </button>
+                  )}
+                  <ReminderList />
 
-                {RemindersData?.length ? (
-                  <ReminderList reminders={RemindersData} />
-                ) : (
-                  <EmptyState message="No hay recordatorios para este vehículo." />
-                )}
-              </>
-            )
-          ) : activeTab === "crashes" ? (
-            CrashesLoading ? (
-              <LoadingState message="Cargando accidentes..." />
-            ) : CrashesData?.length ? (
+                  {RemindersData?.length ? (
+                    <ReminderList reminders={RemindersData} />
+                  ) : (
+                    <EmptyState message="No hay recordatorios para este vehículo." />
+                  )}
+                </>
+              )
+            ) : activeTab === "crashes" ? (
+              CrashesLoading ? (
+                <LoadingState message="Cargando accidentes..." />
+              ) : CrashesData?.length ? (
+                <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
+                  {CrashesData.map((c, i) => (
+                    <li key={i}>{c.description || "Accidente registrado"}</li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyState message="No hay reportes de accidentes." />
+              )
+            ) : FilesLoading ? (
+              <LoadingState message="Cargando archivos..." />
+            ) : FilesData?.length ? (
               <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
-                {CrashesData.map((c, i) => (
-                  <li key={i}>{c.description || "Accidente registrado"}</li>
+                {FilesData.map((f, i) => (
+                  <li key={i}>
+                    <a
+                      href={f.url || f.filePath}
+                      className="text-blue-600 hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {f.name || `Archivo ${i + 1}`}
+                    </a>
+                  </li>
                 ))}
               </ul>
             ) : (
-              <EmptyState message="No hay reportes de accidentes." />
-            )
-          ) : FilesLoading ? (
-            <LoadingState message="Cargando archivos..." />
-          ) : FilesData?.length ? (
-            <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
-              {FilesData.map((f, i) => (
-                <li key={i}>
-                  <a
-                    href={f.url || f.filePath}
-                    className="text-blue-600 hover:underline"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {f.name || `Archivo ${i + 1}`}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <EmptyState message="No hay archivos asociados al vehículo." />
-          )}
-        </div>
+              <EmptyState message="No hay archivos asociados al vehículo." />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Sidebars */}
       {selectedEntry && (
-        <SideBarEntry
-          entry={selectedEntry}
-          onClose={() => setSelectedEntry(null)}
-        />
+        <SideBarEntry entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
       )}
       {selectedIssue && (
-        <SideBarIssue
-          issue={selectedIssue}
-          onClose={() => setSelectedIssue(null)}
-        />
+        <SideBarIssue issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
       )}
-    </div>
+    </motion.div>
   );
 };
 

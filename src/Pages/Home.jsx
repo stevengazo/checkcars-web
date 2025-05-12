@@ -1,31 +1,52 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import EntrySearch from "../Module/EntrySearch";
-import AddExit from "../Components/AddExit"; // Asegúrate de que la ruta sea correcta
+import AddExit from "../Components/AddExit";
 
 const Home = () => {
   const [showAdd, setShowAdd] = useState(false);
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-medium">Reporte de Salidas</h1>
-        <button
+        <motion.h1
+          className="text-3xl font-medium"
+          initial={{ x: -30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          Reporte de Salidas
+        </motion.h1>
+
+        <motion.button
           onClick={() => setShowAdd(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           + Nueva Salida
-        </button>
+        </motion.button>
       </div>
 
-      <EntrySearch />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <EntrySearch />
+      </motion.div>
 
-      {showAdd && (
-        <div className="mt-6">
-          <AddExit  OnHandleClose={setShowAdd} />
+   
+        {showAdd && (
+            <AddExit OnHandleClose={setShowAdd} />
+        )}
 
-        </div>
-      )}
-    </div>
+    </motion.div>
   );
 };
 
