@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DotLoader } from "react-spinners";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,12 +6,15 @@ import useFetch from "../Hook/useFetch";
 import CarInfo from "../Components/CarInfo";
 import CarEdit from "../Components/CarEdit";
 import EntriesTable from "../Components/EntryTable";
+import CrashTable from "../Components/CrashTable";
 import IssueTable from "../Components/IssueTable";
 import SideBarEntry from "../Components/SideBarEntry";
 import SideBarIssue from "../Components/SidebarIssue";
 import { ReminderList } from "../Components/ReminderList";
 import SettingsContext from "../Context/SettingsContext";
 import { AddReminder } from "../Components/AddReminder";
+import FileTable from "../Components/FileTable";
+import FileUpload from "../Components/FileUpload";
 
 const LoadingState = ({ message }) => (
   <div className="flex flex-col items-center justify-center p-6">
@@ -46,11 +49,26 @@ const CarView = () => {
     loading: carLoading,
     error: carError,
   } = useFetch(URLInfo, { autoFetch: true });
-  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, { autoFetch: true });
-  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, { autoFetch: true });
-  const { data: RemindersData, loading: RemindersLoading } = useFetch(URLReminders, { autoFetch: true });
-  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, { autoFetch: true });
-  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, { autoFetch: true });
+  const { data: EntriesData, loading: EntriesLoading } = useFetch(URLEntries, {
+    autoFetch: true,
+  });
+  const { data: IssuesData, loading: IssuesLoading } = useFetch(URLIssues, {
+    autoFetch: true,
+  });
+  const { data: RemindersData, loading: RemindersLoading } = useFetch(
+    URLReminders,
+    { autoFetch: true }
+  );
+  const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, {
+    autoFetch: true,
+  });
+  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
+    autoFetch: true,
+  });
+
+  useEffect(() => {
+    console.log("CarData", CrashesData);
+  }, [CrashesData]);
 
   const tabs = [
     { key: "entries", label: "Salidas" },
@@ -105,7 +123,11 @@ const CarView = () => {
           ) : carError ? (
             <EmptyState message="Error al cargar los datos del vehículo." />
           ) : carData ? (
-            editMode ? <CarEdit CarEdit={carData} /> : <CarInfo car={carData} />
+            editMode ? (
+              <CarEdit CarEdit={carData} />
+            ) : (
+              <CarInfo car={carData} />
+            )
           ) : (
             <EmptyState message="No hay datos disponibles para este vehículo." />
           )}
@@ -144,7 +166,10 @@ const CarView = () => {
               EntriesLoading ? (
                 <LoadingState message="Cargando Salidas..." />
               ) : EntriesData?.length ? (
-                <EntriesTable entries={EntriesData} onSelected={setSelectedEntry} />
+                <EntriesTable
+                  entries={EntriesData}
+                  onSelected={setSelectedEntry}
+                />
               ) : (
                 <EmptyState message="No hay registros de salidas." />
               )
@@ -162,7 +187,10 @@ const CarView = () => {
               ) : (
                 <>
                   {showAddReminder ? (
-                    <AddReminder onClose={() => setShowAddReminder(false)} CarId={id} />
+                    <AddReminder
+                      onClose={() => setShowAddReminder(false)}
+                      CarId={id}
+                    />
                   ) : (
                     <button
                       onClick={() => setShowAddReminder(true)}
@@ -184,14 +212,18 @@ const CarView = () => {
                 <LoadingState message="Cargando accidentes..." />
               ) : CrashesData?.length ? (
                 <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
-                  {CrashesData.map((c, i) => (
-                    <li key={i}>{c.description || "Accidente registrado"}</li>
-                  ))}
+                  {
+                    <CrashTable
+                      crashes={CrashesData}
+                      onSelected={setSelectedIssue}
+                    />
+                  }
                 </ul>
               ) : (
                 <EmptyState message="No hay reportes de accidentes." />
               )
             ) : FilesLoading ? (
+              
               <LoadingState message="Cargando archivos..." />
             ) : FilesData?.length ? (
               <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
@@ -209,7 +241,13 @@ const CarView = () => {
                 ))}
               </ul>
             ) : (
-              <EmptyState message="No hay archivos asociados al vehículo." />
+              <>
+                <EmptyState message="No hay archivos asociados al vehículo." />
+                
+                <FileUpload/>
+                <br/>
+                <FileTable />
+              </>
             )}
           </motion.div>
         </AnimatePresence>
@@ -217,10 +255,16 @@ const CarView = () => {
 
       {/* Sidebars */}
       {selectedEntry && (
-        <SideBarEntry entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
+        <SideBarEntry
+          entry={selectedEntry}
+          onClose={() => setSelectedEntry(null)}
+        />
       )}
       {selectedIssue && (
-        <SideBarIssue issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
+        <SideBarIssue
+          issue={selectedIssue}
+          onClose={() => setSelectedIssue(null)}
+        />
       )}
     </motion.div>
   );

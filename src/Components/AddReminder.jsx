@@ -10,7 +10,7 @@ export const AddReminder = ({ onClose, CarId }) => {
     title: "",
     description: "",
     email: "",
-    dateTime: "",
+    ReminderDate: Date.now,
     author: "",
     carId: CarId,
     reminderDests: [],
@@ -80,26 +80,25 @@ export const AddReminder = ({ onClose, CarId }) => {
     });
   };
 
-  const { data:Result, loading:Sending, error:SendingError, statusStatis, refetch } = useFetch(
-    `${API_URL}/api/Reminder`,
-    {
-      method: "POST",
-      body: JSON.stringify(reminderData),
-      headers: { "Content-Type": "application/json" },
-      autoFetch: false,
-    }
-  );
-  
+  const {
+    data: Result,
+    loading: Sending,
+    error: SendingError,
+    statusStatis,
+    refetch,
+  } = useFetch(`${API_URL}/api/Reminder`, {
+    method: "POST",
+    body: JSON.stringify(reminderData),
+    headers: { "Content-Type": "application/json" },
+    autoFetch: false,
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     refetch(); // This triggers the fetch manually
-    
+
     console.log(reminderData);
   };
-
-
-
-
 
   return (
     <AnimatePresence>
@@ -183,8 +182,8 @@ export const AddReminder = ({ onClose, CarId }) => {
 
             <input
               type="datetime-local"
-              name="dateTime"
-              value={reminderData.dateTime}
+              name="ReminderDate"
+              value={reminderData.ReminderDate}
               min={new Date().toISOString().slice(0, 16)}
               onChange={handleChange}
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"

@@ -97,25 +97,29 @@ export default function SideBarIssue({ issue, onClose }) {
       >
         <div className="fixed top-0 right-0 w-screen md:w-[50vw] lg:w-[40vw] h-full z-50 bg-white border-l border-gray-300 shadow-2xl rounded-l-2xl overflow-y-auto p-6 transition-transform">
           {/* Botones flotantes */}
-          <div className="absolute top-4 right-4 flex gap-3 z-50">
+          <div className="absolute top-4 right-4 flex items-center gap-3 z-50">
             <Link
               to={`/car/${issue.carId}`}
-              className="flex items-center justify-center w-full px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
+              className="flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded shadow-md hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
             >
               Ver Vehículo
             </Link>
 
-            <FaRegFilePdf
-              size={26}
-              className="text-blue-600 hover:scale-110 cursor-pointer transition"
-              title="Generar PDF"
+            <button
               onClick={HandleGenerate}
-            />
-            <IoIosCloseCircle
-              size={36}
-              className="text-red-500 hover:rotate-180 cursor-pointer transition"
+              className="p-2 rounded bg-white border border-blue-200 shadow-md hover:scale-110 transition-transform"
+              title="Generar PDF"
+            >
+              <FaRegFilePdf size={22} className="text-blue-600" />
+            </button>
+
+            <button
               onClick={() => onClose(null)}
-            />
+              className="p-1.5 rounded bg-white border border-red-200 shadow-md hover:rotate-180 transition-transform"
+              title="Cerrar"
+            >
+              <IoIosCloseCircle size={28} className="text-red-500" />
+            </button>
           </div>
 
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
