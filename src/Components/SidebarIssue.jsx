@@ -98,13 +98,13 @@ export default function SideBarIssue({ issue, onClose }) {
         <div className="fixed top-0 right-0 w-screen md:w-[50vw] lg:w-[40vw] h-full z-50 bg-white border-l border-gray-300 shadow-2xl rounded-l-2xl overflow-y-auto p-6 transition-transform">
           {/* Botones flotantes */}
           <div className="absolute top-4 right-4 flex gap-3 z-50">
-          <Link
-                to={`/car/${issue.carId}`}
-                className="flex bg-white border rounded items-center w-full p-1  text-blue-300 hover:text-blue-500"
-              >
-                {" "}
-                Ver Vehiculo
-              </Link>
+            <Link
+              to={`/car/${issue.carId}`}
+              className="flex items-center justify-center w-full px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
+            >
+              Ver Vehículo
+            </Link>
+
             <FaRegFilePdf
               size={26}
               className="text-blue-600 hover:scale-110 cursor-pointer transition"

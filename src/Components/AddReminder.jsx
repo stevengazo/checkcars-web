@@ -12,7 +12,7 @@ export const AddReminder = ({ onClose, CarId }) => {
     email: "",
     dateTime: "",
     author: "",
-    carId: CarId ,
+    carId: CarId,
     reminderDests: [],
     isCompleted: false,
     sendIt: false,
@@ -80,11 +80,26 @@ export const AddReminder = ({ onClose, CarId }) => {
     });
   };
 
+  const { data:Result, loading:Sending, error:SendingError, statusStatis, refetch } = useFetch(
+    `${API_URL}/api/Reminder`,
+    {
+      method: "POST",
+      body: JSON.stringify(reminderData),
+      headers: { "Content-Type": "application/json" },
+      autoFetch: false,
+    }
+  );
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí va la lógica para enviar el formulario o realizar alguna acción con los datos
+    refetch(); // This triggers the fetch manually
+    
     console.log(reminderData);
   };
+
+
+
+
 
   return (
     <AnimatePresence>
@@ -158,7 +173,6 @@ export const AddReminder = ({ onClose, CarId }) => {
                         <IoIosCloseCircle
                           size={24}
                           className="text-red-500 hover:rotate-180 cursor-pointer transition"
-                         
                         />
                       </li>
                     ))}

@@ -153,26 +153,27 @@ export default function SideBarCrash({ crash, onClose }) {
               Registro de Accidente
             </h2>
             <div className="flex items-center gap-3">
-            <Link
+              <Link
                 to={`/car/${crash.carId}`}
-                className="flex bg-white border rounded items-center w-full p-1  text-blue-300 hover:text-blue-500"
+                className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
               >
-                {" "}
-                Ver Vehiculo
+                Ver Vehículo
               </Link>
+
               <button
                 onClick={HandleGenerate}
-                className="text-blue-600 hover:text-blue-800 transition"
+                className="flex items-center justify-center p-2 text-blue-600 border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-800 transition duration-200"
                 title="Generar PDF"
               >
-                <FaRegFilePdf size={24} />
+                <FaRegFilePdf size={20} />
               </button>
+
               <button
                 onClick={() => onClose(null)}
-                className="text-red-600 hover:text-red-800 transition"
+                className="flex items-center justify-center p-2 text-red-600 border border-red-200 rounded-lg shadow-sm hover:bg-red-50 hover:text-red-800 transition duration-200"
                 title="Cerrar"
               >
-                <IoIosCloseCircle size={32} />
+                <IoIosCloseCircle size={24} />
               </button>
             </div>
           </div>
