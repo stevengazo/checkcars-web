@@ -1,31 +1,37 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import useMultipartFetch from "../Hook/useMultipartFetch";
+import SettingsContext from "../Context/SettingsContext.jsx";
+const FileUpload = ({ CarId }) => {
+  const { API_URL } = useContext(SettingsContext);
 
-const FileUpload = () => {
+  const { data, loading, error, refetch, status } = useMultipartFetch(
+    `${API_URL}/api/VehicleAttachments/upload/${CarId}`
+  );
+
   const [file, setFile] = useState(null);
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setError(""); // Limpiar errores al seleccionar nuevo archivo
+    setErrorMessage("");
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
-      setError("Por favor, selecciona un archivo antes de subirlo.");
+      setErrorMessage("Por favor, selecciona un archivo antes de subirlo.");
       return;
     }
-    // Aquí iría la lógica para subir el archivo (e.g. a un servidor)
-    alert(`Archivo "${file.name}" listo para subir.`);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    await refetch(formData);
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-6 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl shadow-sm">
       <label className="w-full max-w-md text-center py-8 px-4 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="hidden"
-        />
+        <input type="file" onChange={handleFileChange} className="hidden" />
         {file ? (
           <p className="text-gray-700 font-medium">{file.name}</p>
         ) : (
@@ -37,12 +43,23 @@ const FileUpload = () => {
 
       <button
         onClick={handleUpload}
-        className="mt-4 px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition duration-200"
+        disabled={loading}
+        className="mt-4 px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Subir Archivo
+        {loading ? "Subiendo..." : "Subir Archivo"}
       </button>
 
-      {error && <p className="mt-2 text-sm text-red-600 italic">{error}</p>}
+      {errorMessage && (
+        <p className="mt-2 text-sm text-red-600 italic">{errorMessage}</p>
+      )}
+
+      {error && (
+        <p className="mt-2 text-sm text-red-600 italic">Error: {error}</p>
+      )}
+
+      {status >= 200 && status < 300 && data && (
+        <p className="mt-2 text-sm text-green-600">Archivo subido con éxito.</p>
+      )}
     </div>
   );
 };

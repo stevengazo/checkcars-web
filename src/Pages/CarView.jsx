@@ -42,7 +42,7 @@ const CarView = () => {
   const URLIssues = `${API_URL}/api/IssueReports/search?carId=${id}`;
   const URLReminders = `${API_URL}/api/Reminder/remindersbycar/${id}`;
   const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
-  const URLFiles = `${API_URL}/api/Files/search?carId=${id}`;
+  const URLFiles = `${API_URL}/attachmentsbyCar/${id}`;
 
   const {
     data: carData,
@@ -65,10 +65,6 @@ const CarView = () => {
   const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
     autoFetch: true,
   });
-
-  useEffect(() => {
-    console.log("CarData", CrashesData);
-  }, [CrashesData]);
 
   const tabs = [
     { key: "entries", label: "Salidas" },
@@ -223,30 +219,18 @@ const CarView = () => {
                 <EmptyState message="No hay reportes de accidentes." />
               )
             ) : FilesLoading ? (
-              
               <LoadingState message="Cargando archivos..." />
             ) : FilesData?.length ? (
-              <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
-                {FilesData.map((f, i) => (
-                  <li key={i}>
-                    <a
-                      href={f.url || f.filePath}
-                      className="text-blue-600 hover:underline"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {f.name || `Archivo ${i + 1}`}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <div>
+                <FileUpload CarId={id} />
+                <br />
+                <FileTable items={FilesData} />
+              </div>
             ) : (
               <>
+                <FileUpload CarId={id} />
+                <br />
                 <EmptyState message="No hay archivos asociados al vehículo." />
-                
-                <FileUpload/>
-                <br/>
-                <FileTable />
               </>
             )}
           </motion.div>
