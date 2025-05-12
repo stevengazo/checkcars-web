@@ -6,6 +6,7 @@ import MapLocation from "./MapLocation";
 import { BeatLoader } from "react-spinners";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import generatePDFReport from "../utils/generatePDFReport.js";
+import { Link } from "react-router-dom";
 
 export default function SideBarEntry({ entry, onClose }) {
   const { API_URL } = useContext(SettingsContext);
@@ -54,6 +55,12 @@ export default function SideBarEntry({ entry, onClose }) {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Resumen de Salida</h2>
         <div className="flex items-center gap-3">
+          
+      <Link
+               to={`/car/${entry.carId}`}
+              className="flex bg-white border rounded items-center w-full p-1  text-blue-300 hover:text-blue-500"
+        
+            > Ver Vehiculo</Link>
           <button
             onClick={HandlePDF}
             title="Generar PDF"
@@ -61,10 +68,11 @@ export default function SideBarEntry({ entry, onClose }) {
           >
             <FaRegFilePdf size={24} />
           </button>
+          
           <button
             onClick={() => onClose(null)}
             title="Cerrar"
-            className="text-red-600 hover:rotate-45 hover:text-red-800 transition"
+            className="text-red-600 hover:rotate-180 hover:text-red-800 transition"
           >
             <IoIosCloseCircle size={32} />
           </button>

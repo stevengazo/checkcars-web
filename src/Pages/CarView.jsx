@@ -27,6 +27,7 @@ const CarView = () => {
   const { API_URL } = useContext(SettingsContext);
   const { id } = useParams();
 
+  const [showAddReminder, setShowAddReminder] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -76,7 +77,11 @@ const CarView = () => {
         {carData && (
           <button
             onClick={() => setEditMode(!editMode)}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            className={`px-4 py-2 rounded transition text-white ${
+              editMode
+                ? "bg-gray-500 hover:bg-gray-600" // Estilo para "Cancelar"
+                : "bg-red-600 hover:bg-red-700" // Estilo para "Editar Vehículo"
+            }`}
           >
             {editMode ? "Cancelar" : "Editar Vehículo"}
           </button>
@@ -140,8 +145,18 @@ const CarView = () => {
               <LoadingState message="Cargando Recordatorios..." />
             ) : (
               <>
-                 <ReminderList/>
-                <AddReminder />
+                {showAddReminder ? (
+                  <AddReminder onClose={() => setShowAddReminder(false)} />
+                ) : (
+                  <button
+                    onClick={() => setShowAddReminder(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                  >
+                    Añadir Recordatorio
+                  </button>
+                )}
+                <ReminderList />
+
                 {RemindersData?.length ? (
                   <ReminderList reminders={RemindersData} />
                 ) : (

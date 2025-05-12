@@ -54,7 +54,7 @@ export const AddReminder = ({ onClose }) => {
         <h2 className="text-2xl font-bold text-gray-800">Nuevo Recordatorio</h2>
         <button
           onClick={() => onClose()}
-          className="text-red-600 hover:text-red-800 transition"
+          className="text-red-600 hover:rotate-180 hover:text-red-800 transition"
           title="Cerrar"
         >
           <IoIosCloseCircle size={32} />

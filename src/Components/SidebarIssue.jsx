@@ -5,6 +5,7 @@ import { useContext } from "react";
 import useFetch from "../Hook/useFetch";
 import Map from "../Components/MapLocation";
 import SettingsContext from "../Context/SettingsContext.jsx";
+import { Link } from "react-router-dom";
 
 export default function SideBarIssue({ issue, onClose }) {
   const { API_URL, generatePDF } = useContext(SettingsContext);
@@ -14,6 +15,8 @@ export default function SideBarIssue({ issue, onClose }) {
     { autoFetch: true }
   );
 
+
+ 
   const HandleGenerate = () => {
     generatePDF((doc) => {
       doc.setFont("helvetica", "bold");
@@ -84,6 +87,8 @@ export default function SideBarIssue({ issue, onClose }) {
     return `Report-Issue-${formattedDate}.pdf`;
   };
 
+
+
   return (
     <div className="fixed top-0 right-0 w-screen md:w-[50vw] lg:w-[40vw] h-full z-50 bg-white border-l border-gray-300 shadow-2xl rounded-l-2xl overflow-y-auto p-6 transition-transform">
       {/* Botones flotantes */}
@@ -102,6 +107,12 @@ export default function SideBarIssue({ issue, onClose }) {
       </div>
 
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Reporte de Avería</h2>
+
+      <Link
+              to={`/car/${issue.carId}`}
+              className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
+            />
 
       <div className="space-y-2">
         <InfoRow label="Creación" value={issue.created} />
