@@ -74,6 +74,7 @@ const Navbar = () => {
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Problemas</span>
             </Link>
           </li>
+          {/*
           <li className="hover:bg-blue-800 transition duration-500">
             <Link
               to="booking"
@@ -84,6 +85,8 @@ const Navbar = () => {
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Reservas</span>
             </Link>
           </li>
+        
+        */}
           <li className="hover:bg-blue-800 transition duration-500">
             <Link
               to="crash"

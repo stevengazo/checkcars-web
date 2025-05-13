@@ -1,42 +1,42 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { IoIosCloseCircle } from "react-icons/io";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import SettingsContext from "../Context/SettingsContext.jsx";
+import useFetch from "../Hook/useFetch";
 
 const SERVICE_TYPES = [
-    "Alineación",
-    "Balanceo de neumáticos",
-    "Cambio de batería",
-    "Cambio de bujías",
-    "Cambio de filtro de aire",
-    "Cambio de filtro de cabina",
-    "Cambio de líquido de frenos",
-    "Cambio de líquido de transmisión",
-    "Cambio de neumáticos",
-    "Cambio de aceite",
-    "Diagnóstico electrónico",
-    "Instalación de accesorios",
-    "Inspección de frenos",
-    "Inspección del motor",
-    "Lavado y detallado",
-    "Otro",
-    "Revisión de luces",
-    "Revisión del sistema de escape",
-    "Revisión del sistema eléctrico",
-    "Revisión de suspensión",
-    "Revisión general",
-    "Rotación de neumáticos",
-    "Servicio de dirección",
-    "Servicio de transmisión"
-  ];
-  
+  "Alineación", "Balanceo de neumáticos", "Cambio de batería", "Cambio de bujías",
+  "Cambio de filtro de aire", "Cambio de filtro de cabina", "Cambio de líquido de frenos",
+  "Cambio de líquido de transmisión", "Cambio de neumáticos", "Cambio de aceite",
+  "Diagnóstico electrónico", "Instalación de accesorios", "Inspección de frenos",
+  "Inspección del motor", "Lavado y detallado", "Otro", "Revisión de luces",
+  "Revisión del sistema de escape", "Revisión del sistema eléctrico", "Revisión de suspensión",
+  "Revisión general", "Rotación de neumáticos", "Servicio de dirección", "Servicio de transmisión"
+];
 
-const AddService = ({ carId }) => {
+const AddService = ({ carId, OnCloseForm }) => {
+  const { API_URL } = useContext(SettingsContext);
+
   const [formData, setFormData] = useState({
     title: "",
     date: new Date().toISOString().slice(0, 16),
     type: "",
     description: "",
     carId: carId,
+  });
+
+  const [success, setSuccess] = useState(false);
+
+  const {
+    data: result,
+    loading: sending,
+    error: sendingError,
+    refetch: sendService,
+  } = useFetch(`${API_URL}/api/CarServices`, {
+    method: "POST",
+    body: JSON.stringify(formData),
+    headers: { "Content-Type": "application/json" },
+    autoFetch: false,
   });
 
   const handleChange = (e) => {
@@ -47,15 +47,33 @@ const AddService = ({ carId }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Servicio enviado:", formData);
-    // Aquí deberías hacer el POST al backend
+    setSuccess(false);
+
+    try {
+      await sendService(); // Ejecuta el POST
+
+      setSuccess(true);
+      setFormData({
+        title: "",
+        date: new Date().toISOString().slice(0, 16),
+        type: "",
+        description: "",
+        carId: carId,
+      });
+
+      setTimeout(() => {
+        setSuccess(false);
+        OnCloseForm(false);
+      }, 3000);
+    } catch (err) {
+      console.error("Error al enviar servicio:", err);
+    }
   };
 
   const handleClose = () => {
-    // Lógica para ocultar la barra lateral si no usas un estado externo
-    document.getElementById("add-service-sidebar")?.classList.add("hidden");
+    OnCloseForm(false);
   };
 
   return (
@@ -91,7 +109,7 @@ const AddService = ({ carId }) => {
           />
 
           <input
-            type="datetime-local"
+            type="date"
             name="date"
             value={formData.date}
             onChange={handleChange}
@@ -124,19 +142,35 @@ const AddService = ({ carId }) => {
             required
           />
 
-          <input
-            type="hidden"
-            name="carId"
-            value={formData.carId}
-            readOnly
-          />
+          <input type="hidden" name="carId" value={formData.carId} readOnly />
 
           <button
             type="submit"
-            className="w-full py-3 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full py-3 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
+            disabled={sending}
           >
-            Guardar Servicio
+            {sending ? "Guardando..." : "Guardar Servicio"}
           </button>
+
+          <AnimatePresence>
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="text-green-600 bg-green-100 border border-green-400 p-3 rounded-lg text-center"
+              >
+                ¡Servicio añadido exitosamente!
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {sendingError && (
+            <div className="text-red-600 bg-red-100 border border-red-400 p-3 rounded-lg text-center">
+              Error al guardar el servicio. Intenta nuevamente.
+            </div>
+          )}
         </form>
       </motion.div>
     </AnimatePresence>

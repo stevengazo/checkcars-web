@@ -2,13 +2,13 @@ import React, { useContext, useState } from "react";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import { useNavigate } from "react-router-dom";
-import  SettingsContext from '../Context/SettingsContext.jsx'
-
+import SettingsContext from '../Context/SettingsContext.jsx';
 
 const CarTable = () => {
   const { API_URL } = useContext(SettingsContext);
   const Nav = useNavigate();
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const URL = `${API_URL}/api/Cars`;
   const { data, loading, error, refetch } = useFetch(URL, {
@@ -35,6 +35,11 @@ const CarTable = () => {
     return sortableItems;
   }, [data, sortConfig]);
 
+  const filteredCars = sortedCars.filter((car) =>
+    [car.brand, car.model, car.plate, car.type]
+      .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   const requestSort = (key) => {
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
@@ -46,6 +51,13 @@ const CarTable = () => {
   return (
     <>
       <div className="border rounded-xl border-gray-300 p-4 bg-gray-50 shadow-md">
+        <input
+          type="text"
+          placeholder="Buscar por marca, modelo, placa o tipo..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mb-4 p-2 w-full border border-gray-300 rounded-lg"
+        />
         <table className="table-auto w-full text-left border-collapse">
           <thead className="bg-gray-200">
             <tr>
@@ -76,19 +88,18 @@ const CarTable = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedCars &&
-              sortedCars.map((car) => (
-                <tr
-                  key={car.carId}
-                  className="hover:cursor-pointer"
-                  onClick={() => GoTo(car.carId)}
-                >
-                  <td className="px-4 py-2 border-b border-gray-300">{car.brand}</td>
-                  <td className="px-4 py-2 border-b border-gray-300">{car.model}</td>
-                  <td className="px-4 py-2 border-b border-gray-300">{car.plate}</td>
-                  <td className="px-4 py-2 border-b border-gray-300">{car.type}</td>
-                </tr>
-              ))}
+            {filteredCars.map((car) => (
+              <tr
+                key={car.carId}
+                className="hover:cursor-pointer"
+                onClick={() => GoTo(car.carId)}
+              >
+                <td className="px-4 py-2 border-b border-gray-300">{car.brand}</td>
+                <td className="px-4 py-2 border-b border-gray-300">{car.model}</td>
+                <td className="px-4 py-2 border-b border-gray-300">{car.plate}</td>
+                <td className="px-4 py-2 border-b border-gray-300">{car.type}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         {loading && (

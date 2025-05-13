@@ -1,7 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+// Importing necessary libraries and components
+import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DotLoader } from "react-spinners";
 import { motion, AnimatePresence } from "framer-motion";
+import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+// Importing custom components and hooks
 import useFetch from "../Hook/useFetch";
 import CarInfo from "../Components/CarInfo";
 import CarEdit from "../Components/CarEdit";
@@ -29,23 +33,42 @@ const EmptyState = ({ message }) => (
   <p className="text-center text-gray-500 p-4">{message}</p>
 );
 
+// Motion wrapper for each TabPanel
+const AnimatedTabPanel = ({ children }) => (
+  <AnimatePresence mode="wait">
+    <motion.div
+      key="panel"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.25 }}
+      className="mt-4"
+    >
+      {children}
+    </motion.div>
+  </AnimatePresence>
+);
+
 const CarView = () => {
+  // Use context to get API URL
   const { API_URL } = useContext(SettingsContext);
   const { id } = useParams();
-
+  // Use state hooks for managing local state
   const [showAddReminder, setShowAddReminder] = useState(false);
+  const [showAddService, setShowAddService] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [activeTab, setActiveTab] = useState("entries");
-
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  // API URLs
   const URLInfo = `${API_URL}/api/Cars/${id}`;
   const URLEntries = `${API_URL}/api/EntryExitReports/search?carId=${id}`;
   const URLIssues = `${API_URL}/api/IssueReports/search?carId=${id}`;
   const URLReminders = `${API_URL}/api/Reminder/remindersbycar/${id}`;
   const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
   const URLFiles = `${API_URL}/attachmentsbyCar/${id}`;
-
+  const URLServices = `${API_URL}/api/CarServices/carservicebycar/${id}`;
+  // Fetch data using custom hook
   const {
     data: carData,
     loading: carLoading,
@@ -67,15 +90,10 @@ const CarView = () => {
   const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
     autoFetch: true,
   });
-
-  const tabs = [
-    { key: "entries", label: "Salidas" },
-    { key: "issues", label: "Problemas" },
-    { key: "reminders", label: "Recordatorios" },
-    { key: "crashes", label: "Accidentes" },
-    { key: "files", label: "Archivos" },
-    { key: "services", label: "Servicios" },
-  ];
+  const { data: ServicesData, loading: ServicesLoading } = useFetch(
+    URLServices,
+    { autoFetch: true }
+  );
 
   return (
     <motion.div
@@ -123,7 +141,7 @@ const CarView = () => {
             <EmptyState message="Error al cargar los datos del vehículo." />
           ) : carData ? (
             editMode ? (
-              <CarEdit CarEdit={carData} />
+              <CarEdit car={carData} />
             ) : (
               <CarInfo car={carData} />
             )
@@ -134,108 +152,97 @@ const CarView = () => {
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="mt-6">
-        <div className="flex gap-4 border-b border-gray-200">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              className={`px-4 py-2 font-medium border-b-2 ${
-                activeTab === tab.key
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-blue-600"
-              }`}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      <Tabs selectedIndex={activeTabIndex} onSelect={setActiveTabIndex}>
+        <TabList>
+          <Tab>Salidas</Tab>
+          <Tab>Problemas</Tab>
+          <Tab>Accidentes</Tab>
+          <Tab>Recordatorios</Tab>
+          <Tab>Archivos</Tab>
+          <Tab>Servicios</Tab>
+        </TabList>
 
-        {/* Tab Content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
-            className="mt-4"
-          >
-            {activeTab === "entries" ? (
-              EntriesLoading ? (
-                <LoadingState message="Cargando Salidas..." />
-              ) : EntriesData?.length ? (
-                <EntriesTable
-                  entries={EntriesData}
-                  onSelected={setSelectedEntry}
-                />
-              ) : (
-                <EmptyState message="No hay registros de salidas." />
-              )
-            ) : activeTab === "issues" ? (
-              IssuesLoading ? (
-                <LoadingState message="Cargando Problemas..." />
-              ) : IssuesData?.length ? (
-                <IssueTable issues={IssuesData} onSelected={setSelectedIssue} />
-              ) : (
-                <EmptyState message="No hay registros de problemas." />
-              )
-            ) : activeTab === "reminders" ? (
-              RemindersLoading ? (
-                <LoadingState message="Cargando Recordatorios..." />
-              ) : (
-                <>
-                  {showAddReminder ? (
-                    <AddReminder
-                      onClose={() => setShowAddReminder(false)}
-                      CarId={id}
-                    />
-                  ) : (
-                    <button
-                      onClick={() => setShowAddReminder(true)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                    >
-                      Añadir Recordatorio
-                    </button>
-                  )}
+        {/* Exists */}
+        <TabPanel>
+          <AnimatedTabPanel>
+            {EntriesLoading ? (
+              <LoadingState message="Cargando Salidas..." />
+            ) : EntriesData?.length ? (
+              <EntriesTable
+                entries={EntriesData}
+                onSelected={setSelectedEntry}
+              />
+            ) : (
+              <EmptyState message="No hay registros de salidas." />
+            )}
+          </AnimatedTabPanel>
+        </TabPanel>
+        {/* Issues */}
+        <TabPanel>
+          <AnimatedTabPanel>
+            {IssuesLoading ? (
+              <LoadingState message="Cargando Problemas..." />
+            ) : IssuesData?.length ? (
+              <IssueTable issues={IssuesData} onSelected={setSelectedIssue} />
+            ) : (
+              <EmptyState message="No hay registros de problemas." />
+            )}
+          </AnimatedTabPanel>
+        </TabPanel>
+        {/* Crash */}
 
-                  {RemindersData?.length ? (
-                    <ReminderList items={RemindersData} />
-                  ) : (
-                    <EmptyState message="No hay recordatorios para este vehículo." />
-                  )}
-                </>
-              )
-            ) : activeTab === "crashes" ? (
-              CrashesLoading ? (
-                <LoadingState message="Cargando accidentes..." />
-              ) : CrashesData?.length ? (
-                <ul className="list-disc list-inside bg-white rounded shadow p-4 text-sm">
-                  {
-                    <CrashTable
-                      crashes={CrashesData}
-                      onSelected={setSelectedIssue}
-                    />
-                  }
-                </ul>
-              ) : (
-                <EmptyState message="No hay reportes de accidentes." />
-              )
-            ) : activeTab === "services" ? (
-              <div>
-                <h3>Servicios</h3>
-                <AddService />
-                <ServiceTable />
-              </div>
+        <TabPanel>
+          <AnimatedTabPanel>
+            {CrashesLoading ? (
+              <LoadingState message="Cargando accidentes..." />
+            ) : CrashesData?.length ? (
+              <CrashTable crashes={CrashesData} onSelected={setSelectedIssue} />
+            ) : (
+              <EmptyState message="No hay reportes de accidentes." />
+            )}
+          </AnimatedTabPanel>
+        </TabPanel>
+        {/* Reminders */}
+        <TabPanel>
+          <AnimatedTabPanel>
+            {RemindersLoading ? (
+              <LoadingState message="Cargando Recordatorios..." />
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowAddReminder(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                  {" "}
+                  Añadir Recordatorio
+                </button>
+                {showAddReminder && (
+                  <AddReminder
+                    onClose={() => setShowAddReminder(false)}
+                    CarId={id}
+                  />
+                )}
 
-            ) : FilesLoading ? (
+                {RemindersData?.length ? (
+                  <ReminderList items={RemindersData} />
+                ) : (
+                  <EmptyState message="No hay recordatorios para este vehículo." />
+                )}
+              </>
+            )}
+          </AnimatedTabPanel>
+        </TabPanel>
+        {/* Files */}
+        <TabPanel>
+          <AnimatedTabPanel>
+            {FilesLoading ? (
               <LoadingState message="Cargando archivos..." />
             ) : FilesData?.length ? (
-              <div>
+              <>
                 <FileUpload CarId={id} />
                 <br />
                 <FileTable items={FilesData} />
-              </div>
+              </>
             ) : (
               <>
                 <FileUpload CarId={id} />
@@ -243,9 +250,25 @@ const CarView = () => {
                 <EmptyState message="No hay archivos asociados al vehículo." />
               </>
             )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+          </AnimatedTabPanel>
+        </TabPanel>
+        {/* Services */}
+        <TabPanel>
+          <AnimatedTabPanel>
+            <button
+              onClick={() => setShowAddService(true)}
+              className="bg-blue-600 text-white  my-2 px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+              Agregar Servicio
+            </button>
+            <br />
+            {showAddService && (
+              <AddService OnCloseForm={setShowAddService} carId={id} />
+            )}
+            <ServiceTable items={ServicesData} />
+          </AnimatedTabPanel>
+        </TabPanel>
+      </Tabs>
 
       {/* Sidebars */}
       {selectedEntry && (
