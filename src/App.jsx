@@ -10,6 +10,7 @@ import Issues from "./Pages/issues";
 import Users from "./Pages/UsersPage"
 import ErrorPage from "./Pages/Error";
 import ForgotPassword from "./Pages/ForgotPassword";
+import Booking from "./Pages/booking";
 
 import { useEffect } from "react";
 import { startConnection, onNotificationReceived } from './service/signalRService'
@@ -40,6 +41,7 @@ function App() {
           <Route path="/crash" element={<Crashes />} />
           <Route path="/issue" element={<Issues />} />
           <Route path="/users" element={<Users/>} />
+          <Route path="/booking" element={<Booking/>} />
           <Route path="/CarList" element={<CarList />} />
           <Route path="/car/:id" element={<CarView />} />
         </Route>
