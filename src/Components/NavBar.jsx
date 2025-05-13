@@ -49,7 +49,11 @@ const Navbar = () => {
             </svg>
           </button>
         </div>
-        <ul className={`${isOpen ? "block" : "hidden"} text-lg font-bold space-y-4`}>
+        <ul
+          className={`${
+            isOpen ? "block" : "hidden"
+          } text-lg font-bold space-y-4`}
+        >
           <li className="hover:bg-blue-800 transition duration-500">
             <Link
               to="home"
@@ -68,6 +72,16 @@ const Navbar = () => {
             >
               <CiWarning size={24} />
               <span className={`${isOpen ? "ml-4" : "hidden"}`}>Problemas</span>
+            </Link>
+          </li>
+          <li className="hover:bg-blue-800 transition duration-500">
+            <Link
+              to="booking"
+              className="flex items-center w-full p-3 hover:text-blue-300"
+              onClick={() => toggleSidebar()}
+            >
+              <CiWarning size={24} />
+              <span className={`${isOpen ? "ml-4" : "hidden"}`}>Reservas</span>
             </Link>
           </li>
           <li className="hover:bg-blue-800 transition duration-500">
