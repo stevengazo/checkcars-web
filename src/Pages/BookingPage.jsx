@@ -8,6 +8,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { es } from "date-fns/locale";
 import AddBookingSidebar from "../Components/AddBookingSidebar";
 import ViewBookingSidebar from "../Components/ViewBookingSidebar";
+import { motion, AnimatePresence } from "framer-motion"; // <- Asegúrate de tener esto
 
 const locales = { es };
 
@@ -18,6 +19,17 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+const sidebarVariants = {
+  hidden: { x: "100%", opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+  exit: { x: "100%", opacity: 0 },
+};
+
+const contentVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
 
 const BookingPage = () => {
   const [events, setEvents] = useState([]);
@@ -68,22 +80,53 @@ const BookingPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex">
-      <AddBookingSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        newEvent={newEvent}
-        setNewEvent={setNewEvent}
-        onAddEvent={handleAddEvent}
-      />
+    <div className="w-full h-full flex relative overflow-hidden">
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            key="addSidebar"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={sidebarVariants}
+            transition={{ type: "tween", duration: 0.3 }}
+            className="absolute top-0 right-0 z-50"
+          >
+            <AddBookingSidebar
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+              newEvent={newEvent}
+              setNewEvent={setNewEvent}
+              onAddEvent={handleAddEvent}
+            />
+          </motion.div>
+        )}
 
-      <ViewBookingSidebar
-        isOpen={eventDetailsOpen}
-        onClose={() => setEventDetailsOpen(false)}
-        event={selectedEvent}
-      />
+        {eventDetailsOpen && (
+          <motion.div
+            key="viewSidebar"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={sidebarVariants}
+            transition={{ type: "tween", duration: 0.3 }}
+            className="absolute top-0 right-0 z-50"
+          >
+            <ViewBookingSidebar
+              isOpen={eventDetailsOpen}
+              onClose={() => setEventDetailsOpen(false)}
+              event={selectedEvent}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="flex-1 p-4">
+      <motion.div
+        className="flex-1 p-4"
+        initial="hidden"
+        animate="visible"
+        variants={contentVariants}
+      >
         <h1 className="text-2xl font-bold mb-2">Booking</h1>
         <p className="mb-4">Reserva tu cita aquí.</p>
         <div style={{ height: 500 }}>
@@ -111,7 +154,7 @@ const BookingPage = () => {
             }}
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
