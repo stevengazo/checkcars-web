@@ -199,7 +199,8 @@ export const AddReminder = ({ onClose, CarId }) => {
             />
 
             <input
-              type="number"
+              type="text"
+              readOnly  
               name="carId"
               value={reminderData.carId}
               onChange={handleChange}

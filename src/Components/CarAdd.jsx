@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
 import useFetch from "../Hook/useFetch";
 import SettingsContext from '../Context/SettingsContext.jsx'
-
+import { v4 as uuidv4 } from 'uuid';
 
 const CarAdd = ({ OnClose, Added }) => {
   const {API_URL} = useContext(SettingsContext);
   const [car, setCar] = useState({
-    carId: 0,
+    carId: uuidv4(),
     model: "",
     type: "",
     fuelType: "",

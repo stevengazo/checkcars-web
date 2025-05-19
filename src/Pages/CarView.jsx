@@ -1,5 +1,5 @@
 // Importing necessary libraries and components
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DotLoader } from "react-spinners";
 import { motion, AnimatePresence } from "framer-motion";
@@ -67,7 +67,7 @@ const CarView = () => {
   const URLReminders = `${API_URL}/api/Reminder/remindersbycar/${id}`;
   const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
   const URLFiles = `${API_URL}/attachmentsbyCar/${id}`;
-  const URLServices = `${API_URL}/api/CarServices/carservicebycar/${id}`;
+  const URLServices = `${API_URL}/api/CarServices/bycar/${id}`;
   // Fetch data using custom hook
   const {
     data: carData,
@@ -90,10 +90,14 @@ const CarView = () => {
   const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
     autoFetch: true,
   });
-  const { data: ServicesData, loading: ServicesLoading } = useFetch(
-    URLServices,
-    { autoFetch: true }
-  );
+  const {
+    data: ServicesData,
+    loading: ServicesLoading,
+    error: ServiceErrors,
+  } = useFetch(URLServices, { autoFetch: true });
+
+
+ 
 
   return (
     <motion.div

@@ -5,7 +5,7 @@ const FileUpload = ({ CarId }) => {
   const { API_URL } = useContext(SettingsContext);
 
   const { data, loading, error, refetch, status } = useMultipartFetch(
-    `${API_URL}/api/VehicleAttachments/upload/${CarId}`
+    `${API_URL}/api/VehicleAttachments/${CarId}`
   );
 
   const [file, setFile] = useState(null);
