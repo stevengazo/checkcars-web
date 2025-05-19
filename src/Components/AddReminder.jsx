@@ -10,7 +10,7 @@ export const AddReminder = ({ onClose, CarId }) => {
     title: "",
     description: "",
     email: "",
-    ReminderDate: Date.now,
+    ReminderDate: "",
     author: "",
     carId: CarId,
     reminderDests: [],
@@ -22,7 +22,7 @@ export const AddReminder = ({ onClose, CarId }) => {
 
   const { API_URL } = useContext(SettingsContext);
 
-  const { data: Users, loading } = useFetch(`${API_URL}/api/users`, {
+  const { data: Users } = useFetch(`${API_URL}/api/users`, {
     autoFetch: true,
   });
 
@@ -59,13 +59,7 @@ export const AddReminder = ({ onClose, CarId }) => {
 
   const GetUserInfo = (idUser) => {
     const user = Users?.find((user) => user.id === idUser);
-
-    if (!user) {
-      console.warn("No se encontró el usuario con el id:", idUser);
-      return null;
-    }
-
-    console.log("Usuario encontrado:", user);
+    if (!user) return null;
     return {
       id: user.id,
       name: user.name,
@@ -77,7 +71,7 @@ export const AddReminder = ({ onClose, CarId }) => {
     setReminderData({
       ...reminderData,
       reminderDests: reminderData.reminderDests.filter(
-        (recipient) => recipient !== email
+        (recipient) => GetUserInfo(recipient.userId)?.email !== email
       ),
     });
   };
@@ -97,13 +91,16 @@ export const AddReminder = ({ onClose, CarId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    refetch(); // This triggers the fetch manually
+    if (Sending) return; // Previene múltiples envíos
+    refetch();
+    console.log(reminderData);
+  };
 
+  useEffect(() => {
     if (status === 201) {
       setAdded(true);
     }
-    console.log(reminderData);
-  };
+  }, [status]);
 
   return (
     <AnimatePresence>
@@ -114,7 +111,7 @@ export const AddReminder = ({ onClose, CarId }) => {
         transition={{ duration: 0.4, ease: "easeInOut" }}
         className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-xl overflow-y-auto p-6 space-y-6"
       >
-        <div className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-lg overflow-y-auto p-6 space-y-6 rounded-lg">
+        <div className="space-y-6">
           {/* Header */}
           <div className="flex justify-between items-center">
             <h2 className="text-3xl font-semibold text-gray-800">
@@ -129,7 +126,7 @@ export const AddReminder = ({ onClose, CarId }) => {
             </button>
           </div>
 
-          {/* Formulario de recordatorio */}
+          {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <input
               type="text"
@@ -137,7 +134,7 @@ export const AddReminder = ({ onClose, CarId }) => {
               value={reminderData.title}
               onChange={handleChange}
               placeholder="Título"
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <textarea
@@ -145,45 +142,44 @@ export const AddReminder = ({ onClose, CarId }) => {
               value={reminderData.description}
               onChange={handleChange}
               placeholder="Descripción"
-              className="w-full p-3 border-2 border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={4}
             />
 
             <input
               list="usersEmails"
               onChange={handleReminderDestChange}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-            ></input>
+              placeholder="Agregar destinatario"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
             <datalist id="usersEmails">
-              {Users?.map((user) => {
-                return (
-                  <option key={user.id} value={user.email}>
-                    {user.email}
-                  </option>
-                );
-              })}
+              {Users?.map((user) => (
+                <option key={user.id} value={user.email}>
+                  {user.email}
+                </option>
+              ))}
             </datalist>
 
-            <div className="flex flex-col justify-between items-center space-x-2">
-              <div className="w-full pl-4">
-                {reminderData.reminderDests.length > 0 && (
-                  <ul className="list-none space-y-2">
-                    {reminderData.reminderDests.map((DestInfo, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between border rounded-md border-gray-300 p-2 items-center text-sm text-gray-700"
-                      >
-                        {GetUserInfo(DestInfo.userId)?.email}
-                        <IoIosCloseCircle
-                          size={24}
-                          className="text-red-500 hover:rotate-180 cursor-pointer transition"
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
+            {reminderData.reminderDests.length > 0 && (
+              <ul className="list-none space-y-2 pl-4">
+                {reminderData.reminderDests.map((dest, index) => {
+                  const userInfo = GetUserInfo(dest.userId);
+                  return (
+                    <li
+                      key={index}
+                      className="flex justify-between border rounded-md border-gray-300 p-2 items-center text-sm text-gray-700"
+                    >
+                      {userInfo?.email}
+                      <IoIosCloseCircle
+                        size={24}
+                        className="text-red-500 hover:rotate-180 cursor-pointer transition"
+                        onClick={() => handleRemoveRecipient(userInfo?.email)}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
             <input
               type="datetime-local"
@@ -191,7 +187,7 @@ export const AddReminder = ({ onClose, CarId }) => {
               value={reminderData.ReminderDate}
               min={new Date().toISOString().slice(0, 16)}
               onChange={handleChange}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
@@ -200,7 +196,7 @@ export const AddReminder = ({ onClose, CarId }) => {
               value={reminderData.author}
               onChange={handleChange}
               placeholder="Autor"
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
@@ -208,27 +204,23 @@ export const AddReminder = ({ onClose, CarId }) => {
               readOnly
               name="carId"
               value={reminderData.carId}
-              onChange={handleChange}
-              placeholder="ID del auto"
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg bg-gray-100"
             />
 
-           {
-            !added && (
+            {!added && (
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={Sending}
+                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
               >
                 {Sending ? "Enviando..." : "Enviar Recordatorio"}
               </button>
-            )
-           }
+            )}
           </form>
+
           {added && (
-            <div className=" z-50 bg-green-500 border-l border-gray-200 overflow-y-auto  rounded-lg">
-              <h2 className="font-semibold text-center m-2 text-white">
-                Recordatorio creado con éxito
-              </h2>
+            <div className="z-50 bg-green-500 text-white rounded-lg p-3 text-center">
+              Recordatorio creado con éxito
             </div>
           )}
         </div>
