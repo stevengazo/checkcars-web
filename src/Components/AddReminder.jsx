@@ -18,6 +18,8 @@ export const AddReminder = ({ onClose, CarId }) => {
     sendIt: false,
   });
 
+  const [added, setAdded] = useState(false);
+
   const { API_URL } = useContext(SettingsContext);
 
   const { data: Users, loading } = useFetch(`${API_URL}/api/users`, {
@@ -84,7 +86,7 @@ export const AddReminder = ({ onClose, CarId }) => {
     data: Result,
     loading: Sending,
     error: SendingError,
-    statusStatis,
+    status,
     refetch,
   } = useFetch(`${API_URL}/api/Reminder`, {
     method: "POST",
@@ -97,6 +99,9 @@ export const AddReminder = ({ onClose, CarId }) => {
     e.preventDefault();
     refetch(); // This triggers the fetch manually
 
+    if (status === 201) {
+      setAdded(true);
+    }
     console.log(reminderData);
   };
 
@@ -200,7 +205,7 @@ export const AddReminder = ({ onClose, CarId }) => {
 
             <input
               type="text"
-              readOnly  
+              readOnly
               name="carId"
               value={reminderData.carId}
               onChange={handleChange}
@@ -208,13 +213,24 @@ export const AddReminder = ({ onClose, CarId }) => {
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             />
 
-            <button
-              type="submit"
-              className="w-full py-3 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-            >
-              Crear
-            </button>
+           {
+            !added && (
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                {Sending ? "Enviando..." : "Enviar Recordatorio"}
+              </button>
+            )
+           }
           </form>
+          {added && (
+            <div className=" z-50 bg-green-500 border-l border-gray-200 overflow-y-auto  rounded-lg">
+              <h2 className="font-semibold text-center m-2 text-white">
+                Recordatorio creado con éxito
+              </h2>
+            </div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>
