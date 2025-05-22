@@ -24,14 +24,22 @@ const Navbar = () => {
     <div className="flex transition-all duration-300 ease-in-out">
       <div
         className={`
-          ${sidebarOpen ? "w-screen md:w-48" : "h-12 md:h-screen w-screen md:w-16"} 
+          ${
+            sidebarOpen
+              ? "w-screen md:w-48"
+              : "h-12 md:h-screen w-screen md:w-16"
+          } 
           bg-blue-600 text-white transition-all duration-300 ease-in-out
         `}
         onMouseEnter={() => window.innerWidth >= 768 && setIsHovering(true)}
         onMouseLeave={() => window.innerWidth >= 768 && setIsHovering(false)}
       >
         <div className="flex justify-between items-center p-4 md:block md:p-2">
-          <h1 className={`${sidebarOpen ? "block" : "hidden"} text-lg text-center font-bold`}>
+          <h1
+            className={`${
+              sidebarOpen ? "block" : "hidden"
+            } text-lg text-center font-bold`}
+          >
             Check Cars
           </h1>
           {/* Toggle button visible only on mobile */}
@@ -43,17 +51,31 @@ const Navbar = () => {
               stroke="currentColor"
               className="h-6 w-6"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </div>
 
         {/* Menu items */}
-        <ul className={`${sidebarOpen ? "block" : "hidden"} text-lg font-bold space-y-4`}>
+        <ul
+          className={`${
+            sidebarOpen ? "block" : "hidden"
+          } text-lg font-bold space-y-4`}
+        >
           {[
-            { to: "home", icon: <FaHome size={24} />, label: "Salidas" },
+            { to: "home", icon: <FaHome size={24} />, label: "Graficas" },
+            { to: "exits", icon: <FaHome size={24} />, label: "Salidas" },
             { to: "issue", icon: <CiWarning size={24} />, label: "Problemas" },
-            { to: "crash", icon: <FaCarCrash size={24} />, label: "Accidentes" },
+            {
+              to: "crash",
+              icon: <FaCarCrash size={24} />,
+              label: "Accidentes",
+            },
             { to: "CarList", icon: <FaCar size={24} />, label: "Vehículos" },
             { to: "users", icon: <FaUsers size={24} />, label: "Usuarios" },
           ].map(({ to, icon, label }) => (
@@ -64,7 +86,9 @@ const Navbar = () => {
                 onClick={() => window.innerWidth < 768 && toggleSidebar()}
               >
                 {icon}
-                <span className={`${sidebarOpen ? "ml-4" : "hidden"}`}>{label}</span>
+                <span className={`${sidebarOpen ? "ml-4" : "hidden"}`}>
+                  {label}
+                </span>
               </Link>
             </li>
           ))}
@@ -76,9 +100,14 @@ const Navbar = () => {
             sidebarOpen ? "w-48" : "w-16"
           } absolute bottom-2 text-white transition-all duration-300 ease-in-out px-4`}
         >
-          <div className="flex flex-row items-center p-2 hover:bg-blue-900 transition duration-500 cursor-pointer" onClick={DeleteToken}>
+          <div
+            className="flex flex-row items-center p-2 hover:bg-blue-900 transition duration-500 cursor-pointer"
+            onClick={DeleteToken}
+          >
             <IoIosExit size={36} />
-            <span className={`${sidebarOpen ? "ml-2" : "hidden"}`}>Cerrar Sesión</span>
+            <span className={`${sidebarOpen ? "ml-2" : "hidden"}`}>
+              Cerrar Sesión
+            </span>
           </div>
         </div>
       </div>
