@@ -1,8 +1,20 @@
+import React from "react";
+import { motion } from "framer-motion";
+
 import ReportGeneralByCar from "../Components/ReportGeneralByCar";
 import ReportGeneralByUsers from "../Components/ReportGeneralByUsers";
 import ReportByYear from "../Components/ReportByYear";
 import ReportCarsByBrand from "../Components/ReportCarsByBrand";
 import ReportCarByType from "../Components/ReportCarByType";
+
+const fadeUpVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.5 },
+  }),
+};
 
 const Home = () => {
   return (
@@ -13,22 +25,31 @@ const Home = () => {
 
       {/* Responsive grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow p-4">
-          <ReportGeneralByCar />
-        </div>
-        <div className="bg-white rounded-2xl shadow p-4">
-          <ReportGeneralByUsers />
-        </div>
-        <div className="bg-white rounded-2xl shadow p-4">
-          <ReportCarByType />
-        </div>
-        <div className="bg-white rounded-2xl shadow p-4">
-          <ReportCarsByBrand />
-        </div>
-        
-       
+        {[ReportGeneralByCar, ReportGeneralByUsers, ReportCarByType, ReportCarsByBrand].map(
+          (Component, i) => (
+            <motion.div
+              key={i}
+              className="bg-white rounded-2xl shadow p-4"
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
+              custom={i}
+            >
+              <Component />
+            </motion.div>
+          )
+        )}
       </div>
-      <ReportByYear />
+
+      <motion.div
+        className="mt-6"
+        variants={fadeUpVariants}
+        initial="hidden"
+        animate="visible"
+        custom={4}
+      >
+        <ReportByYear />
+      </motion.div>
     </div>
   );
 };
