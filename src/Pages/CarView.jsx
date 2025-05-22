@@ -96,9 +96,6 @@ const CarView = () => {
     error: ServiceErrors,
   } = useFetch(URLServices, { autoFetch: true });
 
-
- 
-
   return (
     <motion.div
       className="p-6 space-y-8"
@@ -115,18 +112,30 @@ const CarView = () => {
       >
         <h1 className="text-3xl font-bold">Detalles del Vehículo</h1>
         {carData && (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setEditMode(!editMode)}
-            className={`px-4 py-2 rounded transition text-white ${
-              editMode
-                ? "bg-gray-500 hover:bg-gray-600"
-                : "bg-red-600 hover:bg-red-700"
-            }`}
-          >
-            {editMode ? "Cancelar" : "Editar Vehículo"}
-          </motion.button>
+          <div className=" flex gap-1">
+            {!editMode && (
+              <button className="text-white px-4 py-2 rounded transition bg-red-500">
+                Borrar Vehículo
+              </button>
+            )}
+            {!editMode && (
+              <button className="text-white px-4 py-2 rounded transition bg-purple-500">
+                Mantenimiento
+              </button>
+            )}
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setEditMode(!editMode)}
+              className={`px-4 py-2 rounded transition text-white ${
+                editMode
+                  ? "bg-gray-500 hover:bg-gray-600"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {editMode ? "Cancelar" : "Editar Vehículo"}
+            </motion.button>
+          </div>
         )}
       </motion.div>
 

@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import { motion } from "framer-motion";
 import useFetch from "../Hook/useFetch";
 import SettingsContext from "../Context/SettingsContext.jsx";
 
@@ -12,7 +13,20 @@ const UsersTable = () => {
   }, [data]);
 
   if (loading) {
-    return <div className="text-center py-4 text-gray-600">Cargando...</div>;
+    return (
+      <motion.div
+        className="flex justify-center items-center py-10"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, yoyo: Infinity }}
+      >
+        <motion.div
+          className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        />
+      </motion.div>
+    );
   }
 
   if (error) {
@@ -32,12 +46,12 @@ const UsersTable = () => {
             <th className="px-6 py-3  text-left">Confirmado</th>
           </tr>
         </thead>
-        <tbody className="">
+        <tbody>
           {data && data.length > 0 ? (
             data.map((user, index) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="px-6 py-3 ">{user.email}</td>
-                <td className="px-6 py-3 ">
+                <td className="px-6 py-3">{user.email}</td>
+                <td className="px-6 py-3">
                   {user.emailConfirmed ? "Sí" : "No"}
                 </td>
               </tr>

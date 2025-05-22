@@ -38,7 +38,7 @@ const ReportGeneralByCar = () => {
       ) : error ? (
         <p className="text-red-600">Error al cargar los datos.</p>
       ) : (
-        <div className="w-full h-[400px] bg-white rounded-2xl p-4 shadow">
+        <div className="w-full h-[400px] bg-white rounded-2xl p-4">
           <h2 className="text-xl font-semibold mb-4">Reporte por Vehículo</h2>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart

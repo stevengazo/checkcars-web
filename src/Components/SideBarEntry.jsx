@@ -67,10 +67,16 @@ export default function SideBarEntry({ entry, onClose }) {
             </h2>
             <div className="flex items-center gap-3">
               <Link
+              to={`/viewexit/${entry.reportId}`}
+              className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
+              >
+                Ver Reporte
+              </Link>
+              <Link
                 to={`/car/${entry.carId}`}
                 className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
               >
-                Ver Vehículo
+                Vehículo
               </Link>
 
               <button

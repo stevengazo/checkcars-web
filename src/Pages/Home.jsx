@@ -29,7 +29,11 @@ const Home = () => {
           (Component, i) => (
             <motion.div
               key={i}
-              className="bg-white rounded-2xl shadow p-4"
+              className="bg-white rounded-2xl p-4
+                shadow-lg
+                hover:shadow-2xl
+                transition-shadow
+                duration-300"
               variants={fadeUpVariants}
               initial="hidden"
               animate="visible"
@@ -42,7 +46,12 @@ const Home = () => {
       </div>
 
       <motion.div
-        className="mt-6"
+        className="mt-6
+          bg-white rounded-2xl p-4
+          shadow-lg
+          hover:shadow-2xl
+          transition-shadow
+          duration-300"
         variants={fadeUpVariants}
         initial="hidden"
         animate="visible"

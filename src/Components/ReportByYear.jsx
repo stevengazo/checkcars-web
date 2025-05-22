@@ -82,7 +82,8 @@ const ReportByYear = ({ year = 2025 }) => {
         <p className="text-red-600 text-center">Error al cargar los datos.</p>
       ) : (
         <>
-          <div className="w-full h-[400px] bg-white rounded-2xl p-4 shadow">
+          <div className="w-full h-[400px] bg-white rounded-2xl p-4 
+        ">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
@@ -128,7 +129,7 @@ const ReportByYear = ({ year = 2025 }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 shadow overflow-x-auto">
+          <div className="bg-white rounded-2xl p-4  overflow-x-auto">
             <h3 className="text-xl font-semibold mb-4 capitalize">
               {selectedCategory} - Lista de reportes
             </h3>
@@ -152,7 +153,7 @@ const ReportByYear = ({ year = 2025 }) => {
                       <td className="border-b border-gray-200 px-4 py-2 break-all">
                         <Link
                           to={`/car/${carId}`}
-                          className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
+                          className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition duration-200"
                         >
                           Ver Vehículo
                         </Link>

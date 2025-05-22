@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import UserAdd from "../Components/UserAdd";
 import UsersTable from "../Components/UsersTable";
 
 const UsersPage = () => {
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Simular carga de datos
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500); // 1.5 seg de carga
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -23,7 +31,22 @@ const UsersPage = () => {
         </button>
       </div>
 
-      <UsersTable />
+      {loading ? (
+        <motion.div
+          className="flex justify-center items-center h-40"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, yoyo: Infinity }}
+        >
+          <motion.div
+            className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          />
+        </motion.div>
+      ) : (
+        <UsersTable />
+      )}
 
       {showModal && <UserAdd onClose={setShowModal} />}
     </div>

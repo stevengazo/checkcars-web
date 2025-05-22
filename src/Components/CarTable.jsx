@@ -2,13 +2,16 @@ import React, { useContext, useState } from "react";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import { useNavigate } from "react-router-dom";
-import SettingsContext from '../Context/SettingsContext.jsx';
+import SettingsContext from "../Context/SettingsContext.jsx";
 
 const CarTable = () => {
   const { API_URL } = useContext(SettingsContext);
   const Nav = useNavigate();
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const URL = `${API_URL}/api/Cars`;
   const { data, loading, error, refetch } = useFetch(URL, {
@@ -24,10 +27,10 @@ const CarTable = () => {
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
+          return sortConfig.direction === "ascending" ? -1 : 1;
         }
         if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
+          return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;
       });
@@ -36,17 +39,20 @@ const CarTable = () => {
   }, [data, sortConfig]);
 
   const filteredCars = sortedCars.filter((car) =>
-    [car.brand, car.model, car.plate, car.type]
-      .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
+    [car.brand, car.model, car.plate, car.type].some((field) =>
+      field?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
 
   const requestSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
   };
+
+  console.log("data", data);
 
   return (
     <>
@@ -63,27 +69,47 @@ const CarTable = () => {
             <tr>
               <th
                 className="px-4 py-2 border-b border-gray-300 cursor-pointer"
-                onClick={() => requestSort('brand')}
+                onClick={() => requestSort("brand")}
               >
-                Marca {sortConfig.key === 'brand' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                Marca{" "}
+                {sortConfig.key === "brand"
+                  ? sortConfig.direction === "ascending"
+                    ? "↑"
+                    : "↓"
+                  : ""}
               </th>
               <th
                 className="px-4 py-2 border-b border-gray-300 cursor-pointer"
-                onClick={() => requestSort('model')}
+                onClick={() => requestSort("model")}
               >
-                Modelo {sortConfig.key === 'model' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                Modelo{" "}
+                {sortConfig.key === "model"
+                  ? sortConfig.direction === "ascending"
+                    ? "↑"
+                    : "↓"
+                  : ""}
               </th>
               <th
                 className="px-4 py-2 border-b border-gray-300 cursor-pointer"
-                onClick={() => requestSort('plate')}
+                onClick={() => requestSort("plate")}
               >
-                Placa {sortConfig.key === 'plate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                Placa{" "}
+                {sortConfig.key === "plate"
+                  ? sortConfig.direction === "ascending"
+                    ? "↑"
+                    : "↓"
+                  : ""}
               </th>
               <th
                 className="px-4 py-2 border-b border-gray-300 cursor-pointer"
-                onClick={() => requestSort('type')}
+                onClick={() => requestSort("type")}
               >
-                Tipo {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                Tipo{" "}
+                {sortConfig.key === "type"
+                  ? sortConfig.direction === "ascending"
+                    ? "↑"
+                    : "↓"
+                  : ""}
               </th>
             </tr>
           </thead>
@@ -91,13 +117,26 @@ const CarTable = () => {
             {filteredCars.map((car) => (
               <tr
                 key={car.carId}
-                className="hover:cursor-pointer"
+                className={`hover:cursor-pointer ${
+                  car.isAvailable ? "hover:bg-gray-100" : "bg-gray-200"
+                }${car.deleted ? "hover:bg-red-100" : "bg-gray-200"}`}
                 onClick={() => GoTo(car.carId)}
               >
-                <td className="px-4 py-2 border-b border-gray-300">{car.brand}</td>
-                <td className="px-4 py-2 border-b border-gray-300">{car.model}</td>
-                <td className="px-4 py-2 border-b border-gray-300">{car.plate}</td>
-                <td className="px-4 py-2 border-b border-gray-300">{car.type}</td>
+                <td className="px-4 py-2 border-b border-gray-300">
+                  {car.brand} {
+                  car.deleted ? "Borrado" : ""
+                  
+                }
+                </td>
+                <td className="px-4 py-2 border-b border-gray-300">
+                  {car.model}
+                </td>
+                <td className="px-4 py-2 border-b border-gray-300">
+                  {car.plate}
+                </td>
+                <td className="px-4 py-2 border-b border-gray-300">
+                  {car.type}
+                </td>
               </tr>
             ))}
           </tbody>
