@@ -6,6 +6,7 @@ import { usestate } from "react";
 import useFetch from "../Hook/useFetch";
 import MapLocation from "../Components/MapLocation";
 import SettingsContext from "../Context/SettingsContext.jsx";
+import { Link } from "react-router-dom";
 import generatePDFReport from "../utils/generatePDFReport.js";
 
 const InfoItem = ({ label, value, important = false }) => (
@@ -20,7 +21,6 @@ const InfoItem = ({ label, value, important = false }) => (
     </span>
   </div>
 );
-
 
 const YesNo = ({ label, value }) => (
   <InfoItem label={label} value={value ? "Sí" : "No"} important={!value} />
@@ -88,7 +88,9 @@ const ViewExit = () => {
       <section className="bg-white rounded-2xl shadow p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <InfoItem label="Fecha" value={formatDate(entry.created)} />
         <InfoItem label="Autor" value={entry.author} />
-        <InfoItem label="Placa" value={entry.carPlate} />
+        <Link to={`/car/${entry.carId}`} className="inline-block px-3 py-1 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition">
+          <InfoItem label="Placa" value={entry.carPlate} />
+        </Link>
         <InfoItem label="Kilometraje" value={entry.mileage} />
         <InfoItem label="Pintura" value={entry.paintState} />
         <InfoItem label="Mecánica" value={entry.mecanicState} />
