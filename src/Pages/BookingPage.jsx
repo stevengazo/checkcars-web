@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
-import "react-big-calendar/lib/css/react-big-calendar.css";
 import { es } from "date-fns/locale";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { motion, AnimatePresence } from "framer-motion";
+
 import AddBookingSidebar from "../Components/AddBookingSidebar";
 import ViewBookingSidebar from "../Components/ViewBookingSidebar";
-import { motion, AnimatePresence } from "framer-motion"; // <- Asegúrate de tener esto
+import useFetch from "../Hook/useFetch";
+import SettingsContext from "../Context/SettingsContext.jsx";
 
 const locales = { es };
 
@@ -32,6 +35,13 @@ const contentVariants = {
 };
 
 const BookingPage = () => {
+  const { API_URL } = useContext(SettingsContext);
+  const URL = `${API_URL}/api/Bookings`;
+
+  const { data, loading, error, refetch } = useFetch(URL, {
+    autoFetch: true,
+  });
+
   const [events, setEvents] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [eventDetailsOpen, setEventDetailsOpen] = useState(false);
@@ -43,6 +53,23 @@ const BookingPage = () => {
     plate: "",
     reason: "",
   });
+
+  // Transformar bookings del API en eventos del calendario
+  useEffect(() => {
+    if (data && Array.isArray(data)) {
+      const formattedEvents = data.map((booking) => ({
+        title: booking.reason || "Sin motivo",
+        start: new Date(booking.startDate),
+        end: new Date(booking.endDate),
+        reason: booking.reason,
+        province: booking.province,
+        carId: booking.carId,
+        userId: booking.userId,
+        bookingId: booking.bookingId,
+      }));
+      setEvents(formattedEvents);
+    }
+  }, [data]);
 
   const handleSelectSlot = ({ start, end }) => {
     setNewEvent({
