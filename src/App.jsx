@@ -9,6 +9,7 @@ import Crashes from "./Pages/crashes";
 import Issues from "./Pages/issues";
 import Users from "./Pages/UsersPage";
 import Home from "./Pages/Home";
+import Returns from "./Pages/Returns";
 import ErrorPage from "./Pages/Error";
 import ForgotPassword from "./Pages/ForgotPassword";
 import BookingPage from "./Pages/BookingPage";
@@ -45,6 +46,7 @@ function App() {
           <Route path="/crash" element={<Crashes />} />
           <Route path="/issue" element={<Issues />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/returns" element={<Returns />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/CarList" element={<CarList />} />
           <Route path="/car/:id" element={<CarView />} />

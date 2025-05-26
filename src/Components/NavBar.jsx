@@ -3,6 +3,9 @@ import { FaHome, FaCar, FaUsers, FaCarCrash } from "react-icons/fa";
 import { CiWarning } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosExit } from "react-icons/io";
+import { TbBrandBooking } from "react-icons/tb";
+import { MdMoreTime } from "react-icons/md";
+import { FaChartSimple, FaWarehouse } from "react-icons/fa6";
 
 const Navbar = () => {
   const nav = useNavigate();
@@ -68,17 +71,30 @@ const Navbar = () => {
           } text-lg font-bold space-y-4`}
         >
           {[
-            { to: "home", icon: <FaHome size={24} />, label: "Graficas" },
-            { to: "exits", icon: <FaHome size={24} />, label: "Salidas" },
-            { to: "issue", icon: <CiWarning size={24} />, label: "Problemas" },
+            { to: "home", icon: <FaChartSimple size={24} />, label: "Graficas" },
+            {
+              to: "exits",
+              icon: <FaHome size={24} />,
+              label: "Salidas",
+            },
+            {
+              to: "issue",
+              icon: <CiWarning size={24} />,
+              label: "Problemas",
+            },
             {
               to: "crash",
               icon: <FaCarCrash size={24} />,
               label: "Accidentes",
             },
-            
+            {
+              to: "returns",
+              icon: <FaWarehouse size={24} />,
+              label: "Entregas",
+            },
+
             { to: "CarList", icon: <FaCar size={24} />, label: "Vehículos" },
-               { to: "booking", icon: <CiWarning size={24} />, label: "Reservas" },
+            { to: "booking", icon: <MdMoreTime size={24} />, label: "Reservas" },
             { to: "users", icon: <FaUsers size={24} />, label: "Usuarios" },
           ].map(({ to, icon, label }) => (
             <li key={to} className="hover:bg-blue-800 transition duration-500">

@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import EntrySearch from "../Module/EntrySearch";
-import AddExit from "../Components/AddExit";
+import ReturnsSearch from "../Module/ReturnsSearch.jsx";
 
-const Exits = () => {
+const Returns = () => {
   const [showAdd, setShowAdd] = useState(false);
 
   return (
@@ -20,17 +19,10 @@ const Exits = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Reporte de Salidas
+          Reporte de Entrega Vehiculos
         </motion.h1>
 
-        <motion.button
-          onClick={() => setShowAdd(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          + Nueva Salida
-        </motion.button>
+     
       </div>
 
       <motion.div
@@ -38,14 +30,7 @@ const Exits = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <div className="p-4">
-          <p className="italic text-gray-600">
-          Aquí puedes buscar y filtrar las salidas registradas. Utiliza los campos de búsqueda para encontrar entradas específicas según tus necesidades. Estos corresponden a registros de salidas, en los cuales se revisan detalladamente los vehiculos.
-        </p>
-        <hr className="text-gray-300" />
-          </div>
-
-        <EntrySearch />
+        <ReturnsSearch />
       </motion.div>
 
    
@@ -57,4 +42,4 @@ const Exits = () => {
   );
 };
 
-export default Exits;
+export default Returns;
