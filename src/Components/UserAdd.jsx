@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from "react";
+import React, { useReducer, useContext, useState } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 const initialState = {
   userName: "",
   email: "",
-  phone: "",
   password: "",
   confirmPassword: "",
 };
@@ -26,12 +25,49 @@ const reducer = (state, action) => {
 };
 
 const UserAdd = ({ onClose }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
   const { API_URL } = useContext(SettingsContext);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos del usuario:", state);
+    setMessage("");
+    setError("");
+
+    if (state.password !== state.confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          userName: state.userName,
+          email: state.email,
+          password: state.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar el usuario.");
+      }
+
+      const result = await response.json();
+      setMessage("✅ Usuario agregado correctamente.");
+      dispatch({ type: "RESET" });
+    } catch (err) {
+      setError(err.message || "Error desconocido.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOnClose = () => {
@@ -64,51 +100,67 @@ const UserAdd = ({ onClose }) => {
               placeholder="Nombre de Usuario"
               value={state.userName}
               onChange={(e) =>
-                dispatch({ type: "SET_FIELD", field: "userName", value: e.target.value })
+                dispatch({
+                  type: "SET_FIELD",
+                  field: "userName",
+                  value: e.target.value,
+                })
               }
-              className="p-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+              className="p-3 rounded-lg border border-gray-300"
             />
             <input
               type="email"
               placeholder="Email"
               value={state.email}
               onChange={(e) =>
-                dispatch({ type: "SET_FIELD", field: "email", value: e.target.value })
+                dispatch({
+                  type: "SET_FIELD",
+                  field: "email",
+                  value: e.target.value,
+                })
               }
-              className="p-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-            <input
-              type="tel"
-              placeholder="Teléfono"
-              value={state.phone}
-              onChange={(e) =>
-                dispatch({ type: "SET_FIELD", field: "phone", value: e.target.value })
-              }
-              className="p-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+              className="p-3 rounded-lg border border-gray-300"
             />
             <input
               type="password"
               placeholder="Contraseña"
               value={state.password}
               onChange={(e) =>
-                dispatch({ type: "SET_FIELD", field: "password", value: e.target.value })
+                dispatch({
+                  type: "SET_FIELD",
+                  field: "password",
+                  value: e.target.value,
+                })
               }
-              className="p-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+              className="p-3 rounded-lg border border-gray-300"
             />
             <input
               type="password"
               placeholder="Confirmar Contraseña"
               value={state.confirmPassword}
               onChange={(e) =>
-                dispatch({ type: "SET_FIELD", field: "confirmPassword", value: e.target.value })
+                dispatch({
+                  type: "SET_FIELD",
+                  field: "confirmPassword",
+                  value: e.target.value,
+                })
               }
-              className="p-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+              className="p-3 rounded-lg border border-gray-300"
             />
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {message && <p className="text-green-600 text-sm">{message}</p>}
+
             <button
               type="submit"
-              className="bg-blue-500 text-white p-3 rounded-lg mt-4 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              disabled={loading}
+              className="bg-blue-500 text-white p-3 rounded-lg mt-4 hover:bg-blue-600 disabled:opacity-50"
             >
-              Agregar
+              {loading ? "Agregando..." : "Agregar"}
             </button>
           </form>
         </div>
