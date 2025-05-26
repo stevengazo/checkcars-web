@@ -46,6 +46,7 @@ const BookingPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [eventDetailsOpen, setEventDetailsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedCar, setSelectedCar] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: "",
@@ -54,7 +55,7 @@ const BookingPage = () => {
     reason: "",
   });
 
-  // Transformar bookings del API en eventos del calendario
+  // Convertir los bookings en eventos de calendario
   useEffect(() => {
     if (data && Array.isArray(data)) {
       const formattedEvents = data.map((booking) => ({
@@ -70,6 +71,35 @@ const BookingPage = () => {
       setEvents(formattedEvents);
     }
   }, [data]);
+
+  // Buscar información del vehículo cuando se selecciona un evento
+  useEffect(() => {
+    const fetchCar = async () => {
+      if (selectedEvent?.carId) {
+        try {
+          const response = await fetch(`${API_URL}/api/Cars/${selectedEvent.carId}`,{
+            autoFetch:false,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          if (response.ok) {
+            const carData = await response.json();
+            setSelectedCar(carData);
+          } else {
+            console.error("No se pudo obtener el vehículo");
+            setSelectedCar(null);
+          }
+        } catch (error) {
+          console.error("Error al obtener el vehículo:", error);
+          setSelectedCar(null);
+        }
+      }
+    };
+
+    fetchCar();
+  }, [selectedEvent, API_URL]);
 
   const handleSelectSlot = ({ start, end }) => {
     setNewEvent({
@@ -129,7 +159,7 @@ const BookingPage = () => {
           </motion.div>
         )}
 
-        {eventDetailsOpen && (
+        {eventDetailsOpen && selectedEvent && (
           <motion.div
             key="viewSidebar"
             initial="hidden"
@@ -143,6 +173,7 @@ const BookingPage = () => {
               isOpen={eventDetailsOpen}
               onClose={() => setEventDetailsOpen(false)}
               event={selectedEvent}
+              car={selectedCar} // 👈 nuevo prop con la info del vehículo
             />
           </motion.div>
         )}

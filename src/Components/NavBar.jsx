@@ -76,7 +76,9 @@ const Navbar = () => {
               icon: <FaCarCrash size={24} />,
               label: "Accidentes",
             },
+            
             { to: "CarList", icon: <FaCar size={24} />, label: "Vehículos" },
+               { to: "booking", icon: <CiWarning size={24} />, label: "Reservas" },
             { to: "users", icon: <FaUsers size={24} />, label: "Usuarios" },
           ].map(({ to, icon, label }) => (
             <li key={to} className="hover:bg-blue-800 transition duration-500">
