@@ -1,12 +1,12 @@
 import React, { useState, useContext } from 'react';
 import SettingsContext from '../../Context/SettingsContext.jsx';
 
-const CommentaryAdd = ({ ReportId }) => {
+const CommentaryAdd = ({ ReportId, onCommentAdded }) => {
   const { API_URL } = useContext(SettingsContext);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false); // Nuevo estado
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,7 +14,7 @@ const CommentaryAdd = ({ ReportId }) => {
 
     setLoading(true);
     setError(null);
-    setSuccess(false); // Reiniciar confirmación
+    setSuccess(false);
 
     const data = {
       id: 0,
@@ -41,8 +41,9 @@ const CommentaryAdd = ({ ReportId }) => {
       }
 
       setText('');
-      setSuccess(true); // Mostrar confirmación
-      setTimeout(() => setSuccess(false), 3000); // Ocultar después de 3 segundos
+      setSuccess(true);
+      if (onCommentAdded) onCommentAdded(); // 🔄 Notifica al componente padre
+      setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err.message || 'Error desconocido');
     } finally {

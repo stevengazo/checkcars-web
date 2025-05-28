@@ -41,6 +41,7 @@ const formatDate = (dateString) => {
 };
 
 const ViewExit = () => {
+  const [refreshComments, setRefreshComments] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const { id } = useParams();
   const { API_URL } = useContext(SettingsContext);
@@ -170,8 +171,8 @@ const ViewExit = () => {
         /* Comentarios */
         <section className="bg-white rounded-2xl shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">Comentarios</h2>
-          <CommentaryAdd ReportId={id} />
-          <CommentaryList ReportId={id} />
+          <CommentaryAdd ReportId={id}  onCommentAdded={() => setRefreshComments(prev => !prev)} />
+          <CommentaryList ReportId={id} refresh={refreshComments}  />
         </section>
       }
 

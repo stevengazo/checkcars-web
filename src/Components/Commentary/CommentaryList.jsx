@@ -3,23 +3,35 @@ import CommentaryItem from "./CommentaryItem";
 import SettingsContext from "../../Context/SettingsContext";
 import useFetch from "../../Hook/useFetch";
 
-const CommentaryList = ({ ReportId }) => {
+const CommentaryList = ({ ReportId, refresh }) => {
   const { API_URL } = useContext(SettingsContext);
   const url = `${API_URL}/api/Commentary/ByReport/${ReportId}`;
-  const { data: comments, loading, error } = useFetch(url, { autoFetch: true });
+  const {
+    data: comments,
+    loading,
+    error,
+    refetch,
+  } = useFetch(url, { autoFetch: true });
 
-console.log("Comentarios:", comments);
+  useEffect(() => {
+    if (refresh) {
+      refetch();
+    }
+  }, [refresh]);
 
   return (
-    <div className=" mx-auto space-y-4 p-4">
+    <div className="mx-auto space-y-4 p-4">
       {loading && <p>Cargando comentarios...</p>}
       {!loading &&
         comments &&
         Array.isArray(comments) &&
         comments.length > 0 &&
-        comments.map((comment) => (
-          <CommentaryItem key={comment.id} commentary={comment} />
-        ))}
+        comments
+          .slice() // para no mutar el array original
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .map((comment) => (
+            <CommentaryItem key={comment.id} commentary={comment} />
+          ))}
       {!loading &&
         comments &&
         Array.isArray(comments) &&
