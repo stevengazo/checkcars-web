@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useState, useContext } from "react";
-import SettingsContext from "../Context/SettingsContext.jsx";
-import useFetch from "../Hook/useFetch";
+import SettingsContext from "../../Context/SettingsContext.jsx";
+import useFetch from "../../Hook/useFetch.js";
 
 const SERVICE_TYPES = [
   "Alineación", "Balanceo de neumáticos", "Cambio de batería", "Cambio de bujías",

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import useFetch from "../Hook/useFetch";
-import SettingsContext from '../Context/SettingsContext.jsx'
+import useFetch from "../../Hook/useFetch.js";
+import SettingsContext from '../../Context/SettingsContext.jsx'
 import { v4 as uuidv4 } from 'uuid';
 
 const CarAdd = ({ OnClose, Added }) => {

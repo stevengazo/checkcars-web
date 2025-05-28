@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
-import EntryTable from "../Components/EntryTable.jsx";
-import SideBarEntry from "../Components/SideBarEntry.jsx";
+import EntryTable from "../Components/Entry/EntryTable.jsx";
+import SideBarEntry from "../Components/Entry/SideBarEntry.jsx";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
 import SettingsContext from "../Context/SettingsContext.jsx";

@@ -3,8 +3,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { DotLoader } from "react-spinners";
 import SettingsContext from '../Context/SettingsContext.jsx'
 import useFetch from "../Hook/useFetch";
-import SideBarCrash from "../Components/SideBarCrash";
-import CrashTable from "../Components/CrashTable";
+import SideBarCrash from "../Components/Crash/SideBarCrash";
+import CrashTable from "../Components/Crash/CrashTable";
 
 const CrashSearch = () => {
   const { API_URL } = useContext(SettingsContext);

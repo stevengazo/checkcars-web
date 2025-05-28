@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import SendForgotPassword from "../Components/SendForgotpassword";
-import ResetPassword from "../Components/ResetPassword";
+import SendForgotPassword from "../Components/User/SendForgotpassword";
+import ResetPassword from "../Components/User/ResetPassword";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ForgotPassword = () => {

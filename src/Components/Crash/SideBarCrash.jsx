@@ -1,11 +1,11 @@
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaRegFilePdf } from "react-icons/fa6";
-import useFetch from "../Hook/useFetch";
+import useFetch from "../../Hook/useFetch.js";
 import { BeatLoader } from "react-spinners";
-import Map from "../Components/MapLocation";
+import Map from "../Maps/MapLocation.jsx";
 import { Link } from "react-router-dom";
-import useGeneratePDF from "../Hook/useGeneratePdf";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import useGeneratePDF from "../../Hook/useGeneratePdf.js";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 import { useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 

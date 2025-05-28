@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CarTable from "../Components/CarTable";
-import CarAdd from "../Components/CarAdd";
+import CarTable from "../Components/Car/CarTable";
+import CarAdd from "../Components/Car/CarAdd";
 
 const CarList = () => {
   const [addCar, setAddCar] = useState(false);

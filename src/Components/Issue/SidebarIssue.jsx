@@ -2,9 +2,9 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { BeatLoader } from "react-spinners";
 import { useContext } from "react";
-import useFetch from "../Hook/useFetch";
-import Map from "../Components/MapLocation";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import useFetch from "../../Hook/useFetch.js";
+import Map from "../Maps/MapLocation.jsx";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 

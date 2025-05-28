@@ -1,11 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-import ReportGeneralByCar from "../Components/ReportGeneralByCar";
-import ReportGeneralByUsers from "../Components/ReportGeneralByUsers";
-import ReportByYear from "../Components/ReportByYear";
-import ReportCarsByBrand from "../Components/ReportCarsByBrand";
-import ReportCarByType from "../Components/ReportCarByType";
+import ReportGeneralByCar from "../Components/Chart/ReportGeneralByCar";
+import ReportGeneralByUsers from "../Components/Chart/ReportGeneralByUsers";
+import ReportByYear from "../Components/Chart/ReportByYear";
+import ReportCarsByBrand from "../Components/Chart/ReportCarsByBrand";
+import ReportCarByType from "../Components/Chart/ReportCarByType";
 
 const fadeUpVariants = {
   hidden: { opacity: 0, y: 20 },

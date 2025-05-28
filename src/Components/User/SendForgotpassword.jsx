@@ -1,7 +1,7 @@
-import useFetch from "../Hook/useFetch"; // Usa tu hook personalizado
+import useFetch from "../../Hook/useFetch"; // Usa tu hook personalizado
 import { IoIosMail } from "react-icons/io";
 import React, { useContext, useEffect, useState } from "react";
-import SettingsContext from "../Context/SettingsContext";
+import SettingsContext from "../../Context/SettingsContext";
 import { motion } from "framer-motion";
 
 const SendForgotPassword = ({ OnSendIt, selectedEmail }) => {

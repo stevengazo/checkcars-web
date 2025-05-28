@@ -7,20 +7,20 @@ import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 // Importing custom components and hooks
 import useFetch from "../Hook/useFetch";
-import CarInfo from "../Components/CarInfo";
-import CarEdit from "../Components/CarEdit";
-import EntriesTable from "../Components/EntryTable";
-import CrashTable from "../Components/CrashTable";
-import IssueTable from "../Components/IssueTable";
-import SideBarEntry from "../Components/SideBarEntry";
-import SideBarIssue from "../Components/SidebarIssue";
-import { ReminderList } from "../Components/ReminderList";
+import CarInfo from "../Components/Car/CarInfo";
+import CarEdit from "../Components/Car/CarEdit";
+import EntriesTable from "../Components/Entry/EntryTable";
+import CrashTable from "../Components/Crash/CrashTable";
+import IssueTable from "../Components/Issue/IssueTable";
+import SideBarEntry from "../Components/Entry/SideBarEntry";
+import SideBarIssue from "../Components/Issue/SidebarIssue";
+import { ReminderList } from "../Components/Reminder/ReminderList";
 import SettingsContext from "../Context/SettingsContext";
-import { AddReminder } from "../Components/AddReminder";
-import FileTable from "../Components/FileTable";
-import FileUpload from "../Components/FileUpload";
-import AddService from "../Components/AddService";
-import ServiceTable from "../Components/ServiceTable";
+import { AddReminder } from "../Components/Reminder/AddReminder";
+import FileTable from "../Components/File/FileTable";
+import FileUpload from "../Components/File/FileUpload";
+import AddService from "../Components/Service/AddService";
+import ServiceTable from "../Components/Service/ServiceTable";
 
 const LoadingState = ({ message }) => (
   <div className="flex flex-col items-center justify-center p-6">

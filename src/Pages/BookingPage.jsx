@@ -8,8 +8,8 @@ import { es } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { motion, AnimatePresence } from "framer-motion";
 
-import AddBookingSidebar from "../Components/AddBookingSidebar";
-import ViewBookingSidebar from "../Components/ViewBookingSidebar";
+import AddBookingSidebar from "../Components/Booking/AddBookingSidebar.jsx";
+import ViewBookingSidebar from "../Components/Booking/ViewBookingSidebar";
 import useFetch from "../Hook/useFetch";
 import SettingsContext from "../Context/SettingsContext.jsx";
 

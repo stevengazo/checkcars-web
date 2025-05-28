@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
-import useMultipartFetch from "../Hook/useMultipartFetch";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import useMultipartFetch from "../../Hook/useMultipartFetch";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 const FileUpload = ({ CarId }) => {
   const { API_URL } = useContext(SettingsContext);
 

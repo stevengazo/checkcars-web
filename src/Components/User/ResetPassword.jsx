@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import useFetch from "../Hook/useFetch";
+import useFetch from "../../Hook/useFetch.js";
 import { useContext, useState } from "react";
-import SettingsContext from '../Context/SettingsContext.jsx'
+import SettingsContext from '../../Context/SettingsContext.jsx'
 
 
 const ResetPassword = ({ email }) => {

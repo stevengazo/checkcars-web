@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from "react";
 import { DotLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch";
-import IssueTable from "../Components/IssueTable";
-import SideBarIssue from "../Components/SidebarIssue";
+import IssueTable from "../Components/Issue/IssueTable";
+import SideBarIssue from "../Components/Issue/SidebarIssue.jsx";
 import SettingsContext from '../Context/SettingsContext.jsx'
 
 

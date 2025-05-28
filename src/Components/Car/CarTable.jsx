@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import { DotLoader } from "react-spinners";
-import useFetch from "../Hook/useFetch";
+import useFetch from "../../Hook/useFetch.js";
 import { useNavigate } from "react-router-dom";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 
 const CarTable = () => {
   const { API_URL } = useContext(SettingsContext);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import EntrySearch from "../Module/EntrySearch";
-import AddExit from "../Components/AddExit";
+import AddExit from "../Components/Exits/AddExit";
 
 const Exits = () => {
   const [showAdd, setShowAdd] = useState(false);

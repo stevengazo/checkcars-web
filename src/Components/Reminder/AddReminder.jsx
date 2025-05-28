@@ -1,7 +1,7 @@
 import { IoIosCloseCircle } from "react-icons/io";
 import { useState, useContext, useEffect } from "react";
-import useFetch from "../Hook/useFetch.js";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import useFetch from "../../Hook/useFetch.js";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const AddReminder = ({ onClose, CarId }) => {

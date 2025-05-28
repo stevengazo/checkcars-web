@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import SettingsContext from "../Context/SettingsContext";
+import SettingsContext from "../../Context/SettingsContext";
 
 const CarEdit = ({ car }) => {
   const { API_URL } = useContext(SettingsContext);

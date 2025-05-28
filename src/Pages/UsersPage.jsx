@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import UserAdd from "../Components/UserAdd";
-import UsersTable from "../Components/UsersTable";
+import UserAdd from "../Components/User/UserAdd";
+import UsersTable from "../Components/User/UsersTable";
 
 const UsersPage = () => {
   const [showModal, setShowModal] = useState(false);

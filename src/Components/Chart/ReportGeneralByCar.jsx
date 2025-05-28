@@ -10,8 +10,8 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import useFetch from "../Hook/useFetch";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import useFetch from "../../Hook/useFetch.js";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 
 const ReportGeneralByCar = () => {
   const { API_URL } = useContext(SettingsContext);

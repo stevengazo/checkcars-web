@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { DotLoader } from "react-spinners";
 
-import ReturnsTable from "../Components/ReturnsTable.jsx";
-import SideBarReturn from "../Components/SideBarReturn.jsx";
+import ReturnsTable from "../Components/Returns/ReturnsTable.jsx";
+import SideBarReturn from "../Components/Returns/SideBarReturn.jsx";
 import useFetch from "../Hook/useFetch.js";
 import SettingsContext from "../Context/SettingsContext.jsx";
 

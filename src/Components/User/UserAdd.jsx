@@ -1,6 +1,6 @@
 import React, { useReducer, useContext, useState } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
-import SettingsContext from "../Context/SettingsContext.jsx";
+import SettingsContext from "../../Context/SettingsContext.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 
 /**
