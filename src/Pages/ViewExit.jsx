@@ -6,6 +6,9 @@ import { usestate } from "react";
 import useFetch from "../Hook/useFetch.js";
 import MapLocation from "../Components/Maps/MapLocation.jsx";
 import SettingsContext from "../Context/SettingsContext.jsx";
+import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
+import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
+
 import { Link } from "react-router-dom";
 import generatePDFReport from "../utils/generatePDFReport.js";
 
@@ -88,7 +91,10 @@ const ViewExit = () => {
       <section className="bg-white rounded-2xl shadow p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <InfoItem label="Fecha" value={formatDate(entry.created)} />
         <InfoItem label="Autor" value={entry.author} />
-        <Link to={`/car/${entry.carId}`} className="inline-block px-3 py-1 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition">
+        <Link
+          to={`/car/${entry.carId}`}
+          className="inline-block px-3 py-1 text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition"
+        >
           <InfoItem label="Placa" value={entry.carPlate} />
         </Link>
         <InfoItem label="Kilometraje" value={entry.mileage} />
@@ -159,6 +165,15 @@ const ViewExit = () => {
           </p>
         )}
       </section>
+
+      {
+        /* Comentarios */
+        <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800">Comentarios</h2>
+          <CommentaryAdd ReportId={id} />
+          <CommentaryList ReportId={id} />
+        </section>
+      }
 
       {/* Modal de imagen ampliada */}
       {selectedImage && (
