@@ -6,6 +6,7 @@ const CommentaryAdd = ({ ReportId }) => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false); // Nuevo estado
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,14 +14,14 @@ const CommentaryAdd = ({ ReportId }) => {
 
     setLoading(true);
     setError(null);
+    setSuccess(false); // Reiniciar confirmación
 
-    // Objeto base
     const data = {
       id: 0,
       text: text,
       createdAt: new Date().toISOString(),
-      author:  localStorage.getItem("user"), // Se puede asignar si tienes esta info
-      authorId: "", // Se puede obtener del token o contexto
+      author: localStorage.getItem("user"),
+      authorId: "",
       reportId: ReportId,
       report: null
     };
@@ -40,6 +41,8 @@ const CommentaryAdd = ({ ReportId }) => {
       }
 
       setText('');
+      setSuccess(true); // Mostrar confirmación
+      setTimeout(() => setSuccess(false), 3000); // Ocultar después de 3 segundos
     } catch (err) {
       setError(err.message || 'Error desconocido');
     } finally {
@@ -66,6 +69,7 @@ const CommentaryAdd = ({ ReportId }) => {
           {loading ? 'Agregando...' : 'Agregar'}
         </button>
         {error && <p className="text-red-600 text-sm">{error}</p>}
+        {success && <p className="text-green-600 text-sm">Comentario agregado correctamente.</p>}
       </form>
     </div>
   );

@@ -22,7 +22,8 @@ const Login = () => {
   };
 
   if (data && data.token) {
-    localStorage.setItem("user", JSON.stringify(data.user));  
+    console.log("Login successful:", data);
+    localStorage.setItem("user", JSON.stringify(email));  
     localStorage.setItem("token", data.token);
     nav("/Home");
   }
