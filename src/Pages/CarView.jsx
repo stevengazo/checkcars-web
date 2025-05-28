@@ -66,7 +66,7 @@ const CarView = () => {
   const URLIssues = `${API_URL}/api/IssueReports/search?carId=${id}`;
   const URLReminders = `${API_URL}/api/Reminder/remindersbycar/${id}`;
   const URLCrashes = `${API_URL}/api/CrashReports/search?carId=${id}`;
-  const URLFiles = `${API_URL}/attachmentsbyCar/${id}`;
+  const URLFiles = `${API_URL}/api/VehicleAttachments/ByCar/${id}`;
   const URLServices = `${API_URL}/api/CarServices/bycar/${id}`;
   // Fetch data using custom hook
   const {
