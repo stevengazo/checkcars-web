@@ -54,6 +54,9 @@ const CarView = () => {
   const { API_URL } = useContext(SettingsContext);
   const { id } = useParams();
   // Use state hooks for managing local state
+  const [refreshFiles, setRefreshFiles] = useState(false);
+  const [refreshServices, setRefreshServices] = useState(false);
+  const [refreshReminders, setRefreshReminders] = useState(false);
   const [showAddReminder, setShowAddReminder] = useState(false);
   const [showAddService, setShowAddService] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -82,19 +85,25 @@ const CarView = () => {
   });
   const { data: RemindersData, loading: RemindersLoading } = useFetch(
     URLReminders,
-    { autoFetch: true }
+    { autoFetch: true, dependencies: [refreshReminders] }
   );
   const { data: CrashesData, loading: CrashesLoading } = useFetch(URLCrashes, {
     autoFetch: true,
   });
-  const { data: FilesData, loading: FilesLoading } = useFetch(URLFiles, {
-    autoFetch: true,
-  });
+  const {
+    data: FilesData,
+    loading: FilesLoading,
+    error: FilesError,
+  } = useFetch(URLFiles, { autoFetch: true, dependencies: [refreshFiles] });
+
   const {
     data: ServicesData,
     loading: ServicesLoading,
     error: ServiceErrors,
-  } = useFetch(URLServices, { autoFetch: true });
+  } = useFetch(URLServices, {
+    autoFetch: true,
+    dependencies: [refreshServices],
+  });
 
   return (
     <motion.div
@@ -233,6 +242,7 @@ const CarView = () => {
                   <AddReminder
                     onClose={() => setShowAddReminder(false)}
                     CarId={id}
+                    OnAdded={() => setRefreshReminders(!refreshReminders)}
                   />
                 )}
 
@@ -252,7 +262,10 @@ const CarView = () => {
               <LoadingState message="Cargando archivos..." />
             ) : FilesData?.length ? (
               <>
-                <FileUpload CarId={id} />
+                <FileUpload
+                  CarId={id}
+                  OnUploaded={() => setRefreshFiles(!refreshFiles)}
+                />
                 <br />
                 <FileTable items={FilesData} />
               </>
@@ -276,7 +289,11 @@ const CarView = () => {
             </button>
             <br />
             {showAddService && (
-              <AddService OnCloseForm={setShowAddService} carId={id} />
+              <AddService
+                OnCloseForm={setShowAddService}
+                carId={id}
+                OnAdded={() => setRefreshServices(!refreshServices)}
+              />
             )}
             <ServiceTable items={ServicesData} />
           </AnimatedTabPanel>

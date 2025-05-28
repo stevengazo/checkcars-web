@@ -1,24 +1,18 @@
-
 import { useState, useEffect, useCallback } from 'react';
-/**
- * Hook personalizado para realizar peticiones HTTP en aplicaciones React.
- * 
- * Características principales:
- * - Maneja estados de carga (`loading`), errores (`error`), y respuesta (`data`).
- * - Soporta autenticación mediante un token almacenado en `localStorage`.
- * - Permite la mezcla de opciones iniciales y personalizadas para las solicitudes.
- * - Incluye una función de reintento (`refetch`) para realizar nuevamente la petición.
- * - Auto-fetch habilitado por defecto, configurable con la opción `autoFetch`.
- * - Proporciona el código de estado HTTP (`status`) de la respuesta.
- */
 
 const useFetch = (url, options = {}) => {
+  const {
+    autoFetch = true,
+    dependencies = [], // nuevas dependencias opcionales para controlar re-fetch
+    ...fetchOptions
+  } = options;
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(0);
 
-  const token = localStorage.getItem('token'); // Obtén el token almacenado
+  const token = localStorage.getItem('token');
 
   const fetchData = useCallback(
     async (customOptions = {}) => {
@@ -27,17 +21,17 @@ const useFetch = (url, options = {}) => {
 
       try {
         const response = await fetch(url, {
-          ...options,
-          ...customOptions, // Mezclar opciones iniciales y personalizadas
+          ...fetchOptions,
+          ...customOptions,
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Agrega el token a los headers
-            ...options.headers, // Headers iniciales
-            ...(customOptions.headers || {}), // Headers personalizados
+            Authorization: `Bearer ${token}`,
+            ...fetchOptions.headers,
+            ...(customOptions.headers || {}),
           },
         });
+
         if (!response.ok) {
-          setData(result)
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
 
@@ -45,20 +39,20 @@ const useFetch = (url, options = {}) => {
         setStatus(response.status);
         setData(result);
       } catch (err) {
-        setData(null)
+        setData(null);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     },
-    [url, options, token]
+    [url, token, JSON.stringify(fetchOptions)] // para que detecte cambios en opciones, se stringify aquí
   );
 
   useEffect(() => {
-    if (options.autoFetch !== false) {
+    if (autoFetch) {
       fetchData();
     }
-  }, []);
+  }, [fetchData, ...dependencies]); // se vuelve a llamar cuando cambian las dependencias
 
   return { data, loading, error, refetch: fetchData, status };
 };

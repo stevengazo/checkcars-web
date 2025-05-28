@@ -4,7 +4,7 @@ import useFetch from "../../Hook/useFetch.js";
 import SettingsContext from "../../Context/SettingsContext.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const AddReminder = ({ onClose, CarId }) => {
+export const AddReminder = ({ onClose, CarId ,OnAdded}) => {
   const [reminderData, setReminderData] = useState({
     reminderId: 0,
     title: "",
@@ -94,6 +94,7 @@ export const AddReminder = ({ onClose, CarId }) => {
     if (Sending) return; // Previene múltiples envíos
     refetch();
     console.log(reminderData);
+    OnAdded(); // Llama a la función para indicar que se ha añadido un recordatorio
   };
 
   useEffect(() => {

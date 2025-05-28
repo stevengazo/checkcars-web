@@ -3,8 +3,7 @@ import React, { useState } from "react";
 const ServiceTable = ({ items }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-
-   const formatDate = (dateString) => {
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString("es-ES", {
       day: "2-digit",
@@ -25,8 +24,17 @@ const ServiceTable = ({ items }) => {
     if (!sortConfig.key) return items;
 
     const sorted = [...items].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'asc' ? 1 : -1;
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
+
+      // Si estamos ordenando por fecha, convertir a Date para comparar
+      if (sortConfig.key === 'date') {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      }
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
 

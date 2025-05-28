@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import useMultipartFetch from "../../Hook/useMultipartFetch";
 import SettingsContext from "../../Context/SettingsContext.jsx";
-const FileUpload = ({ CarId }) => {
+const FileUpload = ({ CarId, OnUploaded }) => {
   const { API_URL } = useContext(SettingsContext);
 
   const { data, loading, error, refetch, status } = useMultipartFetch(
@@ -26,6 +26,7 @@ const FileUpload = ({ CarId }) => {
     formData.append("file", file);
 
     await refetch(formData);
+    OnUploaded(); // Llama a la función para indicar que se ha subido un archivo
   };
 
   return (

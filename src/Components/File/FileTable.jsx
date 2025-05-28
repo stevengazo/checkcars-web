@@ -1,5 +1,10 @@
+import { useState, useContext } from "react";
+import SettingsContext from "../../Context/SettingsContext.jsx";
+import useFetch from "../../Hook/useFetch.js";
+
 const FileTable = ({ items }) => {
-  console.table("items", items);
+  const { API_URL } = useContext(SettingsContext);
+  const [fileItems, setFileItems] = useState(items);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -9,13 +14,35 @@ const FileTable = ({ items }) => {
       year: "numeric",
     });
   };
+
   const handleDownload = (filePath) => {
     window.open(filePath, "_blank");
   };
 
-  const handleDelete = (id) => {
-    // Aquí puedes implementar la lógica para eliminar el archivo
-    console.log(`Eliminar archivo con ID: ${id}`);
+  const handleDelete = async (id) => {
+    const URL = `${API_URL}/api/VehicleAttachments/${id}`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el archivo");
+      }
+
+      // Filtramos el archivo eliminado del estado
+      setFileItems((prevItems) =>
+        prevItems.filter((item) => item.attachmentId !== id)
+      );
+      console.log(`Archivo con ID ${id} eliminado correctamente.`);
+    } catch (error) {
+      console.error("Error al eliminar archivo:", error);
+    }
   };
 
   return (
@@ -31,8 +58,7 @@ const FileTable = ({ items }) => {
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
-          {/* Aquí puedes mapear tus archivos */}
-          {items.map((item, index) => (
+          {fileItems.map((item, index) => (
             <tr
               key={index}
               className="border-b border-gray-200 hover:bg-gray-100"

@@ -14,7 +14,7 @@ const SERVICE_TYPES = [
   "Revisión general", "Rotación de neumáticos", "Servicio de dirección", "Servicio de transmisión"
 ];
 
-const AddService = ({ carId, OnCloseForm }) => {
+const AddService = ({ carId, OnCloseForm , OnAdded }) => {
   const { API_URL } = useContext(SettingsContext);
 
   const [formData, setFormData] = useState({
@@ -53,8 +53,8 @@ const AddService = ({ carId, OnCloseForm }) => {
 
     try {
       await sendService(); // Ejecuta el POST
-
       setSuccess(true);
+      OnAdded(); // Llama a la función para indicar que se ha añadido un servicio
       setFormData({
         title: "",
         date: new Date().toISOString().slice(0, 16),
@@ -66,7 +66,7 @@ const AddService = ({ carId, OnCloseForm }) => {
       setTimeout(() => {
         setSuccess(false);
         OnCloseForm(false);
-      }, 3000);
+      }, 900);
     } catch (err) {
       console.error("Error al enviar servicio:", err);
     }
