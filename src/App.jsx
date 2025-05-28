@@ -14,6 +14,9 @@ import ErrorPage from "./Pages/Error";
 import ForgotPassword from "./Pages/ForgotPassword";
 import BookingPage from "./Pages/BookingPage";
 import ViewExit from "./Pages/ViewExit";
+import ViewCrash from "./Pages/ViewCrash";
+import ViewReturn from "./Pages/ViewReturn";
+import ViewIssue from "./Pages/ViewIssue";
 
 import { useEffect } from "react";
 import {
@@ -51,6 +54,9 @@ function App() {
           <Route path="/CarList" element={<CarList />} />
           <Route path="/car/:id" element={<CarView />} />
           <Route path="/viewexit/:id" element={<ViewExit />} />
+          <Route path="/viewcrash/:id" element={<ViewCrash />} />
+          <Route path="/viewreturn/:id" element={<ViewReturn />} />
+          <Route path="/viewissue/:id" element={<ViewIssue />} />
         </Route>
         <Route path="*" element={<ErrorPage />} />
       </Routes>

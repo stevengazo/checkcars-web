@@ -74,12 +74,6 @@ const ViewReturn = () => {
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">Resumen de Retorno</h2>
           <div className="flex items-center gap-3">
-                   <Link
-              to={`/viewreturn/${entry.reportId}`}
-              className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
-              >
-                Ver Reporte
-              </Link>
             <Link
               to={`/car/${entry.carId}`}
               className="px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
