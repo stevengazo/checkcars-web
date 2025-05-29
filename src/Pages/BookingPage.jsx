@@ -64,6 +64,7 @@ const BookingPage = () => {
       const formattedEvents = data.map((booking) => ({
         title: booking.reason || "Sin motivo",
         start: new Date(booking.startDate),
+        
         end: new Date(booking.endDate),
         reason: booking.reason,
         province: booking.province,

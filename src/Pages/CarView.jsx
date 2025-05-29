@@ -105,6 +105,28 @@ const CarView = () => {
     dependencies: [refreshServices],
   });
 
+ const DeleteCar = async () => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este vehículo?")) {
+      try {
+        const response = await fetch(`${API_URL}/api/Cars/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Error al eliminar el vehículo");
+        }
+        alert("Vehículo eliminado correctamente");
+        window.location.href = "/cars"; // Redirect to cars list
+      } catch (error) {
+        console.error("Error al eliminar el vehículo:", error);
+        alert("No se pudo eliminar el vehículo. Inténtalo de nuevo más tarde.");
+      }
+    }
+  }
+
   return (
     <motion.div
       className="p-6 space-y-8"
@@ -123,7 +145,7 @@ const CarView = () => {
         {carData && (
           <div className=" flex gap-1">
             {!editMode && (
-              <button className="text-white px-4 py-2 rounded transition bg-red-500">
+              <button className="text-white px-4 py-2 rounded transition bg-red-500"  onClick={DeleteCar}>
                 Borrar Vehículo
               </button>
             )}
