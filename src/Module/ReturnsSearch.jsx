@@ -20,6 +20,7 @@ export default function ReturnsSearch() {
     autoFetch: false,
   });
 
+ 
   // Construye la URL de búsqueda basada en los filtros activos
   const buildSearchUrl = () => {
     const base = `${API_URL}/api/VehicleReturns`;
@@ -105,7 +106,7 @@ export default function ReturnsSearch() {
       <div className="mt-6 flex justify-center align-top">
         {loading && <DotLoader color="#2563EB" />}
         {!loading && data && (
-          <ReturnsTable returns ={data} onSelected={setSelectedReport} />
+          <ReturnsTable returns={data} onSelected={setSelectedReport} />
         )}
         {selectedReport && (
           <SideBarReturn entry={selectedReport} onClose={setSelectedReport} />

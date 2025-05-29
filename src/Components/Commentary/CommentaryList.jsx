@@ -6,6 +6,7 @@ import useFetch from "../../Hook/useFetch";
 const CommentaryList = ({ ReportId, refresh }) => {
   const { API_URL } = useContext(SettingsContext);
   const url = `${API_URL}/api/Commentary/ByReport/${ReportId}`;
+  console.log("Fetching comments from:", url);
   const {
     data: comments,
     loading,

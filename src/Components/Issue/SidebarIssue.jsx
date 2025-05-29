@@ -99,6 +99,12 @@ export default function SideBarIssue({ issue, onClose }) {
           {/* Botones flotantes */}
           <div className="absolute top-4 right-4 flex items-center gap-3 z-50">
             <Link
+              to={`/viewissue/${issue.reportId}`}
+              className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 hover:text-blue-700 transition duration-200"
+            >
+              Ver Reporte
+            </Link>
+            <Link
               to={`/car/${issue.carId}`}
               className="flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded shadow-md hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
             >
