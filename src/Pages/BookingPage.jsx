@@ -38,7 +38,6 @@ const BookingPage = () => {
   const { API_URL } = useContext(SettingsContext);
   const URL = `${API_URL}/api/Bookings`;
 
-
   const { data, loading, error, refetch } = useFetch(URL, {
     autoFetch: true,
   });
@@ -56,15 +55,11 @@ const BookingPage = () => {
     reason: "",
   });
 
-  // Convertir los bookings en eventos de calendario
   useEffect(() => {
-
     if (data && Array.isArray(data)) {
-      console.log("Datos de reservas:", data);
       const formattedEvents = data.map((booking) => ({
         title: booking.reason || "Sin motivo",
         start: new Date(booking.startDate),
-        
         end: new Date(booking.endDate),
         reason: booking.reason,
         province: booking.province,
@@ -77,13 +72,11 @@ const BookingPage = () => {
     }
   }, [data]);
 
-  // Buscar información del vehículo cuando se selecciona un evento
   useEffect(() => {
     const fetchCar = async () => {
       if (selectedEvent?.carId) {
         try {
-          const response = await fetch(`${API_URL}/api/Cars/${selectedEvent.carId}`,{
-            autoFetch:false,
+          const response = await fetch(`${API_URL}/api/Cars/${selectedEvent.carId}`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -141,6 +134,28 @@ const BookingPage = () => {
     setEventDetailsOpen(true);
   };
 
+  // 🎨 Asignar colores según el estado
+  const eventPropGetter = (event) => {
+    let backgroundColor = "#2196F3"; // Azul por defecto
+
+    if (event.status === "Confirmado") {
+      backgroundColor = "#4CAF50"; // Verde
+    } else if (event.status === "Pendiente") {
+      backgroundColor = "#FFC107"; // Amarillo
+    } else if (event.status === "Cancelado") {
+      backgroundColor = "#F44336"; // Rojo
+    }
+
+    return {
+      style: {
+        backgroundColor,
+        color: "white",
+        borderRadius: "5px",
+        border: "none",
+      },
+    };
+  };
+
   return (
     <div className="w-full h-full flex relative overflow-hidden">
       <AnimatePresence>
@@ -178,7 +193,7 @@ const BookingPage = () => {
               isOpen={eventDetailsOpen}
               onClose={() => setEventDetailsOpen(false)}
               event={selectedEvent}
-              car={selectedCar} // 👈 nuevo prop con la info del vehículo
+              car={selectedCar}
             />
           </motion.div>
         )}
@@ -202,6 +217,7 @@ const BookingPage = () => {
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
             culture="es"
+            eventPropGetter={eventPropGetter}
             messages={{
               next: "Sig.",
               previous: "Ant.",

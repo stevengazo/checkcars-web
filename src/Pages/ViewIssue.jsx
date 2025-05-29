@@ -5,6 +5,8 @@ import { BeatLoader } from "react-spinners";
 import useFetch from "../Hook/useFetch.js";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import Map from "../Components/Maps/MapLocation.jsx";
+import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
+import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
 
 const InfoItem = ({ label, value }) => (
   <div className="flex flex-col">
@@ -14,10 +16,14 @@ const InfoItem = ({ label, value }) => (
 );
 
 export default function ViewIssue() {
+  const [refreshCommentary, setRefreshCommentary] = React.useState(false);
   const { id } = useParams();
   const { API_URL, generatePDF } = useContext(SettingsContext);
 
-  const { data: issue, loading: issueLoading } = useFetch(`${API_URL}/api/IssueReports/${id}`, { autoFetch: true });
+  const { data: issue, loading: issueLoading } = useFetch(
+    `${API_URL}/api/IssueReports/${id}`,
+    { autoFetch: true }
+  );
   const { data: photos, loading: photosLoading } = useFetch(
     issue ? `${API_URL}/api/Photos/report/${issue.reportId}` : null,
     { autoFetch: !!issue }
@@ -26,7 +32,11 @@ export default function ViewIssue() {
   const generateName = () => {
     const date = new Date();
     const formattedDate = date
-      .toLocaleString("en-GB", { year: "2-digit", month: "short", day: "2-digit" })
+      .toLocaleString("en-GB", {
+        year: "2-digit",
+        month: "short",
+        day: "2-digit",
+      })
       .replace(/ /g, "-");
     return `Report-Issue-${formattedDate}.pdf`;
   };
@@ -122,7 +132,10 @@ export default function ViewIssue() {
 
       {/* Información general */}
       <section className="bg-white rounded-2xl shadow p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <InfoItem label="Creación" value={new Date(issue.created).toLocaleString("es-ES")} />
+        <InfoItem
+          label="Creación"
+          value={new Date(issue.created).toLocaleString("es-ES")}
+        />
         <InfoItem label="Autor" value={issue.author} />
         <InfoItem label="Placa" value={issue.carPlate} />
         <InfoItem label="Tipo" value={issue.type} />
@@ -144,7 +157,9 @@ export default function ViewIssue() {
 
       {/* Galería de Fotos */}
       <section className="bg-white rounded-2xl shadow p-6 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-800">Fotos del Reporte</h2>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Fotos del Reporte
+        </h2>
         {photosLoading ? (
           <div className="flex justify-center py-6">
             <BeatLoader size={24} />
@@ -161,10 +176,20 @@ export default function ViewIssue() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500 italic">No hay imágenes disponibles.</p>
+          <p className="text-sm text-gray-500 italic">
+            No hay imágenes disponibles.
+          </p>
         )}
+      </section>
+      {/* Galería de Fotos */}
+      <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-800">Comentarios</h2>
+        <CommentaryAdd
+          ReportId={issue.reportId}
+          onCommentAdded={() => setRefreshCommentary(!refreshCommentary)}
+        />
+        <CommentaryList ReportId={issue.reportId} refresh={refreshCommentary} />
       </section>
     </div>
   );
 }
-

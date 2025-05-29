@@ -14,7 +14,7 @@ const ViewBookingSidebar = ({ isOpen, onClose, event, car }) => {
     try {
       setIsProcessing(true);
       const response = await fetch(`${API_URL}/api/Bookings/confirm/${event.bookingId}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -37,7 +37,7 @@ const ViewBookingSidebar = ({ isOpen, onClose, event, car }) => {
     try {
       setIsProcessing(true);
       const response = await fetch(`${API_URL}/api/Bookings/cancel/${event.bookingId}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

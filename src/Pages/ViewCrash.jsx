@@ -1,14 +1,16 @@
 import { useParams, Link } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaRegFilePdf } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
+
 
 import useFetch from "../Hook/useFetch.js";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import useGeneratePDF from "../Hook/useGeneratePdf.js";
 import Map from "../Components/Maps/MapLocation.jsx";
-
+import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
+import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
 
 const InfoRow = ({ label, value }) => (
   <div className="flex flex-col text-sm">
@@ -17,8 +19,9 @@ const InfoRow = ({ label, value }) => (
   </div>
 );
 
-
 const ViewCrash = () => {
+  const [refreshCommentary, setRefreshCommentary] = useState(false);
+
   const { id } = useParams();
   const { API_URL } = useContext(SettingsContext);
 
@@ -244,6 +247,18 @@ const ViewCrash = () => {
             )
           )}
         </div>
+        {/* Galería de Fotos */}
+        <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800">Comentarios</h2>
+          <CommentaryAdd
+            ReportId={crash.reportId}
+            onCommentAdded={() => setRefreshCommentary(!refreshCommentary)}
+          />
+          <CommentaryList
+            ReportId={crash.reportId}
+            refresh={refreshCommentary}
+          />
+        </section>
       </motion.div>
     </AnimatePresence>
   );
