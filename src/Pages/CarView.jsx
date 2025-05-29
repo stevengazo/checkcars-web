@@ -21,6 +21,7 @@ import FileTable from "../Components/File/FileTable";
 import FileUpload from "../Components/File/FileUpload";
 import AddService from "../Components/Service/AddService";
 import ServiceTable from "../Components/Service/ServiceTable";
+import { da } from "date-fns/locale";
 
 const LoadingState = ({ message }) => (
   <div className="flex flex-col items-center justify-center p-6">
@@ -105,8 +106,10 @@ const CarView = () => {
     dependencies: [refreshServices],
   });
 
- const DeleteCar = async () => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este vehículo?")) {
+  const DeleteCar = async () => {
+    if (
+      window.confirm("¿Estás seguro de que quieres eliminar este vehículo?")
+    ) {
       try {
         const response = await fetch(`${API_URL}/api/Cars/${id}`, {
           method: "DELETE",
@@ -125,7 +128,44 @@ const CarView = () => {
         alert("No se pudo eliminar el vehículo. Inténtalo de nuevo más tarde.");
       }
     }
-  }
+  };
+
+  const AvariableSet = async (value) => {
+    const dat = !value;
+    console.log("AvariableSet called with value:", dat);
+    if (!carData) return;
+
+    try {
+      console.log("Setting Avariable to:", dat);
+
+      // Crear una copia del objeto en lugar de modificar directamente
+      const updatedCar = { ...carData, IsAvailable: dat };
+      console.log("Payload enviado:", updatedCar);
+      const response = await fetch(`${API_URL}/api/Cars/${carData.carId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(updatedCar),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+      console.log("Response body:", await response.text());
+      if (!response.ok) {
+        throw new Error("Error al actualizar el vehículo");
+      } else if (response.status === 204) {
+        console.log("No content returned, update successful");
+      }
+
+      alert("Estado de mantenimiento actualizado correctamente");
+      window.location.reload(); // Recarga para reflejar cambios
+    } catch (error) {
+      console.error("Error al establecer el valor:", error);
+      alert("No se pudo actualizar el estado. Inténtalo de nuevo más tarde.");
+    }
+  };
 
   return (
     <motion.div
@@ -145,13 +185,23 @@ const CarView = () => {
         {carData && (
           <div className=" flex gap-1">
             {!editMode && (
-              <button className="text-white px-4 py-2 rounded transition bg-red-500"  onClick={DeleteCar}>
+              <button
+                className="text-white px-4 py-2 rounded transition bg-red-500"
+                onClick={DeleteCar}
+              >
                 Borrar Vehículo
               </button>
             )}
             {!editMode && (
-              <button className="text-white px-4 py-2 rounded transition bg-purple-500">
-                Mantenimiento
+              <button
+                className={`text-white px-4 py-2 rounded transition ${
+                  carData.IsAvailable
+                    ? "bg-purple-500 hover:bg-purple-600"
+                    : "bg-yellow-500 hover:bg-yellow-600"
+                }`}
+                onClick={() => AvariableSet(carData.IsAvailable)}
+              >
+                {carData.IsAvailable ? "En Mantenimiento" : "Disponible"}
               </button>
             )}
             <motion.button
