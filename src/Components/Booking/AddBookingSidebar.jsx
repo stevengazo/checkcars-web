@@ -1,6 +1,26 @@
 import { motion } from "framer-motion";
+import { useState, useContext, useEffect } from "react";
+import SettingsContext from "../../Context/SettingsContext";
+import useFetch from "../../Hook/useFetch";
 
-const AddBookingSidebar = ({ isOpen, onClose, newEvent, setNewEvent, onAddEvent }) => {
+const AddBookingSidebar = ({
+  isOpen,
+  onClose,
+  newEvent,
+  setNewEvent,
+  onAddEvent,
+}) => {
+  const { API_URL } = useContext(SettingsContext);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { data: cars } = useFetch(`${API_URL}/api/Cars`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  console.log("Cars data:", cars);
+
   return (
     <motion.div
       initial={{ x: "100%" }}
@@ -37,13 +57,19 @@ const AddBookingSidebar = ({ isOpen, onClose, newEvent, setNewEvent, onAddEvent 
         />
       </label>
       <label className="block mb-2">
-        Placa del vehículo:
-        <input
-          type="text"
-          value={newEvent.plate}
-          onChange={(e) => setNewEvent({ ...newEvent, plate: e.target.value })}
+        Vehículo:
+        <select
+          value={newEvent.carId}
+          onChange={(e) => setNewEvent({ ...newEvent, carId: e.target.value })}
           className="w-full border rounded p-2 mt-1"
-        />
+        >
+          {cars &&
+            cars.map((car) => (
+              <option key={car.carId} value={car.carId}>
+                {car.plate} - {car.brand} {car.model}
+              </option>
+            ))}
+        </select>
       </label>
       <label className="block mb-4">
         Motivo de uso:
@@ -54,7 +80,10 @@ const AddBookingSidebar = ({ isOpen, onClose, newEvent, setNewEvent, onAddEvent 
         />
       </label>
       <div className="flex justify-between">
-        <button onClick={onAddEvent} className="bg-blue-500 text-white px-4 py-2 rounded">
+        <button
+          onClick={onAddEvent}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
           Guardar
         </button>
         <button onClick={onClose} className="text-gray-600 underline">
