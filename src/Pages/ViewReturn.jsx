@@ -170,7 +170,7 @@ const ViewReturn = () => {
             Comentarios
           </h3>
           <CommentaryAdd ReportId={returnObj.reportId} onCommentAdded={()=> setChangeCommentary(!changeCommentary)} />
-          <CommentaryList id={returnObj.reportId} refresh={changeCommentary} />
+          <CommentaryList ReportId={returnObj.reportId} refresh={changeCommentary} />
         </div>
       </motion.div>
     </AnimatePresence>
