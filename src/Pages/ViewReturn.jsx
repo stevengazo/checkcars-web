@@ -87,7 +87,7 @@ const ViewReturn = () => {
 
   return (
     <AnimatePresence>
-      <motion.div className=" container mx-auto p-6 space-y-6">
+      <motion.div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">
             Resumen de Retorno

@@ -38,6 +38,7 @@ const BookingPage = () => {
   const { API_URL } = useContext(SettingsContext);
   const URL = `${API_URL}/api/Bookings`;
 
+
   const { data, loading, error, refetch } = useFetch(URL, {
     autoFetch: true,
   });
@@ -57,7 +58,9 @@ const BookingPage = () => {
 
   // Convertir los bookings en eventos de calendario
   useEffect(() => {
+
     if (data && Array.isArray(data)) {
+      console.log("Datos de reservas:", data);
       const formattedEvents = data.map((booking) => ({
         title: booking.reason || "Sin motivo",
         start: new Date(booking.startDate),
@@ -67,6 +70,7 @@ const BookingPage = () => {
         carId: booking.carId,
         userId: booking.userId,
         bookingId: booking.bookingId,
+        status: booking.status,
       }));
       setEvents(formattedEvents);
     }

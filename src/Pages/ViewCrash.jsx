@@ -173,7 +173,7 @@ const ViewCrash = () => {
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: "100%", opacity: 0 }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
-        className="fixed top-0 right-0 z-50 w-full md:w-[50vw] lg:w-[40vw] h-full bg-white border-l border-gray-200 shadow-xl overflow-y-auto p-6 space-y-6"
+        className="max-w-6xl mx-auto px-6 py-10 space-y-10"
       >
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -198,7 +198,7 @@ const ViewCrash = () => {
         </div>
 
         {/* Información */}
-        <div className="space-y-3">
+        <div className="mt-6 border-gray-400 rounded shadow-sm p-4">
           <InfoRow label="Creación" value={formatDate(crash.created)} />
           <InfoRow label="Autor" value={crash.author} />
           <InfoRow label="Placa" value={crash.carPlate} />
@@ -208,7 +208,7 @@ const ViewCrash = () => {
         </div>
 
         {/* Ubicación */}
-        <div>
+        <div className="mt-6 border-gray-400 rounded shadow-sm p-4">
           <h3 className="text-lg font-semibold mb-2 text-gray-700">
             Ubicación GPS
           </h3>
@@ -220,7 +220,7 @@ const ViewCrash = () => {
         </div>
 
         {/* Imágenes */}
-        <div>
+        <div className="mt-6 border-gray-400 rounded shadow-sm p-4">
           <h3 className="text-lg font-semibold mb-3 text-gray-700">
             Fotos del Accidente
           </h3>
