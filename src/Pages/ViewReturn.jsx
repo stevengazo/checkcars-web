@@ -10,6 +10,7 @@ import generatePDFReport from "../utils/generatePDFReport.js";
 import { motion, AnimatePresence } from "framer-motion";
 import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
 import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
+import ScoreStatus from "../Components/Score/ScoreStatus.jsx";
 
 const ViewReturn = () => {
   const { id } = useParams();
@@ -163,7 +164,11 @@ const ViewReturn = () => {
             </p>
           )}
         </div>
-
+      {/* Calificación */}
+      <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-800">Calificación</h2>
+        <ScoreStatus Report={returnObj} type={"VehicleReturns"} />
+      </section>
         {/* Commentary List */}
         <div className="border rounded-2xl p-4  border-gray-300 shadow-sm">
           <h3 className="text-lg font-semibold mb-2 text-gray-700">

@@ -4,13 +4,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaRegFilePdf } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
 
-
 import useFetch from "../Hook/useFetch.js";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import useGeneratePDF from "../Hook/useGeneratePdf.js";
 import Map from "../Components/Maps/MapLocation.jsx";
 import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
 import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
+import ScoreStatus from "../Components/Score/ScoreStatus.jsx";
 
 const InfoRow = ({ label, value }) => (
   <div className="flex flex-col text-sm">
@@ -247,6 +247,12 @@ const ViewCrash = () => {
             )
           )}
         </div>
+
+        {/* Calificación */}
+        <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800">Calificación</h2>
+          <ScoreStatus Report={Crash} type={"CrashReports"} />
+        </section>
         {/* Galería de Fotos */}
         <section className="bg-white rounded-2xl shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">Comentarios</h2>

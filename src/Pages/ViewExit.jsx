@@ -8,7 +8,7 @@ import MapLocation from "../Components/Maps/MapLocation.jsx";
 import SettingsContext from "../Context/SettingsContext.jsx";
 import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
 import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
-
+import ScoreStatus from "../Components/Score/ScoreStatus.jsx";
 import { Link } from "react-router-dom";
 import generatePDFReport from "../utils/generatePDFReport.js";
 
@@ -165,6 +165,11 @@ const ViewExit = () => {
             No hay imágenes disponibles.
           </p>
         )}
+      </section>
+      {/* Calificación */}
+      <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-800">Calificación</h2>
+        <ScoreStatus Report={entry} type={"EntryExitReports"} />
       </section>
 
       {

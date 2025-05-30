@@ -21,13 +21,14 @@ const CarEdit = ({ car }) => {
     try {
       const response = await fetch(`${API_URL}/api/Cars/${car.carId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) throw new Error("Error al actualizar el vehículo");
 
       setMessage("✅ Vehículo actualizado correctamente.");
+window.location.reload(); // Reload the page to reflect changes
     } catch (err) {
       console.error(err);
       setMessage("❌ Hubo un error al guardar.");

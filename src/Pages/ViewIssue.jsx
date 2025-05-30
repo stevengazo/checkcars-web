@@ -7,6 +7,7 @@ import SettingsContext from "../Context/SettingsContext.jsx";
 import Map from "../Components/Maps/MapLocation.jsx";
 import CommentaryAdd from "../Components/Commentary/CommentaryAdd.jsx";
 import CommentaryList from "../Components/Commentary/CommentaryList.jsx";
+import ScoreStatus from "../Components/Score/ScoreStatus.jsx";
 
 const InfoItem = ({ label, value }) => (
   <div className="flex flex-col">
@@ -180,6 +181,12 @@ export default function ViewIssue() {
             No hay imágenes disponibles.
           </p>
         )}
+      </section>
+
+      {/* Calificación */}
+      <section className="bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-800">Calificación</h2>
+        <ScoreStatus Report={issue} type={"IssueReports"} />
       </section>
       {/* Galería de Fotos */}
       <section className="bg-white rounded-2xl shadow p-6 space-y-4">
