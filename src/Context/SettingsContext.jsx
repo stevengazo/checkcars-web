@@ -1,11 +1,9 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 
-// Creamos el contexto
 const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
-  // URL de la API
-  const API_URL = "http://localhost:8080";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   return (
     <SettingsContext.Provider value={{ API_URL }}>
@@ -14,5 +12,4 @@ export const SettingsProvider = ({ children }) => {
   );
 };
 
-// Hook para usar el contexto en otros componentes
 export default SettingsContext;
