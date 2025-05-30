@@ -118,15 +118,15 @@ const CarTable = () => {
               <tr
                 key={car.carId}
                 className={`hover:cursor-pointer ${
-                  car.isAvailable ? "hover:bg-gray-100" : "bg-gray-200"
+                  car.isAvailable ? "hover:bg-gray-100" : "bg-purple-200"
                 }${car.deleted ? "hover:bg-red-100" : "bg-gray-200"}`}
                 onClick={() => GoTo(car.carId)}
               >
                 <td className="px-4 py-2 border-b border-gray-300">
-                  {car.brand} {
-                  car.deleted ? "Borrado" : ""
-                  
-                }
+                  {car.brand}
+                  {"-"} {car.deleted ? " Borrado " : ""}
+                 
+                  {!car.isAvailable ? " En Mantenimiento" : ""}
                 </td>
                 <td className="px-4 py-2 border-b border-gray-300">
                   {car.model}

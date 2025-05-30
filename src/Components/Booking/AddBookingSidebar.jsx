@@ -19,7 +19,6 @@ const AddBookingSidebar = ({
     },
   });
 
-  console.log("Cars data:", cars);
 
   return (
     <motion.div

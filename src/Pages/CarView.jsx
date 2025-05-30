@@ -64,6 +64,7 @@ const CarView = () => {
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [car, setCar] = useState(null);
   // API URLs
   const URLInfo = `${API_URL}/api/Cars/${id}`;
   const URLEntries = `${API_URL}/api/EntryExitReports/search?carId=${id}`;
@@ -96,6 +97,14 @@ const CarView = () => {
     loading: FilesLoading,
     error: FilesError,
   } = useFetch(URLFiles, { autoFetch: true, dependencies: [refreshFiles] });
+
+  useEffect(() => {
+    // Set the car data when fetched
+    console.log("Car data fetched:", carData);
+    if (carData) {
+      setCar(carData);
+    }
+  }, [carData]);
 
   const {
     data: ServicesData,
@@ -131,28 +140,27 @@ const CarView = () => {
   };
 
   const AvariableSet = async (value) => {
-    const dat = !value;
-    console.log("AvariableSet called with value:", dat);
-    if (!carData) return;
+    console.log("AvariableSet1 called with value:", value);
+    console.log("AvariableSet called with value:", !value);
+    if (!car) return;
 
     try {
-      console.log("Setting Avariable to:", dat);
+      console.log("Setting Avariable to:", !value);
 
       // Crear una copia del objeto en lugar de modificar directamente
-      const updatedCar = { ...carData, IsAvailable: dat };
-      console.log("Payload enviado:", updatedCar);
-      const response = await fetch(`${API_URL}/api/Cars/${carData.carId}`, {
+      const varL = car;
+      varL.isAvailable = !value;
+      setCar(varL);
+      console.log("Payload enviado:", car);
+      const response = await fetch(`${API_URL}/api/Cars/${car.carId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(updatedCar),
+        body: JSON.stringify(car),
       });
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-      console.log("Response body:", await response.text());
       if (!response.ok) {
         throw new Error("Error al actualizar el vehículo");
       } else if (response.status === 204) {
@@ -160,7 +168,7 @@ const CarView = () => {
       }
 
       alert("Estado de mantenimiento actualizado correctamente");
-      window.location.reload(); // Recarga para reflejar cambios
+      //  window.location.reload(); // Recarga para reflejar cambios
     } catch (error) {
       console.error("Error al establecer el valor:", error);
       alert("No se pudo actualizar el estado. Inténtalo de nuevo más tarde.");
@@ -182,7 +190,10 @@ const CarView = () => {
         transition={{ delay: 0.1 }}
       >
         <h1 className="text-3xl font-bold">Detalles del Vehículo</h1>
-        {carData && (
+        <h3 className="text-xl font-semibold text-gray-700">
+          {car?.isAvailable ? "" : "En Mantenimiento"}
+        </h3>
+        {car && (
           <div className=" flex gap-1">
             {!editMode && (
               <button
@@ -195,13 +206,13 @@ const CarView = () => {
             {!editMode && (
               <button
                 className={`text-white px-4 py-2 rounded transition ${
-                  carData.IsAvailable
+                  car.isAvailable
                     ? "bg-purple-500 hover:bg-purple-600"
                     : "bg-yellow-500 hover:bg-yellow-600"
                 }`}
-                onClick={() => AvariableSet(carData.IsAvailable)}
+                onClick={() => AvariableSet(car.isAvailable)}
               >
-                {carData.IsAvailable ? "En Mantenimiento" : "Disponible"}
+                {car.isAvailable ? "En Mantenimiento" : "Disponible"}
               </button>
             )}
             <motion.button
@@ -233,11 +244,11 @@ const CarView = () => {
             <LoadingState message="Cargando Detalles..." />
           ) : carError ? (
             <EmptyState message="Error al cargar los datos del vehículo." />
-          ) : carData ? (
+          ) : car ? (
             editMode ? (
-              <CarEdit car={carData} />
+              <CarEdit car={car} />
             ) : (
-              <CarInfo car={carData} />
+              <CarInfo car={car} />
             )
           ) : (
             <EmptyState message="No hay datos disponibles para este vehículo." />
