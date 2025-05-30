@@ -80,7 +80,7 @@ const BookingPage = () => {
   useEffect(() => {
     if (data && Array.isArray(data)) {
       const formattedEvents = data.map((booking) => ({
-        title: booking.reason || "Sin motivo",  // Título visible en el evento
+        title: booking.reason  || "Sin motivo",  // Título visible en el evento
         start: new Date(booking.startDate),     // Fecha inicio como objeto Date
         end: new Date(booking.endDate),         // Fecha fin como objeto Date
         reason: booking.reason,
@@ -240,8 +240,8 @@ const BookingPage = () => {
         animate="visible"
         variants={contentVariants}
       >
-        <h1 className="text-2xl font-bold mb-2">Booking</h1>
-        <p className="mb-4">Reserva tu cita aquí.</p>
+        <h1 className="text-2xl font-bold mb-2">Sistema de Reservas</h1>
+        <p className="mb-4">Administre las reservas de vehículos.</p>
         <div style={{ height: 500 }}>
           {/* Calendario interactivo */}
           <Calendar

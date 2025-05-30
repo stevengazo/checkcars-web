@@ -18,6 +18,7 @@ import ViewCrash from "./Pages/ViewCrash";
 import ViewReturn from "./Pages/ViewReturn";
 import ViewIssue from "./Pages/ViewIssue";
 import Demo from "./Pages/demo";
+import Register from "./Pages/Register";
 
 import { useEffect } from "react";
 import {
@@ -43,6 +44,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />

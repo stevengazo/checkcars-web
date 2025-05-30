@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useFetch from "../Hook/useFetch";
 import { IoIosCar } from "react-icons/io";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Links, useNavigate } from "react-router-dom";
 import SettingsContext from "../Context/SettingsContext.jsx";
 
 const Login = () => {
@@ -23,7 +23,7 @@ const Login = () => {
 
   if (data && data.token) {
     console.log("Login successful:", data);
-    localStorage.setItem("user", JSON.stringify(email));  
+    localStorage.setItem("user", JSON.stringify(email));
     localStorage.setItem("token", data.token);
     nav("/Home");
   }
@@ -131,6 +131,12 @@ const Login = () => {
               {loading ? "Cargando..." : "Iniciar sesión"}
             </motion.button>
           </motion.div>
+          <Link
+            to={"/register"}
+            className="font-light text-sm align-middle justify-center text-center  text-indigo-600 hover:text-indigo-500"
+          >
+            Registrarme
+          </Link>
 
           <AnimatePresence>
             {error && (
