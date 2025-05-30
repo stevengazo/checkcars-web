@@ -11,13 +11,57 @@ const AddBookingSidebar = ({
   onAddEvent,
 }) => {
   const { API_URL } = useContext(SettingsContext);
+  const [event, setEvent] = useState({
+    bookingId: 0,
+    startDate: event.start,
+    endDate: event.end,
+    reason: "",
+    status: "Pendiente",
+    userId: "string",
+    province: "string",
+    deleted: false,
+    carId: "",
+    confirmed: false,
+    car: null,
+  });
+
+
   const [isProcessing, setIsProcessing] = useState(false);
+  // Fetch cars from the API
   const { data: cars } = useFetch(`${API_URL}/api/Cars`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+  // quiero enviar el evento al servidor y la actualizacion al calendario
+
+  const SendToServer = async (event) => {
+    setIsProcessing(true);
+    try {
+      const response = await fetch(`${API_URL}/api/Bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(event),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar la cita");
+      }
+
+      const data = await response.json();
+      console.log("Cita agregada:", data);
+      setIsProcessing(false);
+      onAddEvent();
+    } catch (error) {
+      console.error("Error al agregar la cita:", error);
+      setIsProcessing(false);
+    }
+  }
 
 
   return (
