@@ -73,6 +73,7 @@ const BookingPage = () => {
     end: "",
     carId: "",
     reason: "",
+    province: "",
   });
 
   // useEffect para transformar los datos crudos de la API en eventos para el calendario
