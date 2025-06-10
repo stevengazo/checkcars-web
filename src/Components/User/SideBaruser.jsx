@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { IoIosCloseCircle } from "react-icons/io";
+import SettingsContext from "../../Context/SettingsContext";
+import useFetch from "../../Hook/useFetch";
 
 const SideBarUser = ({ User, onClose }) => {
+  const { API_URL } = useContext(SettingsContext);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({
     email: User?.email || "",
@@ -13,6 +17,44 @@ const SideBarUser = ({ User, onClose }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDelete = async () => {
+    try {
+      const confirmDelete = window.confirm("¿Desea borrar el usuario?");
+      if (!confirmDelete) return;
+
+      const response = await fetch(`${API_URL}/api/Users/${User.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.ok) {
+        onClose();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const HandleConfirmUser = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/Users/${User.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if ((response.status = 204)) {
+        setEditedUser({});
+      }
+      // update the user
+    } catch (error) {}
   };
 
   const handleSave = () => {
@@ -46,73 +88,28 @@ const SideBarUser = ({ User, onClose }) => {
 
       {/* Contenido */}
       <div className="p-4 space-y-3 text-gray-700 text-sm">
-        {isEditing ? (
-          <form className="space-y-3">
-            <div>
-              <label className="block font-semibold">Email:</label>
-              <input
-                type="email"
-                name="email"
-                value={editedUser.email}
-                onChange={handleInputChange}
-                className="w-full border rounded px-3 py-1"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold">Teléfono:</label>
-              <input
-                type="text"
-                name="phoneNumber"
-                value={editedUser.phoneNumber}
-                onChange={handleInputChange}
-                className="w-full border rounded px-3 py-1"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold">Nombre de usuario:</label>
-              <input
-                type="text"
-                name="userName"
-                value={editedUser.userName}
-                onChange={handleInputChange}
-                className="w-full border rounded px-3 py-1"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="w-full py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700 transition"
-            >
-              Guardar Cambios
-            </button>
-          </form>
-        ) : (
-          <>
-            <p>
-              <span className="font-semibold">Email:</span> {User?.email || "—"}
-            </p>
-            <p>
-              <span className="font-semibold">Teléfono:</span> {User?.phoneNumber || "—"}
-            </p>
-            <p>
-              <span className="font-semibold">Usuario:</span> {User?.userName || "—"}
-            </p>
-          </>
-        )}
+        <>
+          <p>
+            <span className="font-semibold">Email:</span> {User?.email || "—"}
+          </p>
+          <p>
+            <span className="font-semibold">Teléfono:</span>{" "}
+            {User?.phoneNumber || "—"}
+          </p>
+          <p>
+            <span className="font-semibold">Usuario:</span>{" "}
+            {User?.userName || "—"}
+          </p>
+        </>
 
         {/* Acciones */}
         {!isEditing && (
           <div className="pt-4 border-t mt-4 space-y-2">
-            <button
-              onClick={() => setIsEditing(true)}
-              className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-            >
-              Editar Usuario
-            </button>
             <button className="w-full py-2 px-4 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
               Cambiar Contraseña
             </button>
             <button
+              onClick={() => HandleConfirmUser(User?.emailConfirmed)}
               className={`w-full py-2 px-4 rounded text-white transition ${
                 User?.emailConfirmed
                   ? "bg-red-600 hover:bg-red-700"
@@ -121,7 +118,10 @@ const SideBarUser = ({ User, onClose }) => {
             >
               {User?.emailConfirmed ? "Desactivar Usuario" : "Activar Usuario"}
             </button>
-            <button className="w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition">
+            <button
+              onClick={() => handleDelete()}
+              className="w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition"
+            >
               Eliminar Usuario
             </button>
           </div>

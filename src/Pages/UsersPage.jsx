@@ -9,7 +9,7 @@ const UsersPage = () => {
 
   // Simular carga de datos
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500); // 1.5 seg de carga
+    const timer = setTimeout(() => setLoading(false), 500); // 1.5 seg de carga
     return () => clearTimeout(timer);
   }, []);
 
