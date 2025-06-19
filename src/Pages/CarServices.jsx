@@ -1,7 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import useFetch from "../Hook/useFetch";
 import SettingsContext from "../Context/SettingsContext.jsx";
-import { Link, Links } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CarServices = () => {
   const { API_URL: baseUrl } = useContext(SettingsContext);
@@ -97,55 +98,66 @@ const CarServices = () => {
                 )}
               </div>
 
-              {openIndex === index && item.serviciosRecientes && (
-                <div className="mt-4 border-t border-gray-200 pt-4">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                    Servicios Recientes
-                  </h3>
-                  <ul className="space-y-3">
-                    {item.serviciosRecientes.map((service) => (
-                      <li
-                        key={service.carServiceId}
-                        className="bg-gray-50 p-4 rounded-md border border-gray-200"
-                      >
-                        <p>
-                          <span className="font-semibold">Título:</span>{" "}
-                          {service.title}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Tipo:</span>{" "}
-                          {service.type}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Fecha:</span>{" "}
-                          {new Date(service.date).toLocaleDateString()}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Descripción:</span>{" "}
-                          {service.description}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Kilometraje:</span>{" "}
-                          {service.mileage}
-                        </p>
-                        <p>
-                          <span className="font-semibold">
-                            Próximo Servicio:
-                          </span>{" "}
-                          {item.ultimoRetorno &&
-                          service.nextMileage >= item.ultimoRetorno.mileage ? (
-                            <span className="text-red-600 font-semibold">
-                              {service.nextMileage} km (vencido)
-                            </span>
-                          ) : (
-                            <span>{service.nextMileage} km</span>
-                          )}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <AnimatePresence>
+                {openIndex === index && item.serviciosRecientes && (
+                  <motion.div
+                    className="mt-4 border-t border-gray-200 pt-4"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                      Servicios Recientes
+                    </h3>
+                    <ul className="space-y-3">
+                      {item.serviciosRecientes.map((service) => (
+                        <li
+                          key={service.carServiceId}
+                          className="bg-gray-50 p-4 rounded-md border border-gray-200"
+                        >
+                          <p>
+                            <span className="font-semibold">Título:</span>{" "}
+                            {service.title}
+                          </p>
+                          <p>
+                            <span className="font-semibold">Tipo:</span>{" "}
+                            {service.type}
+                          </p>
+                          <p>
+                            <span className="font-semibold">Fecha:</span>{" "}
+                            {new Date(service.date).toLocaleDateString()}
+                          </p>
+                          <p>
+                            <span className="font-semibold">
+                              Descripción:
+                            </span>{" "}
+                            {service.description}
+                          </p>
+                          <p>
+                            <span className="font-semibold">Kilometraje:</span>{" "}
+                            {service.mileage}
+                          </p>
+                          <p>
+                            <span className="font-semibold">
+                              Próximo Servicio:
+                            </span>{" "}
+                            {item.ultimoRetorno &&
+                            service.nextMileage >=
+                              item.ultimoRetorno.mileage ? (
+                              <span className="text-red-600 font-semibold">
+                                {service.nextMileage} km (vencido)
+                              </span>
+                            ) : (
+                              <span>{service.nextMileage} km</span>
+                            )}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </li>
           ))}
         </ul>
