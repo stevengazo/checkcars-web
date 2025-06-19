@@ -1,9 +1,11 @@
+// Imports
 import { AnimatePresence, motion } from "framer-motion";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useState, useContext } from "react";
 import SettingsContext from "../../Context/SettingsContext.jsx";
 import useFetch from "../../Hook/useFetch.js";
 
+// Tipos de servicio
 const SERVICE_TYPES = [
   "Alineación", "Balanceo de neumáticos", "Cambio de batería", "Cambio de bujías",
   "Cambio de filtro de aire", "Cambio de filtro de cabina", "Cambio de líquido de frenos",
@@ -14,15 +16,17 @@ const SERVICE_TYPES = [
   "Revisión general", "Rotación de neumáticos", "Servicio de dirección", "Servicio de transmisión"
 ];
 
-const AddService = ({ carId, OnCloseForm , OnAdded }) => {
+const AddService = ({ carId, OnCloseForm, OnAdded }) => {
   const { API_URL } = useContext(SettingsContext);
 
   const [formData, setFormData] = useState({
     title: "",
-    date: new Date().toISOString().slice(0, 16),
+    date: new Date().toISOString().slice(0, 10),
     type: "",
     description: "",
     carId: carId,
+    mileage: 0,
+    nextMileage: 0,
   });
 
   const [success, setSuccess] = useState(false);
@@ -43,26 +47,26 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "mileage" || name === "nextMileage" ? parseInt(value) || 0 : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
-
     try {
-      await sendService(); // Ejecuta el POST
+      await sendService();
       setSuccess(true);
-      OnAdded(); // Llama a la función para indicar que se ha añadido un servicio
+      OnAdded();
       setFormData({
         title: "",
-        date: new Date().toISOString().slice(0, 16),
+        date: new Date().toISOString().slice(0, 10),
         type: "",
         description: "",
         carId: carId,
+        mileage: 0,
+        nextMileage: 0,
       });
-
       setTimeout(() => {
         setSuccess(false);
         OnCloseForm(false);
@@ -79,7 +83,6 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
   return (
     <AnimatePresence>
       <motion.div
-        id="add-service-sidebar"
         initial={{ x: "100%", opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: "100%", opacity: 0 }}
@@ -104,7 +107,7 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
             value={formData.title}
             onChange={handleChange}
             placeholder="Título del servicio"
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg"
             required
           />
 
@@ -113,7 +116,7 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg"
             required
           />
 
@@ -121,14 +124,12 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
             name="type"
             value={formData.type}
             onChange={handleChange}
-            className="w-full p-3 border-2 border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg bg-white"
             required
           >
             <option value="">Selecciona el tipo de servicio</option>
             {SERVICE_TYPES.map((type, idx) => (
-              <option key={idx} value={type}>
-                {type}
-              </option>
+              <option key={idx} value={type}>{type}</option>
             ))}
           </select>
 
@@ -137,8 +138,30 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
             value={formData.description}
             onChange={handleChange}
             placeholder="Descripción del servicio"
-            className="w-full p-3 border-2 border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg resize-none"
             rows={4}
+            required
+          />
+
+          <input
+            type="number"
+            name="mileage"
+            value={formData.mileage}
+            onChange={handleChange}
+            placeholder="Kilometraje actual"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg"
+            min={0}
+            required
+          />
+
+          <input
+            type="number"
+            name="nextMileage"
+            value={formData.nextMileage}
+            onChange={handleChange}
+            placeholder="Próximo kilometraje recomendado"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg"
+            min={0}
             required
           />
 
@@ -146,7 +169,7 @@ const AddService = ({ carId, OnCloseForm , OnAdded }) => {
 
           <button
             type="submit"
-            className="w-full py-3 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
+            className="w-full py-3 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             disabled={sending}
           >
             {sending ? "Guardando..." : "Guardar Servicio"}

@@ -27,10 +27,16 @@ const ServiceTable = ({ items }) => {
       let aValue = a[sortConfig.key];
       let bValue = b[sortConfig.key];
 
-      // Si estamos ordenando por fecha, convertir a Date para comparar
+      // Si la clave es fecha, convertir a Date
       if (sortConfig.key === 'date') {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
+      }
+
+      // Si la clave es mileage o nextMileage, aseguramos que sean números para comparar
+      if (sortConfig.key === 'mileage' || sortConfig.key === 'nextMileage') {
+        aValue = Number(aValue);
+        bValue = Number(bValue);
       }
 
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -69,6 +75,18 @@ const ServiceTable = ({ items }) => {
             >
               Fecha {getSortArrow('date')}
             </th>
+            <th
+              onClick={() => handleSort('mileage')}
+              className="cursor-pointer px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Kilometraje {getSortArrow('mileage')}
+            </th>
+            <th
+              onClick={() => handleSort('nextMileage')}
+              className="cursor-pointer px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Próximo Kilometraje {getSortArrow('nextMileage')}
+            </th>
             <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider">
               Acciones
             </th>
@@ -80,6 +98,8 @@ const ServiceTable = ({ items }) => {
               <td className="px-6 py-4 text-sm text-gray-700">{item.title}</td>
               <td className="px-6 py-4 text-sm text-gray-500">{item.type}</td>
               <td className="px-6 py-4 text-sm text-gray-500">{formatDate(item.date)}</td>
+              <td className="px-6 py-4 text-sm text-gray-500">{item.mileage.toLocaleString()} KM</td>
+              <td className="px-6 py-4 text-sm text-gray-500">{item.nextMileage.toLocaleString()} KM</td>
               <td className="px-6 py-4 text-right text-sm">
                 <button className="text-blue-600 hover:underline mr-2">Ver</button>
                 <button className="text-red-600 hover:underline">Eliminar</button>

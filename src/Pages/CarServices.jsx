@@ -70,7 +70,7 @@ const CarServices = () => {
                     {item.ultimoRetorno ? (
                       <div className="flex space-x-2">
                         <span className="inline-block bg-blue-100 text-blue-800 text-sm font-bold px-2 py-1 rounded">
-                          {item.ultimoRetorno.mileage} km
+                          {item.ultimoRetorno.mileage.toLocaleString()} km
                         </span>
                         <span className="inline-block bg-blue-100 text-blue-800 text-sm font-bold px-2 py-1 rounded">
                           {item.ultimoRetorno.author}
@@ -129,14 +129,12 @@ const CarServices = () => {
                             {new Date(service.date).toLocaleDateString()}
                           </p>
                           <p>
-                            <span className="font-semibold">
-                              Descripción:
-                            </span>{" "}
+                            <span className="font-semibold">Descripción:</span>{" "}
                             {service.description}
                           </p>
                           <p>
                             <span className="font-semibold">Kilometraje:</span>{" "}
-                            {service.mileage}
+                            {service.mileage.toLocaleString()} km
                           </p>
                           <p>
                             <span className="font-semibold">
@@ -146,10 +144,13 @@ const CarServices = () => {
                             service.nextMileage >=
                               item.ultimoRetorno.mileage ? (
                               <span className="text-red-600 font-semibold">
-                                {service.nextMileage} km (vencido)
+                                {service.nextMileage.toLocaleString()} km
+                                (vencido)
                               </span>
                             ) : (
-                              <span>{service.nextMileage} km</span>
+                              <span>
+                                {service.nextMileage.toLocaleString()} km
+                              </span>
                             )}
                           </p>
                         </li>

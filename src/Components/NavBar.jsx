@@ -5,14 +5,14 @@ import { CiWarning } from "react-icons/ci";
 import { IoIosExit } from "react-icons/io";
 import { TbBrandBooking } from "react-icons/tb";
 import { MdMoreTime } from "react-icons/md";
+import { FiTool } from "react-icons/fi";
 import { FaChartSimple, FaWarehouse } from "react-icons/fa6";
 
 const navItems = [
   { to: "home", icon: <FaChartSimple size={24} />, label: "Gráficas" },
-  { to: "booking", icon: <MdMoreTime size={24} />, label: "Reservas" },
   { to: "CarList", icon: <FaCar size={24} />, label: "Vehículos" },
   { to: "users", icon: <FaUsers size={24} />, label: "Usuarios" },
-  { to: "carservices", icon: <MdMoreTime size={24} />, label: "Servicios" },
+  { to: "carservices", icon: <FiTool size={24} />, label: "Servicios" },
   { to: "exits", icon: <FaHome size={24} />, label: "Salidas" },
   { to: "returns", icon: <FaWarehouse size={24} />, label: "Entregas" },
   { to: "issue", icon: <CiWarning size={24} />, label: "Problemas" },
