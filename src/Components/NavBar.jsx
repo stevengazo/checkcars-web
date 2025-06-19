@@ -12,6 +12,7 @@ const navItems = [
   { to: "booking", icon: <MdMoreTime size={24} />, label: "Reservas" },
   { to: "CarList", icon: <FaCar size={24} />, label: "Vehículos" },
   { to: "users", icon: <FaUsers size={24} />, label: "Usuarios" },
+  { to: "carservices", icon: <MdMoreTime size={24} />, label: "Servicios" },
   { to: "exits", icon: <FaHome size={24} />, label: "Salidas" },
   { to: "returns", icon: <FaWarehouse size={24} />, label: "Entregas" },
   { to: "issue", icon: <CiWarning size={24} />, label: "Problemas" },
@@ -64,7 +65,11 @@ const Navbar = () => {
         </div>
 
         {/* Menu Items */}
-        <ul className={`space-y-2 font-semibold ${sidebarOpen ? "block" : "hidden"}`}>
+        <ul
+          className={`space-y-2 font-semibold ${
+            sidebarOpen ? "block" : "hidden"
+          }`}
+        >
           {navItems.map(({ to, icon, label }) => (
             <li key={to} className="hover:bg-blue-800 transition duration-300">
               <Link

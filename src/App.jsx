@@ -17,6 +17,7 @@ import ViewExit from "./Pages/ViewExit";
 import ViewCrash from "./Pages/ViewCrash";
 import ViewReturn from "./Pages/ViewReturn";
 import ViewIssue from "./Pages/ViewIssue";
+import CarServices from "./Pages/CarServices";
 import Demo from "./Pages/demo";
 import Register from "./Pages/Register";
 
@@ -55,6 +56,7 @@ function App() {
           <Route path="/returns" element={<Returns />} />
          <Route path="/demo" element={<Demo />} />
           <Route path="/booking" element={<BookingPage />} />
+          <Route path="/carservices" element={<CarServices />} />
           <Route path="/CarList" element={<CarList />} />
           <Route path="/car/:id" element={<CarView />} />
           <Route path="/viewexit/:id" element={<ViewExit />} />
