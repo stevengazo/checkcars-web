@@ -129,52 +129,7 @@ const ReportByYear = ({ year = 2025 }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-white rounded-2xl p-4  overflow-x-auto">
-            <h3 className="text-xl font-semibold mb-4 capitalize">
-              {selectedCategory} - Lista de reportes
-            </h3>
-            {reportList.length === 0 ? (
-              <p className="text-gray-600">No hay reportes disponibles.</p>
-            ) : (
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr>
-                    <th className="border-b border-gray-300 px-4 py-2">
-                      Vehiculo{" "}
-                    </th>
-                    <th className="border-b border-gray-300 px-4 py-2">
-                      Fecha Creación
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportList.map(({ reportId, carId, created }) => (
-                    <tr key={reportId} className="hover:bg-gray-50">
-                      <td className="border-b border-gray-200 px-4 py-2 break-all">
-                        <Link
-                          to={`/car/${carId}`}
-                          className="flex items-center justify-center px-4 py-2 text-blue-600 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition duration-200"
-                        >
-                          Ver Vehículo
-                        </Link>
-                      </td>
-                      <td className="border-b border-gray-200 px-4 py-2">
-                        {new Date(created).toLocaleString("es-ES", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+       
         </>
       )}
     </div>
