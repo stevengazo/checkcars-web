@@ -43,8 +43,8 @@ const AddBookingSidebar = ({
         endDate: newEvent.end,
         reason: newEvent.reason,
         status: "Pendiente",
-        userId: "string", // Cambiar según tu lógica
-        province: newEvent.province || "string", // Usar dato real si aplica
+        userId: (() => { try { return JSON.parse(localStorage.getItem("user")) || ""; } catch { return ""; } })(),
+        province: newEvent.province || "",
         deleted: false,
         carId: newEvent.carId,
         confirmed: false,

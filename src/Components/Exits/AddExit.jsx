@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { IoClose } from "react-icons/io5";
+import { FiUploadCloud } from "react-icons/fi";
 
 const AddExit = ({ OnHandleClose }) => {
   const [form, setForm] = useState({
@@ -24,181 +26,147 @@ const AddExit = ({ OnHandleClose }) => {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleClose = () => {
-    OnHandleClose(false);
-  };
+  const handleClose = () => OnHandleClose(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
-  };
+  const handleImageChange = (e) => setImages(Array.from(e.target.files));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setMessage("");
-
     try {
       const payload = new FormData();
-
-      Object.entries(form).forEach(([key, value]) => {
-        payload.append(key, value);
-      });
-
-      images.forEach((img) => {
-        payload.append("photos", img);
-      });
-
-      // Simula envío (reemplaza por llamada real con fetch/axios)
-      console.log("Formulario:", form);
-      console.log("Fotos:", images);
-
+      Object.entries(form).forEach(([k, v]) => payload.append(k, v));
+      images.forEach((img) => payload.append("photos", img));
+      // NOTA: envío simulado — pendiente de conectar al endpoint real de EntryExitReports.
       setTimeout(() => {
         setSubmitting(false);
         setMessage("Salida registrada correctamente.");
         setImages([]);
-      }, 1000);
-    } catch (err) {
-      console.error(err);
+      }, 800);
+    } catch {
       setMessage("Error al registrar salida.");
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white overflow-y-auto p-6 flex flex-col">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">Registrar Salida</h2>
-        <button
-          onClick={handleClose}
-          className="text-red-600 font-medium hover:underline text-sm"
-        >
-          Cerrar
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="max-w-4xl w-full mx-auto space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input label="Placa" name="carPlate" value={form.carPlate} onChange={handleChange} required />
-          <Input label="Autor" name="author" value={form.author} onChange={handleChange} required />
-          <Input label="Kilometraje" name="mileage" type="number" value={form.mileage} onChange={handleChange} required />
-          <Input label="Fecha de salida" name="exitDate" type="datetime-local" value={form.exitDate} onChange={handleChange} />
-
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:items-center">
+      <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        {/* Header */}
+        <header className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <div>
-            <label className="block font-medium text-sm text-gray-700">Nivel de combustible (%)</label>
-            <input
-              type="range"
-              name="fuelLevel"
-              min={0}
-              max={100}
-              value={form.fuelLevel}
-              onChange={handleChange}
-              className="w-full"
-            />
-            <span className="text-sm text-gray-600">{form.fuelLevel}%</span>
+            <h2 className="text-xl font-bold text-gray-900">Registrar Salida</h2>
+            <p className="text-xs text-gray-400">Inspección del vehículo al momento de la salida</p>
           </div>
-
-          <Select label="Nivel de aceite" name="oilLevel" value={form.oilLevel} onChange={handleChange} options={["Lleno", "Medio", "Bajo", "Vacío"]} />
-          <Select label="Estado de pintura" name="paintState" value={form.paintState} onChange={handleChange} />
-          <Select label="Estado neumáticos" name="tiresState" value={form.tiresState} onChange={handleChange} />
-          <Select label="Estado mecánico" name="mecanicState" value={form.mecanicState} onChange={handleChange} />
-          <Select label="Estado interiores" name="interiorsState" value={form.interiorsState} onChange={handleChange} />
-
-          <Checkbox label="¿Llanta de repuesto?" name="hasSpareTire" checked={form.hasSpareTire} onChange={handleChange} />
-          <Checkbox label="¿Cargador USB?" name="hasChargerUSB" checked={form.hasChargerUSB} onChange={handleChange} />
-          <Checkbox label="¿Quick Pass?" name="hasQuickPass" checked={form.hasQuickPass} onChange={handleChange} />
-          <Checkbox label="¿Soporte para teléfono?" name="hasPhoneSupport" checked={form.hasPhoneSupport} onChange={handleChange} />
-          <Checkbox label="¿Kit de emergencia?" name="hasEmergencyKit" checked={form.hasEmergencyKit} onChange={handleChange} />
-        </div>
-
-        <Textarea label="Observaciones" name="notes" value={form.notes} onChange={handleChange} />
-
-        {/* Campo de fotos */}
-        <div>
-          <label className="block font-medium text-sm text-gray-700 mb-1">Fotos (opcional)</label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
-              file:rounded-md file:border-0 file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          {images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
-              {images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={URL.createObjectURL(img)}
-                  alt={`preview-${idx}`}
-                  className="w-full h-32 object-cover rounded border"
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
-          >
-            {submitting ? "Guardando..." : "Guardar salida"}
+          <button onClick={handleClose} className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100" aria-label="Cerrar">
+            <IoClose size={20} />
           </button>
-          {message && <p className="text-sm text-gray-600">{message}</p>}
-        </div>
-      </form>
+        </header>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit} className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+          <Section title="Identificación">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Input label="Placa" name="carPlate" value={form.carPlate} onChange={handleChange} required />
+              <Input label="Autor" name="author" value={form.author} onChange={handleChange} required />
+              <Input label="Kilometraje" name="mileage" type="number" value={form.mileage} onChange={handleChange} required />
+              <Input label="Fecha de salida" name="exitDate" type="datetime-local" value={form.exitDate} onChange={handleChange} />
+            </div>
+          </Section>
+
+          <Section title="Estado del vehículo">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Nivel de combustible — <span className="font-semibold text-blue-600">{form.fuelLevel}%</span>
+                </label>
+                <input type="range" name="fuelLevel" min={0} max={100} value={form.fuelLevel} onChange={handleChange} className="w-full accent-blue-600" />
+              </div>
+              <Select label="Nivel de aceite" name="oilLevel" value={form.oilLevel} onChange={handleChange} options={["Lleno", "Medio", "Bajo", "Vacío"]} />
+              <Select label="Estado de pintura" name="paintState" value={form.paintState} onChange={handleChange} />
+              <Select label="Estado neumáticos" name="tiresState" value={form.tiresState} onChange={handleChange} />
+              <Select label="Estado mecánico" name="mecanicState" value={form.mecanicState} onChange={handleChange} />
+              <Select label="Estado interiores" name="interiorsState" value={form.interiorsState} onChange={handleChange} />
+            </div>
+          </Section>
+
+          <Section title="Equipamiento">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Toggle label="Llanta de repuesto" name="hasSpareTire" checked={form.hasSpareTire} onChange={handleChange} />
+              <Toggle label="Cargador USB" name="hasChargerUSB" checked={form.hasChargerUSB} onChange={handleChange} />
+              <Toggle label="Quick Pass" name="hasQuickPass" checked={form.hasQuickPass} onChange={handleChange} />
+              <Toggle label="Soporte para teléfono" name="hasPhoneSupport" checked={form.hasPhoneSupport} onChange={handleChange} />
+              <Toggle label="Kit de emergencia" name="hasEmergencyKit" checked={form.hasEmergencyKit} onChange={handleChange} />
+            </div>
+          </Section>
+
+          <Section title="Observaciones">
+            <textarea name="notes" rows={3} value={form.notes} onChange={handleChange} placeholder="Notas adicionales sobre la salida"
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500" />
+          </Section>
+
+          <Section title="Fotos (opcional)">
+            <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-sm text-gray-500 transition hover:bg-gray-100">
+              <FiUploadCloud size={24} />
+              <span>Arrastra o haz clic para elegir imágenes</span>
+              <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
+            </label>
+            {images.length > 0 && (
+              <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                {images.map((img, idx) => (
+                  <img key={idx} src={URL.createObjectURL(img)} alt={`preview-${idx}`} className="h-24 w-full rounded-lg border border-gray-200 object-cover" />
+                ))}
+              </div>
+            )}
+          </Section>
+        </form>
+
+        {/* Footer */}
+        <footer className="flex items-center justify-between gap-3 border-t border-gray-100 bg-gray-50 px-6 py-3">
+          {message ? <p className="text-sm text-green-600">{message}</p> : <span className="text-xs text-gray-400">Los campos con * son obligatorios</span>}
+          <div className="flex gap-2">
+            <button type="button" onClick={handleClose} className="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200">
+              Cancelar
+            </button>
+            <button type="submit" disabled={submitting} onClick={handleSubmit}
+              className="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60">
+              {submitting ? "Guardando..." : "Guardar salida"}
+            </button>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };
 
-// Subcomponentes
-const Input = ({ label, name, type = "text", ...props }) => (
-  <div>
-    <label htmlFor={name} className="block font-medium text-sm text-gray-700">{label}</label>
-    <input
-      type={type}
-      id={name}
-      name={name}
-      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-      {...props}
-    />
-  </div>
+/* ---- Subcomponentes de UI ---- */
+const Section = ({ title, children }) => (
+  <section>
+    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">{title}</h3>
+    {children}
+  </section>
 );
 
-const Textarea = ({ label, name, ...props }) => (
+const inputClass =
+  "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500";
+
+const Input = ({ label, name, type = "text", ...props }) => (
   <div>
-    <label htmlFor={name} className="block font-medium text-sm text-gray-700">{label}</label>
-    <textarea
-      id={name}
-      name={name}
-      rows={3}
-      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-      {...props}
-    />
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+    <input type={type} id={name} name={name} className={inputClass} {...props} />
   </div>
 );
 
 const Select = ({ label, name, value, onChange, options = ["Bueno", "Regular", "Malo"] }) => (
   <div>
-    <label htmlFor={name} className="block font-medium text-sm text-gray-700">{label}</label>
-    <select
-      id={name}
-      name={name}
-      value={value}
-      onChange={onChange}
-      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-    >
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+    <select id={name} name={name} value={value} onChange={onChange} className={inputClass}>
       {options.map((opt) => (
         <option key={opt} value={opt}>{opt}</option>
       ))}
@@ -206,18 +174,11 @@ const Select = ({ label, name, value, onChange, options = ["Bueno", "Regular", "
   </div>
 );
 
-const Checkbox = ({ label, name, checked, onChange }) => (
-  <div className="flex items-center space-x-2">
-    <input
-      id={name}
-      name={name}
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-    />
-    <label htmlFor={name} className="text-sm text-gray-700">{label}</label>
-  </div>
+const Toggle = ({ label, name, checked, onChange }) => (
+  <label className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition ${checked ? "border-blue-300 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"}`}>
+    <input type="checkbox" name={name} checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600" />
+    {label}
+  </label>
 );
 
 export default AddExit;

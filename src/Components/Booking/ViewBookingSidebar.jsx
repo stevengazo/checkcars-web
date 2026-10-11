@@ -1,174 +1,103 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { IoIosCloseCircle } from "react-icons/io";
-import { useContext, useState } from "react";
-import SettingsContext from "../../Context/SettingsContext";
-import useFetch from "../../Hook/useFetch";
+import { toast } from "react-toastify";
+import { FaCheck, FaXmark, FaCar } from "react-icons/fa6";
+import bookingService from "../../services/bookingService";
+import { carImageUrl } from "../../services/carsService";
+import OffCanvas from "../molecules/OffCanvas";
+import Button from "../atoms/Button";
+import Badge from "../atoms/Badge";
+
+const STATUS_TONE = {
+  Confirmado: "green", Confirmed: "green",
+  Pendiente: "amber", Pending: "amber",
+  Cancelado: "red", Cancelled: "red",
+};
+
+const fmt = (d) => (d ? new Date(d).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" }) : "—");
+
+const Row = ({ label, value }) => (
+  <div className="flex justify-between gap-4 border-b border-gray-100 py-2 text-sm">
+    <span className="text-gray-500">{label}</span>
+    <span className="text-right font-medium text-gray-800">{value || "—"}</span>
+  </div>
+);
 
 const ViewBookingSidebar = ({ isOpen, onClose, event, car }) => {
-  const { API_URL } = useContext(SettingsContext);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
-  const handleConfirm = async () => {
+  const act = async (fn, okMsg) => {
     if (!event?.bookingId) return;
+    setProcessing(true);
     try {
-      setIsProcessing(true);
-      const response = await fetch(
-        `${API_URL}/api/Bookings/confirm/${event.bookingId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      const result = await response.json();
-      console.log("Evento confirmado:", result);
-      alert("Evento confirmado exitosamente");
+      await fn(event.bookingId);
+      toast.success(okMsg);
       onClose();
-    } catch (error) {
-      console.error("Error al confirmar el evento:", error);
-      alert("Ocurrió un error al confirmar el evento");
+    } catch (err) {
+      toast.error(err?.message || "Ocurrió un error.");
     } finally {
-      setIsProcessing(false);
+      setProcessing(false);
     }
   };
 
-  const handleCancel = async () => {
-    if (!event?.bookingId) return;
-    try {
-      setIsProcessing(true);
-      const response = await fetch(
-        `${API_URL}/api/Bookings/cancel/${event.bookingId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      const result = await response.json();
-      console.log("Evento cancelado:", result);
-      alert("Evento cancelado exitosamente");
-      onClose();
-    } catch (error) {
-      console.error("Error al cancelar el evento:", error);
-      alert("Ocurrió un error al cancelar el evento");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  const img = carImageUrl(car?.imagePath);
 
   return (
-    <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: isOpen ? 0 : "100%" }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 p-6 border-l border-gray-200 rounded-l-2xl overflow-y-auto"
+    <OffCanvas
+      open={Boolean(isOpen && event)}
+      onClose={onClose}
+      title="Detalles de la reserva"
+      subtitle={event?.title}
+      footer={
+        <div className="flex gap-2">
+          <Button variant="primary" className="flex-1 !bg-green-600 hover:!bg-green-700" loading={processing} onClick={() => act(bookingService.confirm, "Reserva confirmada.")}>
+            <FaCheck size={13} /> Confirmar
+          </Button>
+          <Button variant="danger" className="flex-1" disabled={processing} onClick={() => act(bookingService.cancel, "Reserva cancelada.")}>
+            <FaXmark size={14} /> Cancelar
+          </Button>
+        </div>
+      }
     >
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Detalles del Evento
-        </h2>
-        <button
-          onClick={onClose}
-          title="Cerrar"
-          className="p-2 text-red-500 rounded-full hover:bg-red-100 hover:rotate-180 transition-transform"
-        >
-          <IoIosCloseCircle size={28} />
-        </button>
-      </div>
-
       {event ? (
-        <div className="space-y-6 text-sm text-gray-800">
-          <div className="grid gap-2">
-            <div>
-              <span className="font-medium text-gray-700">Título:</span>{" "}
-              {event.title}
+        <div className="space-y-6">
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400">Reserva</h3>
+              {event.status && <Badge tone={STATUS_TONE[event.status] || "gray"}>{event.status}</Badge>}
             </div>
-            <div>
-              <span className="font-medium text-gray-700">Inicio:</span>{" "}
-              {event.start.toLocaleString()}
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Fin:</span>{" "}
-              {event.end.toLocaleString()}
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Motivo:</span>{" "}
-              {event.reason}
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Provincia:</span>{" "}
-              {event.province}
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Estado:</span>{" "}
-              {event.status}
-            </div>
+            <Row label="Motivo" value={event.reason} />
+            <Row label="Inicio" value={fmt(event.start)} />
+            <Row label="Fin" value={fmt(event.end)} />
+            <Row label="Provincia" value={event.province} />
           </div>
-
-          <div className="flex justify-between gap-4">
-            <button
-              disabled={isProcessing}
-              onClick={handleConfirm}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Confirmar
-            </button>
-            <button
-              disabled={isProcessing}
-              onClick={handleCancel}
-              className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Cancelar
-            </button>
-          </div>
-
-          <hr className="border-gray-300" />
 
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Información del Vehículo
-            </h3>
-
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">Vehículo</h3>
             {car ? (
               <div className="space-y-3">
-                <Link
-                  to={`/car/${car.carId}`}
-                  className="block text-center w-full px-4 py-2 text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition"
-                >
-                  Ver Detalles del Vehículo
+                <div className="flex items-center gap-3">
+                  <div className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100 text-gray-300">
+                    {img ? <img src={img} alt="" className="h-full w-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} /> : <FaCar size={24} />}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800">{car.brand} {car.model}</p>
+                    <span className="rounded bg-gray-100 px-2 py-0.5 font-mono text-xs text-gray-600">{car.plate}</span>
+                  </div>
+                </div>
+                <Row label="Año" value={car.year} />
+                <Row label="Color" value={car.color} />
+                <Link to={`/car/${car.carId}`} className="mt-2 block rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+                  Ver detalles del vehículo
                 </Link>
-                <div>
-                  <span className="font-medium">Placa:</span> {car.plate}
-                </div>
-                <div>
-                  <span className="font-medium">Marca:</span> {car.brand}
-                </div>
-                <div>
-                  <span className="font-medium">Modelo:</span> {car.model}
-                </div>
-                <div>
-                  <span className="font-medium">Año:</span> {car.year}
-                </div>
-                <div>
-                  <span className="font-medium">Color:</span> {car.color}
-                </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">
-                Cargando información del vehículo...
-              </p>
+              <p className="text-sm text-gray-400">Cargando información del vehículo...</p>
             )}
           </div>
         </div>
-      ) : (
-        <p className="text-sm text-gray-500">No hay evento seleccionado.</p>
-      )}
-    </motion.div>
+      ) : null}
+    </OffCanvas>
   );
 };
 

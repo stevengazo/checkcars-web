@@ -1,275 +1,174 @@
-import { useState, useContext, useEffect } from "react";
-// Importa el calendario y localizador de react-big-calendar
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-// Funciones de date-fns para manejo de fechas
+import { useState, useEffect, useMemo } from "react";
+import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
-// Configuración de idioma español para fechas
 import { es } from "date-fns/locale";
-// Estilos CSS del calendario
 import "react-big-calendar/lib/css/react-big-calendar.css";
-// Animaciones con Framer Motion
 import { motion, AnimatePresence } from "framer-motion";
+import { FaPlus } from "react-icons/fa6";
 
-// Componentes para agregar/ver reservas en sidebar
+import bookingService from "../services/bookingService";
+import carsService from "../services/carsService";
+import useApi from "../Hook/useApi";
+import PageHeader from "../Components/templates/PageHeader";
+import Card from "../Components/atoms/Card";
+import Button from "../Components/atoms/Button";
+
 import AddBookingSidebar from "../Components/Booking/AddBookingSidebar.jsx";
 import ViewBookingSidebar from "../Components/Booking/ViewBookingSidebar";
-// Hook personalizado para hacer fetch de datos
-import useFetch from "../Hook/useFetch";
-// Contexto para obtener configuraciones globales, como la URL base
-import SettingsContext from "../Context/SettingsContext.jsx";
 
-// Locales para el localizador de fechas
-const locales = { es };
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales: { es } });
 
-// Configura el localizador para el calendario con date-fns y locales
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
-
-// Variantes para animar la apertura/cierre del sidebar (framer-motion)
 const sidebarVariants = {
-  hidden: { x: "100%", opacity: 0 },  // Sidebar fuera de pantalla a la derecha
-  visible: { x: 0, opacity: 1 },      // Sidebar visible en posición normal
-  exit: { x: "100%", opacity: 0 },    // Sidebar saliendo a la derecha
+  hidden: { x: "100%", opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+  exit: { x: "100%", opacity: 0 },
 };
 
-// Variantes para animar el contenido principal (fade y movimiento vertical)
-const contentVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+// Paleta tipo Google Calendar por estado.
+const STATUS_COLORS = {
+  Confirmado: "#34a853",
+  Pendiente: "#f9ab00",
+  Cancelado: "#ea4335",
+};
+const DEFAULT_COLOR = "#1a73e8";
+
+const LEGEND = [
+  { label: "Confirmado", color: STATUS_COLORS.Confirmado },
+  { label: "Pendiente", color: STATUS_COLORS.Pendiente },
+  { label: "Cancelado", color: STATUS_COLORS.Cancelado },
+  { label: "Otros", color: DEFAULT_COLOR },
+];
+
+const messages = {
+  next: "Sig.", previous: "Ant.", today: "Hoy", month: "Mes", week: "Semana",
+  day: "Día", agenda: "Agenda", date: "Fecha", time: "Hora", event: "Reserva",
+  noEventsInRange: "No hay reservas en este rango.", showMore: (t) => `+${t} más`,
 };
 
 const BookingPage = () => {
-  // Extrae la URL base de la API del contexto de configuración global
-  const { API_URL } = useContext(SettingsContext);
-  const URL = `${API_URL}/api/Bookings`; // Endpoint para obtener reservas
+  const { data, loading, refetch } = useApi(() => bookingService.list());
 
-  // Hook para traer datos de reservas desde la API
-  const { data, loading, error, refetch } = useFetch(URL, {
-    autoFetch: true, // Realiza la petición automáticamente al montar
-  });
-
-  // Estado para almacenar los eventos formateados para el calendario
-  const [events, setEvents] = useState([]);
-  // Estado para controlar si el sidebar para agregar reserva está abierto
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Estado para controlar si el sidebar para ver detalles está abierto
   const [eventDetailsOpen, setEventDetailsOpen] = useState(false);
-  // Estado para almacenar el evento seleccionado para mostrar detalles
   const [selectedEvent, setSelectedEvent] = useState(null);
-  // Estado para almacenar la información del coche relacionado al evento seleccionado
   const [selectedCar, setSelectedCar] = useState(null);
-  // Estado para crear un nuevo evento (reserva) con campos iniciales vacíos
-  const [newEvent, setNewEvent] = useState({
-    title: "",
-    start: "",
-    end: "",
-    carId: "",
-    reason: "",
-    province: "",
-  });
+  const [newEvent, setNewEvent] = useState({ title: "", start: "", end: "", carId: "", reason: "", province: "" });
 
-  // useEffect para transformar los datos crudos de la API en eventos para el calendario
+  const events = useMemo(
+    () =>
+      (data || []).map((b) => ({
+        title: b.reason || "Sin motivo",
+        start: new Date(b.startDate),
+        end: new Date(b.endDate),
+        reason: b.reason,
+        province: b.province,
+        carId: b.carId,
+        userId: b.userId,
+        bookingId: b.bookingId,
+        status: b.status,
+      })),
+    [data]
+  );
+
   useEffect(() => {
-    if (data && Array.isArray(data)) {
-      const formattedEvents = data.map((booking) => ({
-        title: booking.reason  || "Sin motivo",  // Título visible en el evento
-        start: new Date(booking.startDate),     // Fecha inicio como objeto Date
-        end: new Date(booking.endDate),         // Fecha fin como objeto Date
-        reason: booking.reason,
-        province: booking.province,
-        carId: booking.carId,
-        userId: booking.userId,
-        bookingId: booking.bookingId,
-        status: booking.status, // Estado (Confirmado, Pendiente, Cancelado)
-      }));
-      setEvents(formattedEvents); // Actualiza el estado con los eventos formateados
+    let active = true;
+    if (selectedEvent?.carId) {
+      carsService
+        .get(selectedEvent.carId)
+        .then((c) => active && setSelectedCar(c))
+        .catch(() => active && setSelectedCar(null));
     }
-  }, [data]);
+    return () => { active = false; };
+  }, [selectedEvent]);
 
-  // useEffect para obtener información del coche cuando se selecciona un evento
-  useEffect(() => {
-    const fetchCar = async () => {
-      if (selectedEvent?.carId) {
-        try {
-          const response = await fetch(
-            `${API_URL}/api/Cars/${selectedEvent.carId}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`, // Token para autenticación
-              },
-            }
-          );
-          if (response.ok) {
-            const carData = await response.json();
-            setSelectedCar(carData); // Guarda los datos del coche en estado
-          } else {
-            console.error("No se pudo obtener el vehículo");
-            setSelectedCar(null); // Limpia el estado si falla la petición
-          }
-        } catch (error) {
-          console.error("Error al obtener el vehículo:", error);
-          setSelectedCar(null); // Limpia el estado si hay error
-        }
-      }
-    };
-
-    fetchCar();
-  }, [selectedEvent, API_URL]);
-
-  // Manejador cuando el usuario selecciona un rango de fechas en el calendario
-  const handleSelectSlot = ({ start, end }) => {
+  const openAdd = (start = new Date(), end = new Date(Date.now() + 2 * 3600 * 1000)) => {
     setNewEvent({
       title: "",
-      start: start.toISOString().slice(0, 16), // Formatea fecha a string para inputs
-      end: end.toISOString().slice(0, 16),
-      plate: "",
+      start: new Date(start).toISOString().slice(0, 16),
+      end: new Date(end).toISOString().slice(0, 16),
+      carId: "",
       reason: "",
+      province: "",
     });
-    setSidebarOpen(true); // Abre el sidebar para agregar nueva reserva
+    setSidebarOpen(true);
   };
 
-  // Manejador para agregar un nuevo evento a la lista de eventos
-  const handleAddEvent = () => {
-    const { title, start, end, plate, reason } = newEvent;
-    // Validación: todos los campos son obligatorios
-    if (!title || !start || !end || !plate || !reason) {
-      alert("Todos los campos son obligatorios");
-      return;
-    }
-    // Agrega el nuevo evento al estado de eventos, convirtiendo fechas a objetos Date
-    setEvents([
-      ...events,
-      {
-        title,
-        start: new Date(start),
-        end: new Date(end),
-        plate,
-        reason,
-      },
-    ]);
-    setSidebarOpen(false); // Cierra el sidebar al agregar
-  };
+  const handleSelectSlot = ({ start, end }) => openAdd(start, end);
 
-  // Manejador para cuando se selecciona un evento del calendario
   const handleSelectEvent = (event) => {
-    setSelectedEvent(event); // Guarda el evento seleccionado
-    setEventDetailsOpen(true); // Abre el sidebar con detalles del evento
+    setSelectedEvent(event);
+    setEventDetailsOpen(true);
   };
 
-  // Función para asignar colores a los eventos según su estado
-  const eventPropGetter = (event) => {
-    let backgroundColor = "#2196F3"; // Azul por defecto
+  const eventPropGetter = (event) => ({
+    style: {
+      backgroundColor: STATUS_COLORS[event.status] || DEFAULT_COLOR,
+      color: "#fff",
+    },
+  });
 
-    if (event.status === "Confirmado") {
-      backgroundColor = "#4CAF50"; // Verde para confirmados
-    } else if (event.status === "Pendiente") {
-      backgroundColor = "#FFC107"; // Amarillo para pendientes
-    } else if (event.status === "Cancelado") {
-      backgroundColor = "#F44336"; // Rojo para cancelados
-    }
-
-    return {
-      style: {
-        backgroundColor,
-        color: "white",
-        borderRadius: "5px",
-        border: "none",
-      },
-    };
+  const closeAndRefresh = (setter) => () => {
+    setter(false);
+    refetch();
   };
 
   return (
-    <div className="w-full h-full flex relative overflow-hidden">
-      {/* Contenedor para mostrar los sidebars con animación */}
+    <div className="relative flex h-full flex-col overflow-hidden">
       <AnimatePresence>
-        {/* Sidebar para agregar nueva reserva */}
         {sidebarOpen && (
-          <motion.div
-            key="addSidebar"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={sidebarVariants}
-            transition={{ type: "tween", duration: 0.3 }}
-            className="absolute top-0 right-0 z-50"
-          >
-            <AddBookingSidebar
-              isOpen={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-              newEvent={newEvent}
-              setNewEvent={setNewEvent}
-              onAddEvent={handleAddEvent}
-            />
-          </motion.div>
-        )}
-
-        {/* Sidebar para ver detalles de una reserva seleccionada */}
-        {eventDetailsOpen && selectedEvent && (
-          <motion.div
-            key="viewSidebar"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={sidebarVariants}
-            transition={{ type: "tween", duration: 0.3 }}
-            className="absolute top-0 right-0 z-50"
-          >
-            <ViewBookingSidebar
-              isOpen={eventDetailsOpen}
-              onClose={() => setEventDetailsOpen(false)}
-              event={selectedEvent}
-              car={selectedCar}
-            />
+          <motion.div key="addSidebar" initial="hidden" animate="visible" exit="exit" variants={sidebarVariants} transition={{ type: "tween", duration: 0.3 }} className="absolute right-0 top-0 z-50">
+            <AddBookingSidebar isOpen={sidebarOpen} onClose={closeAndRefresh(setSidebarOpen)} newEvent={newEvent} setNewEvent={setNewEvent} onAddEvent={closeAndRefresh(setSidebarOpen)} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Contenido principal con animación */}
-      <motion.div
-        className="flex-1 p-4"
-        initial="hidden"
-        animate="visible"
-        variants={contentVariants}
-      >
-        <h1 className="text-2xl font-bold mb-2">Sistema de Reservas</h1>
-        <p className="mb-4">Administre las reservas de vehículos.</p>
-        <div style={{ height: 500 }}>
-          {/* Calendario interactivo */}
+      <ViewBookingSidebar isOpen={eventDetailsOpen && !!selectedEvent} onClose={closeAndRefresh(setEventDetailsOpen)} event={selectedEvent} car={selectedCar} />
+
+      <motion.div className="flex flex-1 flex-col" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <PageHeader
+          title="Reservas"
+          action={
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="hidden flex-wrap items-center gap-3 sm:flex">
+                {LEGEND.map((l) => (
+                  <span key={l.label} className="inline-flex items-center gap-1.5 text-xs text-gray-600">
+                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: l.color }} />
+                    {l.label}
+                  </span>
+                ))}
+              </div>
+              <Button onClick={() => openAdd()}>
+                <FaPlus size={13} /> Nueva reserva
+              </Button>
+            </div>
+          }
+        />
+        <p className="mb-4 text-sm text-gray-500">
+          Selecciona un rango de días para crear una reserva, o haz clic en una existente para ver el detalle.
+        </p>
+
+        <Card className="gcal flex-1" padding="p-4">
           <Calendar
-            localizer={localizer} // Configuración regional y de fechas
-            events={events} // Eventos a mostrar
-            startAccessor="start" // Propiedad que indica inicio evento
-            endAccessor="end" // Propiedad que indica fin evento
-            selectable // Permite seleccionar fechas para crear evento
-            onSelectSlot={handleSelectSlot} // Manejador al seleccionar un rango
-            onSelectEvent={handleSelectEvent} // Manejador al seleccionar un evento
-            culture="es" // Idioma español
-            eventPropGetter={eventPropGetter} // Función para colorear eventos
-            messages={{
-              // Traducción de textos del calendario
-              next: "Sig.",
-              previous: "Ant.",
-              today: "Hoy",
-              month: "Mes",
-              week: "Semana",
-              day: "Día",
-              agenda: "Agenda",
-              date: "Fecha",
-              time: "Hora",
-              event: "Evento",
-              noEventsInRange: "No hay eventos en este rango.",
-            }}
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            popup
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            culture="es"
+            defaultView={Views.MONTH}
+            views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
+            eventPropGetter={eventPropGetter}
+            messages={messages}
+            style={{ height: "72vh" }}
+            className={loading ? "opacity-60" : ""}
           />
-        </div>
+        </Card>
       </motion.div>
     </div>
   );

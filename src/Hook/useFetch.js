@@ -1,10 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
+import { rawRequest } from '../services/httpClient';
 
+/**
+ * Hook de fetch (compatibilidad). Conserva la firma original (url completa + options
+ * con body ya serializado) pero delega en el cliente HTTP central, así los componentes
+ * aún no migrados ganan: inyección de token, manejo de 401 y parseo seguro de body vacío.
+ */
 const useFetch = (url, options = {}) => {
   const {
     autoFetch = true,
-    dependencies = [], // nuevas dependencias opcionales para controlar re-fetch
-    ...fetchOptions
+    dependencies = [],
+    method = 'GET',
+    body,
+    headers = {},
   } = options;
 
   const [data, setData] = useState(null);
@@ -12,47 +20,36 @@ const useFetch = (url, options = {}) => {
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(0);
 
-  const token = localStorage.getItem('token');
-
   const fetchData = useCallback(
     async (customOptions = {}) => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(url, {
-          ...fetchOptions,
-          ...customOptions,
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-            ...fetchOptions.headers,
-            ...(customOptions.headers || {}),
-          },
+        const { data: result, status: resStatus } = await rawRequest(url, {
+          method: customOptions.method || method,
+          rawBody: customOptions.body !== undefined ? customOptions.body : body,
+          headers: { ...headers, ...(customOptions.headers || {}) },
         });
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        setStatus(response.status);
+        setStatus(resStatus);
         setData(result);
       } catch (err) {
+        setStatus(err.status ?? 0);
         setData(null);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     },
-    [url, token, JSON.stringify(fetchOptions)] // para que detecte cambios en opciones, se stringify aquí
+    // Mantiene el comportamiento previo: reacciona a cambios de url/opciones.
+    [url, method, body, JSON.stringify(headers)]
   );
 
   useEffect(() => {
     if (autoFetch) {
       fetchData();
     }
-  }, [fetchData, ...dependencies]); // se vuelve a llamar cuando cambian las dependencias
+  }, [fetchData, ...dependencies]);
 
   return { data, loading, error, refetch: fetchData, status };
 };

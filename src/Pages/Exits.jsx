@@ -1,60 +1,12 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import EntrySearch from "../Module/EntrySearch";
-import AddExit from "../Components/Exits/AddExit";
+import DynamicReportPage from "../Components/organisms/DynamicReportPage";
 
-const Exits = () => {
-  const [showAdd, setShowAdd] = useState(false);
-
-  return (
-    <motion.div
-      className="p-6 space-y-6"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
-      <div className="flex justify-between items-center">
-        <motion.h1
-          className="text-3xl font-medium"
-          initial={{ x: -30, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Reporte de Salidas
-        </motion.h1>
-
-        <motion.button
-          onClick={() => setShowAdd(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          + Nueva Salida
-        </motion.button>
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="p-4">
-          <p className="italic text-gray-600">
-          Aquí puedes buscar y filtrar las salidas registradas. Utiliza los campos de búsqueda para encontrar entradas específicas según tus necesidades. Estos corresponden a registros de salidas, en los cuales se revisan detalladamente los vehiculos.
-        </p>
-        <hr className="text-gray-300" />
-          </div>
-
-        <EntrySearch />
-      </motion.div>
-
-   
-        {showAdd && (
-            <AddExit OnHandleClose={setShowAdd} />
-        )}
-
-    </motion.div>
-  );
-};
+const Exits = () => (
+  <DynamicReportPage
+    type="Exit"
+    title="Reporte de Salidas"
+    description="Registros de salida de vehículos. El formulario se configura en Configuración → Formularios."
+    noun="salida"
+  />
+);
 
 export default Exits;
